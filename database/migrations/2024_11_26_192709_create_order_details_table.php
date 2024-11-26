@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +15,16 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Order::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->foreignIdFor(Product::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->string('order_product_quantity');
+            $table->string("unit_price");
             $table->timestamps();
         });
     }
