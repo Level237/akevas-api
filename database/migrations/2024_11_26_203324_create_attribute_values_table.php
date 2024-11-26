@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Attribute;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,9 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('images', function (Blueprint $table) {
+        Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
-            $table->string("image_path");
+            $table->foreignIdFor(Attribute::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->string("value");
+            $table->string('value_hex')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('images');
+        Schema::dropIfExists('attribute_values');
     }
 };
