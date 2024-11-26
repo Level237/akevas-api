@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Shop;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,15 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('product_name');
+            $table->string('product_description');
+            $table->foreignIdFor(Shop::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->string('product_price');
+            $table->string('product_quantity');
+            $table->boolean("status");
             $table->timestamps();
         });
     }
