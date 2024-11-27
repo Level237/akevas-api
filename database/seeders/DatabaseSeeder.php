@@ -20,7 +20,9 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-
+        $path = 'database/sql_files/oauth_client.sql';
+        DB::unprepared(file_get_contents($path));
+        $this->command->info('client table seeded!');
         $this->call([
             TownSeeder::class,
             RoleSeeder::class,
