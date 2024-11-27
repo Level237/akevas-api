@@ -42,4 +42,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function findForPassport($username) {
+        return $this->where('phone_number','=', $username)->first();
+    }
 }
