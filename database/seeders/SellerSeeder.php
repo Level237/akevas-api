@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,15 @@ class SellerSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        User::create([
+            'userName'=>'amelia',
+            'firstName'=>'anita',
+            'lastName'=>'chloé',
+            'role_id'=>2,
+            'town_id'=>1,
+            'phone_number'=>'676342432',
+            'email'=>'amelia@gmail.com',
+            'password'=>bcrypt('password'),
+        ]);
     }
 }
