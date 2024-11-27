@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('product_attributes', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Product::class)
