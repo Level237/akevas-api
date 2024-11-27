@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\ShopType;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +18,16 @@ return new class extends Migration
             $table->string('shop_name');
             $table->string('shop_key')->unique();
             $table->string("shop_description");
-            $table->boolean("status");
+            $table->foreignIdFor(User::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->foreignIdFor(ShopType::class)
+            ->constrained()
+            ->restrictOnDelete()
+            ->restrictOnUpdate();
+            $table->string('shop_profile');
+            $table->boolean("status")->default(0);
             $table->timestamps();
         });
     }
