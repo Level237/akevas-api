@@ -15,8 +15,6 @@ class AdminSeeder extends Seeder
     {
         User::create([
             'userName'=>'akevas',
-            'firstName'=>'akevas',
-            'lastName'=>'shop',
             'role_id'=>1,
             'town_id'=>1,
             'phone_number'=>'657478382',

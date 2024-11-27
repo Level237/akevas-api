@@ -15,8 +15,6 @@ class SellerSeeder extends Seeder
     {
         User::create([
             'userName'=>'amelia',
-            'firstName'=>'anita',
-            'lastName'=>'chloé',
             'role_id'=>2,
             'town_id'=>1,
             'phone_number'=>'676342432',

@@ -16,9 +16,7 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('userName');
-            $table->string("firstName");
-            $table->string("lastName");
+            $table->string('userName')->unique();
             $table->foreignIdFor(Role::class)
             ->constrained()
             ->restrictOnDelete()
