@@ -13,11 +13,15 @@ class AuthControllerTest extends TestCase
      */
     public function test_it_can_login_a_user(): void
     {
-        $user = User::find(1);
+        $user = User::factory()->create([
+            'role_id'=>1,
+            'town_id'=>1,
+            'phone_number'=>'634253672',
+        ]);
 
         $response = $this->postJson('/api/login', [
             'phone_number' => $user->phone_number,
-            'password' => "password",
+            'password' => 'password',
         ]);
 
         $response->assertStatus(200);
