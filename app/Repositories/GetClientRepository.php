@@ -7,7 +7,7 @@ use Laravel\Passport\Client;
 class GetClientRepository{
 
     public function getClient(){
-        $client=Client::where("id",2)->first();
+        $client=Client::where("id",1)->first();
 
         return $client;
     }

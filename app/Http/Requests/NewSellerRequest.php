@@ -22,7 +22,13 @@ class NewSellerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'userName'=>'required',
+            'userName'=>'required|exists:users,userName',
+            'town_id'=>'required',
+            'phone_number'=>'required',
+            'isWholesaler'=>'required',
+            'cni_in_front'=>'required',
+            'cni_in_back'=>'required',
+            'profile'=>'required'
         ];
     }
 }

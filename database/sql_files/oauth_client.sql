@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.34, for Linux (x86_64)
 --
--- Host: localhost    Database: escorte-girl
+-- Host: localhost    Database: akevas-api
 -- ------------------------------------------------------
 -- Server version	8.0.34-0ubuntu0.22.04.1
 
@@ -36,7 +36,7 @@ CREATE TABLE `oauth_clients` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `oauth_clients_user_id_index` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `oauth_clients` (
 
 LOCK TABLES `oauth_clients` WRITE;
 /*!40000 ALTER TABLE `oauth_clients` DISABLE KEYS */;
-INSERT INTO `oauth_clients` VALUES (1,NULL,'user','Ja3gbBhsdiEJKdZiNBHCbNURCsgeFL933ZLfIpVX',NULL,'http://localhost/auth/callback',0,0,0,NULL,NULL),(2,NULL,'Laravel Password Grant Client','JEqpOXFF3Bgt3ND2UzbnuBjuhgIOtGGFJwb377rl','users','http://localhost/',0,1,0,NULL,NULL);
+INSERT INTO `oauth_clients` VALUES (1,NULL,'Laravel Password Grant Client','AaKgsBNSTYSrEWurUgjKTAcNSDZUUh4w9eJbIOt7','users','http://localhost',0,1,0,'2024-11-27 20:09:48','2024-11-27 20:09:48');
 /*!40000 ALTER TABLE `oauth_clients` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-27  7:00:16
+-- Dump completed on 2024-11-27 22:10:13

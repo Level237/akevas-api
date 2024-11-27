@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+
 use App\Http\Controllers\Controller;
 use App\Repositories\GetClientRepository;
+use App\Services\Auth\GenerateTokenUserService;
 use App\Services\Auth\LoginService;
-use App\Services\GenerateTokenUserService;
+
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
