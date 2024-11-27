@@ -32,6 +32,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('isWholesaler')->nullable();
+            $table->string('cni_in_front')->nullable();
+            $table->string('cni_in_back')->nullable();
+            $table->string('profile')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
