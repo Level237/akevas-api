@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Image;
 use App\Models\Product;
+use App\Models\Shop;
 use App\Services\GenerateUrlResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -16,7 +18,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $shop=Shop::where('user_id',Auth::user()->id)->first();
+        $products=Product::where('shop_id',$shop->id)->get();
+
+        return $products;
     }
 
     /**
