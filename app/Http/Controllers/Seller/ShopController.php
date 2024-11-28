@@ -33,7 +33,7 @@ class ShopController extends Controller
             $shop->shop_key=(new generateShopNameService())->generateShopName();
             $shop->shop_description=$request->shop_description;
             $shop->shop_type_id=$request->shop_type_id;
-            $shop->url=(new GenerateUrlResource())->generateUrl($request->shop_name);
+            $shop->shop_url=(new GenerateUrlResource())->generateUrl($request->shop_name);
             $file = $request->file('shop_profile');
             $image_path = $file->store('shops', 'public');
             $shop->shop_profile=$image_path;
