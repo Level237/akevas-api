@@ -45,6 +45,10 @@ class ProductController extends Controller
                 $product->attributes()->attach($imageModel->id);
             }
 
+            if($request->categories){
+                $product->categories()->attach($request->categories);
+            }
+
             if($product->save){
                 return response()->json(['message'=>"Product created successfully"],200);
             }
