@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Image extends Model
 {
@@ -12,4 +14,8 @@ class Image extends Model
     protected $fillable=[
         'image_path'
     ];
+
+    public function products():BelongsToMany{
+        return $this->belongsToMany(Product::class);
+    }
 }
