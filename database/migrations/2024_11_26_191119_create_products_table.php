@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('product_name');
             $table->string('product_description');
             $table->foreignIdFor(Shop::class)

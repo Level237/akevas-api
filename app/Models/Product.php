@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Image;
+use Ramsey\Uuid\Uuid;
 use App\Models\Category;
 use App\Models\AttributeValue;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function images():BelongsToMany{
         return $this->belongsToMany(Image::class);
@@ -24,4 +28,14 @@ class Product extends Model
     public function categories():BelongsToMany{
         return $this->belongsToMany(Category::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->id = Uuid::uuid4()->toString();
+        });
+    }
+
 }
