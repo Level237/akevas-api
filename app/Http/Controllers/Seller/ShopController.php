@@ -56,7 +56,9 @@ class ShopController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $shop=Shop::find($id);
+
+        return $shop;
     }
 
     /**
