@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Seller\CreateSellerController;
@@ -27,6 +29,11 @@ Route::middleware(['auth:api','scopes:seller'])->prefix('v1')->group(function(){
     Route::apiResource("/products",ProductController::class);
 });
 
+Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
+
+ Route::apiResource('categories',CategoryController::class);
+ Route::patch('/shop/confirm/{id}',[ValidateShopController::class,'validateShop']);
+});
 
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function(){
