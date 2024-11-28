@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use App\Models\Shop;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -20,8 +22,6 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'userName',
-        'firstName',
-        'lastName',
         'role_id',
         'town_id',
         'phone_number',
@@ -55,5 +55,9 @@ class User extends Authenticatable
 
     public function findForPassport($username) {
         return $this->where('phone_number','=', $username)->first();
+    }
+
+    public function shops():HasMany{
+        return $this->hasMany(Shop::class);
     }
 }

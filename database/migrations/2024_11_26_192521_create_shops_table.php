@@ -22,6 +22,7 @@ return new class extends Migration
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();
+            $table->string('shop_url');
             $table->foreignIdFor(ShopType::class)
             ->constrained()
             ->restrictOnDelete()

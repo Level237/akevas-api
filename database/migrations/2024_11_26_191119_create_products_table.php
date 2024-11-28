@@ -21,9 +21,10 @@ return new class extends Migration
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();
+            $table->string('product_url');
             $table->string('product_price');
             $table->string('product_quantity');
-            $table->boolean("status");
+            $table->boolean("status")->default(0);
             $table->timestamps();
         });
     }
