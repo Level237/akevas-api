@@ -29,6 +29,7 @@ return new class extends Migration
             ->restrictOnUpdate();
             $table->string('shop_profile');
             $table->boolean("status")->default(0);
+            $table->boolean('isSubscribe')->default(0);
             $table->timestamps();
         });
     }

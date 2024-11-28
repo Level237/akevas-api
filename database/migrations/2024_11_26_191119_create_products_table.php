@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('product_price');
             $table->string('product_quantity');
             $table->boolean("status")->default(0);
+            $table->boolean('isSubscribe')->default(0);
             $table->timestamps();
         });
     }
