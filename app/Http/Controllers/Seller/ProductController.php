@@ -24,7 +24,8 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $product=new Product;
+        try{
+            $product=new Product;
         $product->product_name=$request->product_name;
         $product->product_url=(new GenerateUrlResource())->generateUrl($request->product_name);
         $product->product_description=$request->product_description;
@@ -43,7 +44,18 @@ class ProductController extends Controller
             if ($request->filled('attributs')) {
                 $product->attributes()->attach($imageModel->id);
             }
+
+            if($product->save){
+                return response()->json(['message'=>"Product created successfully"],200);
+            }
         }
+    }catch(\Exception $e){
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong',
+            'errors' => $e
+          ], 500);
+    }
     }
 
     /**
