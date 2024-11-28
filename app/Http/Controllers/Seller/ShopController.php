@@ -29,7 +29,7 @@ class ShopController extends Controller
 
             $shop=new Shop;
             $shop->shop_name=$request->shop_name;
-            $shop->user_id=Auth::user()->id;
+            $shop->user_id=Auth::guard('api')->user()->id;
             $shop->shop_key=(new generateShopNameService())->generateShopName();
             $shop->shop_description=$request->shop_description;
             $shop->shop_type_id=$request->shop_type_id;

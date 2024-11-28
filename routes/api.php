@@ -25,7 +25,7 @@ Route::post("login",[LoginController::class,"login"]);
 Route::post('create/seller',[CreateSellerController::class,'create']);
 Route::get('shop/show/{id}',[ShopController::class,'show']);
 
-Route::middleware(['auth:api','scopes:seller'])->prefix('v1')->group(function(){
+Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
 
     Route::apiResource('/shops',ShopController::class);
     Route::apiResource("/products",ProductController::class);

@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $shop=Shop::where('user_id',Auth::user()->id)->first();
+        $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
         $products=Product::where('shop_id',$shop->id)->get();
 
         return $products;
