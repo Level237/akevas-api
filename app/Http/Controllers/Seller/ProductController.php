@@ -55,7 +55,7 @@ class ProductController extends Controller
             }
 
             if($product->save){
-                return response()->json(['message'=>"Product created successfully"],200);
+                return response()->json(['message'=>"Product created successfully"],201);
             }
         }
     }catch(\Exception $e){

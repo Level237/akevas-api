@@ -39,7 +39,7 @@ class ShopController extends Controller
             $shop->shop_profile=$image_path;
             $shop->save();
 
-            return response()->json(['message'=>"shop created successfully"],200);
+            return response()->json(['message'=>"shop created successfully"],201);
         }catch(\Exception $e){
             return response()->json([
                 'success' => false,

@@ -36,7 +36,7 @@ class CreateSellerController extends Controller
 
         $seller->save();
 
-        return response()->json(['message'=>"seller created successfully"],200);
+        return response()->json(['message'=>"seller created successfully"],201);
        }catch(\Exception $e){
         return response()->json([
             'success' => false,
