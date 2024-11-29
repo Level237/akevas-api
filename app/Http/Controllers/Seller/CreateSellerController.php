@@ -15,7 +15,7 @@ class CreateSellerController extends Controller
        try{
         $seller=new User;
         $seller->userName=$request->userName;
-        $seller->role_id=$request->role_id;
+        $seller->role_id=2;
         $seller->town_id=$request->town_id;
         $seller->phone_number=$request->phone_number;
         $seller->email=$request->email;

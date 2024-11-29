@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class NewSellerRequest extends FormRequest
 {
@@ -14,6 +16,10 @@ class NewSellerRequest extends FormRequest
         return true;
     }
 
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 400));
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,13 +28,16 @@ class NewSellerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'userName'=>'required|exists:users,userName',
+            'userName'=>'required|unique:users,userName',
             'town_id'=>'required',
-            'phone_number'=>'required',
+            'phone_number'=>'required|unique:users,phone_number',
+            'email'=>'required|unique:users,email',
             'isWholesaler'=>'required',
             'cni_in_front'=>'required',
             'cni_in_back'=>'required',
             'profile'=>'required'
         ];
     }
+
+
 }
