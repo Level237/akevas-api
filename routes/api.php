@@ -41,6 +41,7 @@ Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 });
 
 
+
 Route::middleware(['auth:api'])->prefix('v1')->group(function(){
     Route::post('/logout',[LogoutController::class,'logout']);
 });
