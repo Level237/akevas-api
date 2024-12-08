@@ -25,7 +25,7 @@ class InitPaymentService{
                     "customer_name"=>Auth::guard('api')->user()->username,
                     "customer_email"=>Auth::guard('api')->user()->email,
                     "customer_lang"=>"fr",
-                  ]),'application/json')->post("https://my-coolpay.com/api/".$key_public."/paylink",[
+                  ]),'application/json')->post("https://my-coolpay.com/api/".$key_public."/payin",[
 
         ]);
 

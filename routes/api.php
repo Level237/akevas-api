@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
+use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Seller\ShopController;
@@ -30,6 +31,7 @@ Route::get('shop/show/{id}',[ShopController::class,'show']);
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
 
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
+    Route::post("init/payment/subscription/shop",[SubscribeShopController::class,"initPay"]);
     Route::apiResource('/shops',ShopController::class);
     Route::apiResource("/products",ProductController::class);
 });
