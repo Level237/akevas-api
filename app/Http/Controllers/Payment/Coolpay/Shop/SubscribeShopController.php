@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\Shop;
 use App\Models\Subscription;
 use App\Services\Payment\Coolpay\InitPaymentService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +29,7 @@ class SubscribeShopController extends Controller
             $data=[
                 'payment_type'=>"Momo",
                 'price'=>$subscription_type->subscription_price,
-                'payment_of'=>"productAds",
+                'payment_of'=>"shopAds",
                 'transaction_ref'=>$transaction_ref,
                 'transaction_id'=>null,
                 'membership_id'=>$membership_id,
@@ -40,5 +41,36 @@ class SubscribeShopController extends Controller
             return response()->json(['message'=>"payment Pending"]);
     }
 
+    }
+    public function paymentCallBack(Request $request){
+        $payment=Payment::where('transaction_ref',$request->transaction_ref)
+        ->where('payment_of','=',"shopAds")->first();
+
+        if($request->transaction_status==="SUCCESS"){
+            $payment->status="2";
+            $payment->save();
+            $subscription=Subscription::find($payment->subscription_id);
+            $shop=Shop::find($payment->shop_id);
+            $newDateTime = Carbon::now()->addDay(intval($subscription->subscription_duration));
+            $newDateTime->setTimezone('Africa/Douala');
+            $shop->status=1;
+            $shop->isSubscribe=1;
+            $shop->expire=null;
+            $shop->subscribe_id=$subscription->id;
+
+            if($shop->save()){
+                //DB::table('memberships_users')->insert([
+                    //'user_id'=>$payment->user_id,
+                    //'membership_id'=>$membership->id,
+                    //'payment_id'=>$payment->id,
+                    //'expire_at'=>$newDateTime,
+                    //'announcement_id'=>$announcement->id,
+                    //'status'=>1
+                //]);
+            }
+        }else if($request->transaction_status==="FAILED"){
+            $payment->status="1";
+            $payment->save();
+        }
     }
 }
