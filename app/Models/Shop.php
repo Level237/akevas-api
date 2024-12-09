@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Models\User;
 use Ramsey\Uuid\Uuid;
+use App\Models\Product;
 use App\Models\ShopType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,6 +32,11 @@ class Shop extends Model
 
     public function shopType():BelongsTo{
         return $this->belongsTo(ShopType::class);
+    }
+
+    public function products():HasMany{
+
+        return $this->hasMany(Product::class);
     }
 
     protected static function boot()
