@@ -24,7 +24,6 @@ class SubscribeProductController extends Controller
 
     public function initPaymentPending($membership_id,$product_id,$transaction_ref){
         $subscription_type=Subscription::find($membership_id);
-        $product=Product::find($product_id);
         $paymentExist=Payment::where('transaction_ref',$transaction_ref)->first();
 
         if(!isset($paymentExist)){
@@ -36,7 +35,7 @@ class SubscribeProductController extends Controller
                 'transaction_id'=>null,
                 'membership_id'=>$membership_id,
                 'product_id'=>$product_id,
-                'status'=>"0",
+                'status'=>"1",
                 'user_id'=>Auth::user()->id
             ];
             $payment=event(new MakePaymentEvent($data));
