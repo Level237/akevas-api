@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payment\Coolpay\Product;
 
+use App\Events\MakePaymentEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Product;
@@ -36,7 +37,7 @@ class SubscribeProductController extends Controller
                 'status'=>"0",
                 'user_id'=>Auth::user()->id
             ];
-            //$payment=event(new MakePayment($data));
+            $payment=event(new MakePaymentEvent($data));
             return response()->json(['message'=>"payment Pending"]);
     }
     }
