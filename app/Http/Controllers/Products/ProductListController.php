@@ -11,6 +11,5 @@ class ProductListController extends Controller
 {
     public function index(){
         return ProductResource::collection(Product::orderBy('subscribe_id','DESC')->where('status',1)->get());
-
     }
 }

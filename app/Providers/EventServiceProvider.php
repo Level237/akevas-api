@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\MakePaymentEvent;
+use App\Events\Product\EventCheckSubscriptionProduct;
 use App\Listeners\MakePaymentListener;
+use App\Listeners\Product\ListenerCheckSubscriptionProduct;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         MakePaymentEvent::class=>[
             MakePaymentListener::class
+        ],
+        EventCheckSubscriptionProduct::class=>[
+            ListenerCheckSubscriptionProduct::class
         ]
     ];
 
