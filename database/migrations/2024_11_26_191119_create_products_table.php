@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('product_quantity');
             $table->boolean("status")->default(0);
             $table->boolean('isSubscribe')->default(0);
+            $table->timestamp('expire')->nullable();
+            $table->string('subscribe_id')->nullable();
             $table->timestamps();
         });
     }

@@ -31,6 +31,8 @@ Route::get('shop/show/{id}',[ShopController::class,'show']);
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
 
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
+    Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}',[SubscribeProductController::class,'initPaymentPending']);
+
     Route::post("init/payment/subscription/shop",[SubscribeShopController::class,"initPay"]);
     Route::apiResource('/shops',ShopController::class);
     Route::apiResource("/products",ProductController::class);
