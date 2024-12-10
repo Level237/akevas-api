@@ -12,4 +12,8 @@ class ProductListController extends Controller
     public function index(){
         return ProductResource::collection(Product::orderBy('subscribe_id','DESC')->where('status',1)->get());
     }
+
+    public function adsProducts($id){
+        return ProductResource::collection(Product::Where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
+    }
 }

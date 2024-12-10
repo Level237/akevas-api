@@ -30,6 +30,7 @@ Route::post("login",[LoginController::class,"login"]);
 Route::post('create/seller',[CreateSellerController::class,'create']);
 Route::get('shop/show/{id}',[ShopController::class,'show']);
 Route::get("products",[ProductListController::class,'index']);
+Route::get("ads/products/{id}",[ProductListController::class,"adsProducts"]);
 Route::get("shops",[ShopListController::class,"index"]);
 
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
