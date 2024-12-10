@@ -32,7 +32,7 @@ class SubscribeShopController extends Controller
                 'payment_of'=>"shopAds",
                 'transaction_ref'=>$transaction_ref,
                 'transaction_id'=>null,
-                'membership_id'=>$membership_id,
+                'subscription_id'=>$membership_id,
                 'shop_id'=>$shop_id,
                 'status'=>"1",
                 'user_id'=>Auth::user()->id

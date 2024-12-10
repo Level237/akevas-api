@@ -33,7 +33,7 @@ class SubscribeProductController extends Controller
                 'payment_of'=>"productAds",
                 'transaction_ref'=>$transaction_ref,
                 'transaction_id'=>null,
-                'membership_id'=>$membership_id,
+                'subscription_id'=>$membership_id,
                 'product_id'=>$product_id,
                 'status'=>"1",
                 'user_id'=>Auth::user()->id
