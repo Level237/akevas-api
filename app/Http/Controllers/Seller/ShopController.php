@@ -7,6 +7,7 @@ use App\Http\Requests\ShopRequest;
 use App\Models\Shop;
 use App\Service\Shop\generateShopNameService;
 use App\Services\GenerateUrlResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,6 +37,7 @@ class ShopController extends Controller
             $shop->shop_url=(new GenerateUrlResource())->generateUrl($request->shop_name);
             $file = $request->file('shop_profile');
             $image_path = $file->store('shops', 'public');
+            $shop->expire=Carbon::now()->addDay(7);
             $shop->shop_profile=$image_path;
             $shop->save();
 
