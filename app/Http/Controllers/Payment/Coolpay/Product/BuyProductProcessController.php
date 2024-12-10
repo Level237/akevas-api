@@ -53,12 +53,22 @@ class BuyProductProcessController extends Controller
             }else{
                 return response()->json(['message'=>"payment failed"],500);
             }
-
-
     }
     }
 
-    public function buyCallBack(){
+    public function buyCallBack(Request $request){
+        $payment=Payment::where('transaction_ref',$request->transaction_ref)
+        ->where('payment_of','=',"product")->first();
 
+        if($request->transaction_status==="SUCCESS"){
+            $order=Order::find($payment->order_id);
+            $payment->status="2";
+            $payment->save();
+            $order->isPay=1;
+            $order->save();
+        }else if($request->transaction_status==="FAILED"){
+            $payment->status="1";
+            $payment->save();
+        }
     }
 }
