@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ValidateProductController extends Controller
@@ -12,6 +13,7 @@ class ValidateProductController extends Controller
         try{
             $product=Product::find($id);
             $product->status=$request->status;
+            $product->expire=Carbon::now()->addDay(7);
             $product->save();
             return response()->json(['message'=>"Product validated successfully"],200);
         }catch(\Exception $e){
