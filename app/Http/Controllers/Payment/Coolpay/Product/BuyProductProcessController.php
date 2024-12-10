@@ -56,7 +56,7 @@ class BuyProductProcessController extends Controller
     }
     }
 
-    public function buyCallBack(Request $request){
+    public function buyProductCallBack(Request $request){
         $payment=Payment::where('transaction_ref',$request->transaction_ref)
         ->where('payment_of','=',"product")->first();
 

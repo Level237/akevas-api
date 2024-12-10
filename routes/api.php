@@ -60,5 +60,6 @@ Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 Route::middleware(['auth:api'])->prefix('v1')->group(function(){
     Route::post("init/payment/buy/product",[BuyProductProcessController::class,"initPayment"]);
     Route::post("payment/pending/buy/product",[BuyProductProcessController::class,"paymentPending"]);
+    Route::post("payment/callback/buy/product",[BuyProductProcessController::class,"buyProductCallBack"]);
     Route::post('/logout',[LogoutController::class,'logout']);
 });
