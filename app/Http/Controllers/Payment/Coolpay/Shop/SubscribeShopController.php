@@ -35,7 +35,7 @@ class SubscribeShopController extends Controller
                 'subscription_id'=>$membership_id,
                 'shop_id'=>$shop_id,
                 'status'=>"1",
-                'user_id'=>Auth::user()->id
+                'user_id'=>Auth::guard('api')->user()->id
             ];
             $payment=event(new MakePaymentEvent($data));
             return response()->json(['message'=>"payment Pending"]);

@@ -26,7 +26,7 @@ class BuyProductProcessController extends Controller
 
         if(!isset($paymentExist)){
             $order=new Order;
-            $order->user_id=Auth::user()->id;
+            $order->user_id=Auth::guard('api')->user()->id;;
             $order->total=$total;
             if($order->save()){
                 foreach($order_array as $order_detail){
@@ -45,7 +45,7 @@ class BuyProductProcessController extends Controller
                         'transaction_id'=>null,
                         'order_id'=>$order->id,
                         'status'=>"1",
-                        'user_id'=>Auth::user()->id
+                        'user_id'=>Auth::guard('api')->user()->id
                     ];
                     $payment=event(new MakePaymentEvent($data));
                 }

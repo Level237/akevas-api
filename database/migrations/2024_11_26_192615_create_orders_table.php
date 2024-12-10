@@ -22,6 +22,7 @@ return new class extends Migration
             ->restrictOnUpdate();
             $table->string('status')->default("0");
             $table->boolean('isPay')->default(0);
+            $table->boolean('isTake')->default(0);
             $table->string('total');
             $table->timestamps();
         });
