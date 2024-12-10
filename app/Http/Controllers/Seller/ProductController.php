@@ -8,6 +8,7 @@ use App\Models\Image;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Services\GenerateUrlResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,6 +38,7 @@ class ProductController extends Controller
         $product->shop_id=$request->shop_id;
         $product->product_price=$request->product_price;
         $product->product_quantity=$request->product_quantity;
+        $product->expire=Carbon::now()->addDay(7);
 
         if ($request->hasFile('images')) {
             $images = $request->file('images');
