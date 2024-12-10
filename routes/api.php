@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Products\ProductListController;
@@ -57,5 +58,6 @@ Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function(){
+    Route::post("init/payment/buy/product",[BuyProductProcessController::class,"initPayment"]);
     Route::post('/logout',[LogoutController::class,'logout']);
 });

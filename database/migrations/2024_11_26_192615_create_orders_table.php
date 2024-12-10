@@ -21,6 +21,7 @@ return new class extends Migration
             ->restrictOnDelete()
             ->restrictOnUpdate();
             $table->string('status')->default("0");
+            $table->boolean('isPay')->default(0);
             $table->string('total');
             $table->timestamps();
         });
