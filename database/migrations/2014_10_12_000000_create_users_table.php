@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('cni_in_back')->nullable();
             $table->string('profile')->nullable();
             $table->boolean('isSeller')->default(0);
+            $table->boolean('isDelivery')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
