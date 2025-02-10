@@ -12,7 +12,7 @@ class CheckTokenValidityController extends Controller
     $token = $request->bearerToken();
 
     if (!$token) {
-        return response()->json(['valid' => false], 401);
+        return response()->json(['valid' => 0], 401);
     }
 
     // Tenter de récupérer l'utilisateur associé au token
