@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
-
+use App\Http\Controllers\Auth\CheckTokenValidityController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +28,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/check/token',[CheckTokenValidityController::class,'checkToken']);
 Route::post("login",[LoginController::class,"login"]);
 Route::post('create/seller',[CreateSellerController::class,'create']);
 Route::get('shop/show/{id}',[ShopController::class,'show']);
