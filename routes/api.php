@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ValidateProductController;
-use App\Http\Controllers\Admin\ValidateSellerController;
-use App\Http\Controllers\Admin\ValidateShopController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
-use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
-use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
-use App\Http\Controllers\Products\ProductListController;
-use App\Http\Controllers\Seller\CreateSellerController;
-use App\Http\Controllers\Seller\ProductController;
-use App\Http\Controllers\Seller\ShopController;
-use App\Http\Controllers\Shops\ShopListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Seller\ShopController;
+use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\Shops\ShopListController;
+use App\Http\Controllers\Admin\ValidateShopController;
+use App\Http\Controllers\Seller\CreateSellerController;
+use App\Http\Controllers\Admin\ValidateSellerController;
+use App\Http\Controllers\Products\ProductListController;
+use App\Http\Controllers\Admin\ValidateProductController;
+use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
+use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
+use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,5 +62,6 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function(){
     Route::post("init/payment/buy/product",[BuyProductProcessController::class,"initPayment"]);
     Route::post("payment/pending/buy/product",[BuyProductProcessController::class,"paymentPending"]);
     Route::post("payment/callback/buy/product",[BuyProductProcessController::class,"buyProductCallBack"]);
+    Route::get('/current/user',[ProfileController::class,'currentUser']);
     Route::post('/logout',[LogoutController::class,'logout']);
 });
