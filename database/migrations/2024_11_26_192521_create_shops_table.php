@@ -23,13 +23,13 @@ return new class extends Migration
             ->restrictOnDelete()
             ->restrictOnUpdate();
             $table->string('shop_url');
-            $table->foreignIdFor(ShopType::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+            $table->string('shop_banner')->nullable();
             $table->string('shop_profile');
+            $table->string('shop_town');
+            $table->string('shop_quarter');
             $table->boolean("status")->default(0);
             $table->boolean('isSubscribe')->default(0);
+            $table->string('shop_product_type');
             $table->timestamp('expire')->nullable();
             $table->string('subscribe_id')->nullable();
             $table->timestamps();

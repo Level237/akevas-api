@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
+use App\Models\Image;
 class Shop extends Model
 {
     use HasFactory;
@@ -52,5 +52,9 @@ class Shop extends Model
 
     public function categories():BelongsToMany{
         return $this->belongsToMany(Category::class);
+    }
+
+    public function images():BelongsToMany{
+        return $this->belongsToMany(Image::class);
     }
 }
