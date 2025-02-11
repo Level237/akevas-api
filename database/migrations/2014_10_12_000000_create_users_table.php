@@ -17,6 +17,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('userName')->unique();
+            $table->string('firstName')->nullable();
+            $table->string('lastName')->nullable();
+            $table->string('birthDate')->nullable();
+            $table->string('nationality')->nullable();
             $table->foreignIdFor(Role::class)
             ->constrained()
             ->restrictOnDelete()
@@ -30,8 +34,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('isWholesaler')->nullable();
-            $table->string('cni_in_front')->nullable();
-            $table->string('cni_in_back')->nullable();
+            $table->string('identity_card_in_front')->nullable();
+            $table->string('identity_card_in_back')->nullable();
+            $table->string('identity_card_with_the_person')->nullable();
             $table->string('profile')->nullable();
             $table->boolean('isSeller')->default(0);
             $table->boolean('isDelivery')->default(0);
