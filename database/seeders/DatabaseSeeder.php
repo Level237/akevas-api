@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('client table seeded!');
         $this->call([
             TownSeeder::class,
+            QuarterSeeder::class,
             RoleSeeder::class,
             AdminSeeder::class,
             SellerSeeder::class,

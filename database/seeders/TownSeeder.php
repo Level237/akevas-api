@@ -14,11 +14,13 @@ class TownSeeder extends Seeder
     public function run(): void
     {
         Town::create([
-            'town_name'=>"Douala"
+            'town_name'=>"Douala",
+            'code'=>"DLA"
         ]);
 
         Town::create([
-            'town_name'=>"Yaoundé"
+            'town_name'=>"Yaoundé",
+            'code'=>"YND"
         ]);
     }
 }

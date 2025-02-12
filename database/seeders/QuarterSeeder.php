@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use App\Models\Quarter;
 class QuarterSeeder extends Seeder
 {
     /**
@@ -54,10 +54,6 @@ class QuarterSeeder extends Seeder
             'town_id'=>1
         ]);
         Quarter::create([
-            'quarter_name'=>"Kotto",
-            'town_id'=>1
-        ]);
-        Quarter::create([
             'quarter_name'=>"New bell",
             'town_id'=>1
         ]);
@@ -87,10 +83,6 @@ class QuarterSeeder extends Seeder
         ]);
         Quarter::create([
             'quarter_name'=>"Japoma",
-            'town_id'=>1
-        ]);
-        Quarter::create([
-            'quarter_name'=>"Kotto",
             'town_id'=>1
         ]);
         Quarter::create([
@@ -139,10 +131,6 @@ class QuarterSeeder extends Seeder
         ]);
         Quarter::create([
             'quarter_name'=>"Bastos",
-            'town_id'=>2
-        ]);
-        Quarter::create([
-            'quarter_name'=>"Biyem-Assi",
             'town_id'=>2
         ]);
         Quarter::create([
