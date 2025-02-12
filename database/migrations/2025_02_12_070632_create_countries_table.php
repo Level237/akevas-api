@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Country;
+use App\Models\Town;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,10 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('towns', function (Blueprint $table) {
+        Schema::create('quarters', function (Blueprint $table) {
             $table->id();
-            $table->string('town_name')->unique();
-            $table->string('code');
+            $table->string('quarter_name')->unique();
+             $table->foreignIdFor(Town::class)
+            ->constrained()
+            ->restrictOnUpdate()
+            ->restrictOnDelete();
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('towns');
+        Schema::dropIfExists('quarters');
     }
 };
