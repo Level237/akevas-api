@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Service\Shop;
-
+namespace App\Services\Shop;
+use App\Models\Shop;
 class generateShopNameService{
 
-    function generateShopName() {
-        // Préfixe fixe
-        $prefix = 'shop_';
-
+   function generateUniqueShopName(string $shopName) {
+        // Nettoyer et préparer le préfixe à partir du nom de la boutique
+        $prefix = strtolower($shopName); // Conversion en minuscules
+        $prefix = preg_replace('/[^a-z0-9]/', '', $prefix); // Supprime les caractères spéciaux
+        $prefix = substr($prefix, 0, 4); // Prend les 4 premiers caractères
+        $prefix .= '-'; // Ajoute le tiret
+        
         // Générer une chaîne aléatoire de 5 caractères
-        $characters = 'abcdefghijklmnopqrstuvwxyz';
-        $randomString = substr(str_shuffle(str_repeat($characters, 5)), 0, 5);
-
+        $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $randomString = substr(str_shuffle($characters), 0, 5);
+        
         // Combiner le préfixe avec la chaîne aléatoire
-        $shopName = $prefix . $randomString;
-
-        return $shopName;
+        return $prefix . $randomString;
     }
 }

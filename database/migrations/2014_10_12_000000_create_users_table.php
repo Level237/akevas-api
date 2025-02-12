@@ -25,15 +25,12 @@ return new class extends Migration
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();
-            $table->foreignIdFor(Town::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+            
             $table->string('phone_number')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('isWholesaler')->nullable();
+            $table->string('isWholesaler')->nullable();
             $table->string('identity_card_in_front')->nullable();
             $table->string('identity_card_in_back')->nullable();
             $table->string('identity_card_with_the_person')->nullable();

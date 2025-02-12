@@ -15,7 +15,6 @@ class DeliverySeeder extends Seeder
          User::create([
             'userName'=>'georges',
             'role_id'=>3,
-            'town_id'=>1,
             'phone_number'=>'656420363',
             'email'=>'georges@gmail.com',
             'password'=>bcrypt('password'),

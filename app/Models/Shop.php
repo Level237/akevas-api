@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Image;
+use App\Models\Town;
+use App\Models\Quarter;
 class Shop extends Model
 {
     use HasFactory;
@@ -27,7 +29,7 @@ class Shop extends Model
 
     protected $keyType = 'string';
     public $incrementing = false;
-
+ protected $primaryKey = 'id';
     public function seller():BelongsTo{
         return $this->belongsTo(User::class);
     }
@@ -56,5 +58,13 @@ class Shop extends Model
 
     public function images():BelongsToMany{
         return $this->belongsToMany(Image::class);
+    }
+
+    public function town():BelongsTo{
+        return $this->belongsTo(Town::class);
+    }
+
+    public function quarter():BelongsTo{
+        return $this->belongsTo(Quarter::class);
     }
 }
