@@ -18,6 +18,7 @@ use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
+use App\Http\Controllers\Admin\TownController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +29,8 @@ use App\Http\Controllers\Auth\CheckTokenValidityController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/categories',[CategoryController::class,'index']);
+Route::get('/towns',[TownController::class,'index']);
 Route::get('/check/token',[CheckTokenValidityController::class,'checkToken']);
 Route::post("login",[LoginController::class,"login"]);
 Route::post('create/seller',[CreateSellerController::class,'create']);
@@ -52,6 +55,7 @@ Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 
  Route::apiResource('categories',CategoryController::class);
+ Route::apiResource('towns',TownController::class);
  Route::patch('/shop/confirm/{id}',[ValidateShopController::class,'validateShop']);
  Route::patch('/seller/confirm/{id}',[ValidateSellerController::class,'validateSeller']);
  Route::patch('/product/confirm/{id}',[ValidateProductController::class,'validateProduct']);
