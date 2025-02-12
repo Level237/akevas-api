@@ -63,8 +63,9 @@ class CreateSellerController extends Controller
                 if($i->save()){
                     $shop->images()->attach($i);
                 }
-                return response()->json(['message'=>"seller created successfully",'success'=>true],201);
+                
             }
+            return response()->json(['message'=>"seller created successfully",'success'=>true],201);
         }
         
 
