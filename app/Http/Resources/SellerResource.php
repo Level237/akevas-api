@@ -19,6 +19,7 @@ class SellerResource extends JsonResource
         return [
             "id"=>$this->id,
             "firstName"=>$this->firstName,
+            'email'=>$this->email,
             "lastName"=>$this->lastName,
             "birthDate"=>$this->birthDate,
             "nationality"=>$this->nationality,
