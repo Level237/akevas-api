@@ -2,9 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Image;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\ImageResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+
 class ShopResource extends JsonResource
 {
     /**
@@ -26,7 +29,7 @@ class ShopResource extends JsonResource
             "expire"=>$this->expire,
             "subscribe_id"=>$this->subscribe_id,
             "status"=>$this->status,
-            "images"=>$this->images
+            "images"=>ImageResource::collection($this->images)
         ];
     }
 }

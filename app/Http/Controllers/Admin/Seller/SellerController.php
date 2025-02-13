@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Seller;
 
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,7 +31,9 @@ class SellerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $shop=Shop::find($id);
+        $user=$shop->user_id;
+         return SellerResource::make(User::find($user));
     }
 
     /**
