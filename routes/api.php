@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\Admin\ValidateShopController;
+use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Products\ProductListController;
@@ -30,18 +31,18 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "api" middleware group. Make something great!
 |
-*/
-Route::get('/categories',[CategoryController::class,'index']);
-Route::get('/towns',[TownController::class,'index']);
-Route::get('/quarters',[QuarterController::class,'index']);
-Route::get('/check/token',[CheckTokenValidityController::class,'checkToken']);
-Route::post("login",[LoginController::class,"login"]);
-Route::post('create/seller',[CreateSellerController::class,'create']);
-Route::get('shop/show/{id}',[ShopController::class,'show']);
-Route::get("products",[ProductListController::class,'index']);
-Route::get("ads/products/{id}",[ProductListController::class,"adsProducts"]);
-Route::get("shops",[ShopListController::class,"index"]);
-Route::get("ads/shops/{id}",[ShopListController::class,"adsShops"]);
+    */
+    Route::get('/categories',[CategoryController::class,'index']);
+    Route::get('/towns',[TownController::class,'index']);
+    Route::get('/quarters',[QuarterController::class,'index']);
+    Route::get('/check/token',[CheckTokenValidityController::class,'checkToken']);
+    Route::post("login",[LoginController::class,"login"]);
+    Route::post('create/seller',[CreateSellerController::class,'create']);
+    Route::get('shop/show/{id}',[ShopController::class,'show']);
+    Route::get("products",[ProductListController::class,'index']);
+    Route::get("ads/products/{id}",[ProductListController::class,"adsProducts"]);
+    Route::get("shops",[ShopListController::class,"index"]);
+    Route::get("ads/shops/{id}",[ShopListController::class,"adsShops"]);
 
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
 
@@ -57,13 +58,14 @@ Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(
 
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 
-Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
- Route::apiResource('categories',CategoryController::class);
- Route::apiResource('towns',TownController::class);
- Route::apiResource('quarters',QuarterController::class);
- Route::patch('/shop/confirm/{id}',[ValidateShopController::class,'validateShop']);
- Route::patch('/seller/confirm/{id}',[ValidateSellerController::class,'validateSeller']);
- Route::patch('/product/confirm/{id}',[ValidateProductController::class,'validateProduct']);
+    Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
+    Route::apiResource('sellers',SellerController::class);
+    Route::apiResource('categories',CategoryController::class);
+    Route::apiResource('towns',TownController::class);
+    Route::apiResource('quarters',QuarterController::class);
+    Route::patch('/shop/confirm/{id}',[ValidateShopController::class,'validateShop']);
+    Route::patch('/seller/confirm/{id}',[ValidateSellerController::class,'validateSeller']);
+    Route::patch('/product/confirm/{id}',[ValidateProductController::class,'validateProduct']);
 });
 
 

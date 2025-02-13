@@ -22,8 +22,10 @@ class ShopResource extends JsonResource
             'shop_key'=>$this->shop_key,
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
+            "products_count"=>$this->products->count(),
             "expire"=>$this->expire,
             "subscribe_id"=>$this->subscribe_id,
+            "status"=>$this->status,
             "images"=>$this->images
         ];
     }
