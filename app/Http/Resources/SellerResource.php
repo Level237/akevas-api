@@ -31,7 +31,7 @@ class SellerResource extends JsonResource
             "identity_card_with_the_person"=>$this->identity_card_with_the_person,
             "isSeller"=>$this->isSeller,
             "shop"=>ShopResource::make(Shop::where('user_id',$this->id)->first()),
-
+            "created_at"=>$this->created_at
         ];
     }
 }
