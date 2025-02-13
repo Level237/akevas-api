@@ -15,15 +15,15 @@ class ShopResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'shop_id'=>$this->id,
             'shop_name'=>$this->shop_name,
             'shop_description'=>$this->shop_description,
-            'user'=>$this->user->name,
             'shop_key'=>$this->shop_key,
-            'shop_type'=>$this->shopType->type_name,
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "expire"=>$this->expire,
-            "subscribe_id"=>$this->subscribe_id
+            "subscribe_id"=>$this->subscribe_id,
+            "images"=>$this->images
         ];
     }
 }

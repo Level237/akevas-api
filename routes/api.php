@@ -2,10 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\TownController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Seller\ShopController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Admin\QuarterController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
@@ -14,12 +16,11 @@ use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Products\ProductListController;
 use App\Http\Controllers\Admin\ValidateProductController;
+use App\Http\Controllers\Auth\CheckTokenValidityController;
+use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
-use App\Http\Controllers\Auth\CheckTokenValidityController;
-use App\Http\Controllers\Admin\TownController;
-use App\Http\Controllers\Admin\QuarterController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -56,6 +57,7 @@ Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(
 
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 
+Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
  Route::apiResource('categories',CategoryController::class);
  Route::apiResource('towns',TownController::class);
  Route::apiResource('quarters',QuarterController::class);
