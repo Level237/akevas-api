@@ -48,7 +48,6 @@ class CreateSellerController extends Controller
             $shop->town_id=intval($request->town_id);
             $shop->quarter_id=intval($request->quarter_id);
             $shop->product_type=$request->product_type;
-            $shop->status=0;
             $shop_profile = $request->file('shop_profile');
             $shop->shop_profile=$shop_profile->store('shop/profile','public');
             

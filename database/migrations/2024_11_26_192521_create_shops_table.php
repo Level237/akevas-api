@@ -35,10 +35,11 @@ return new class extends Migration
             $table->string('product_type');
             $table->string('shop_banner')->nullable();
             $table->string('shop_profile');
-            $table->boolean("status")->default(0);
+            $table->boolean("isPublished")->default(0);
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();
             $table->string('subscribe_id')->nullable();
+            $table->string('state')->default(0);
             $table->timestamps();
         });
     }
