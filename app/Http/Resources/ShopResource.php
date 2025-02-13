@@ -28,6 +28,8 @@ class ShopResource extends JsonResource
             "products_count"=>$this->products->count(),
             "expire"=>$this->expire,
             "subscribe_id"=>$this->subscribe_id,
+            "town"=>$this->town->town_name,
+            "quarter"=>$this->quarter->quarter_name,
             "status"=>$this->status,
             "images"=>ImageResource::collection($this->images)
         ];
