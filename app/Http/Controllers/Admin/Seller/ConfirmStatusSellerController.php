@@ -18,7 +18,7 @@ class ConfirmStatusSellerController extends Controller
             }
 
             $shop->isPublished = $request->isPublished;
-            //$shop->stepperInit=$request->stepperInit;
+            $shop->shop_level=$request->shop_level;
             $shop->state = $request->state;
             
             if ($shop->save()) {
