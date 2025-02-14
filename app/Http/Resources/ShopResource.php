@@ -32,6 +32,7 @@ class ShopResource extends JsonResource
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
             "state"=>$this->state,
+            "level"=>$this->shop_level,
             "images"=>ImageResource::collection($this->images)
         ];
     }
