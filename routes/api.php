@@ -19,6 +19,7 @@ use App\Http\Controllers\Products\ProductListController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
+use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
