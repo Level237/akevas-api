@@ -31,6 +31,7 @@ class ShopResource extends JsonResource
             "town"=>$this->town->town_name,
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
+            "state"=>$this->state,
             "images"=>ImageResource::collection($this->images)
         ];
     }

@@ -59,12 +59,11 @@ Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
 
     Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
+    Route::post('/shop/confirm/{id}',[ConfirmStatusSellerController::class,'index']);
     Route::apiResource('sellers',SellerController::class);
     Route::apiResource('categories',CategoryController::class);
     Route::apiResource('towns',TownController::class);
     Route::apiResource('quarters',QuarterController::class);
-    Route::patch('/shop/confirm/{id}',[ValidateShopController::class,'validateShop']);
-    Route::patch('/seller/confirm/{id}',[ValidateSellerController::class,'validateSeller']);
     Route::patch('/product/confirm/{id}',[ValidateProductController::class,'validateProduct']);
 });
 
