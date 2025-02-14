@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Products\ProductListController;
+use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -55,6 +56,10 @@ Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}',[SubscribeShopController::class,'initPaymentPending']);
     Route::apiResource('/shops',ShopController::class);
     Route::apiResource("/products",ProductController::class);
+});
+
+Route::middleware(['auth:api','scopes:seller'])->prefix('v1')->group(function(){
+    Route::get('/current/seller',[CurrentSellerController::class,'currentSeller']);
 });
 
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
