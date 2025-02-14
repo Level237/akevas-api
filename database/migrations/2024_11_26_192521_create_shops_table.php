@@ -39,6 +39,7 @@ return new class extends Migration
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();
             $table->string('subscribe_id')->nullable();
+            $table->string('stepperInit')->default(0);
             $table->string('state')->default(0);
             $table->timestamps();
         });
