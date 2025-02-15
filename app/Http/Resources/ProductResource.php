@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\ImageResource;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -21,13 +23,15 @@ class ProductResource extends JsonResource
             "shop_name"=>$this->shop->shop_name,
             "shop_id"=>$this->shop->id,
             "product_url"=>$this->product_url,
-            "product_images"=>$this->images,
+            "product_images"=>ImageResource::collection($this->images),
             "product_profile"=>URL("/storage/".$this->product_profile),
             "product_price"=>$this->product_price,
             "product_quantity"=>$this->product_quantity,
+            "product_categories"=>CategoryResource::collection($this->categories),
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "expire"=>$this->expire,
+            "created_at"=>$this->created_at,
             "subscribe_id"=>$this->subscribe_id
         ];
     }
