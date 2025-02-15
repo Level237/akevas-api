@@ -33,6 +33,7 @@ class ShopResource extends JsonResource
             "isPublished"=>$this->isPublished,
             "state"=>$this->state,
             "level"=>$this->shop_level,
+            "cover"=>$this->shop_banner,
             "images"=>ImageResource::collection($this->images)
         ];
     }
