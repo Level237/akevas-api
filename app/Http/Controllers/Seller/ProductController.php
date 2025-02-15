@@ -37,21 +37,24 @@ class ProductController extends Controller
         $product->shop_id=$request->shop_id;
         $product->product_price=$request->product_price;
         $product->product_quantity=$request->product_quantity;
-
+        $product_profile = $request->file('product_profile');
+        $product->product_profile=$product_profile->store('product/profile','public');
 
         if ($request->hasFile('images')) {
             $images = $request->file('images');
 
             foreach ($images as $image) {
-                $path = $image->store('products', 'public');
-                $imageModel=Image::create(['image_path'=>$path]);
-                $product->images()->attach($imageModel->id);
+                 $i=new Image;
+                $i->image_path=$image->store('shop/images','public');
+                if($i->save()){
+                    $product->images()->attach($i);
+                }
             }
-            if ($request->filled('attributs')) {
-                $product->attributes()->attach($imageModel->id);
-            }
+            //if ($request->filled('attributs')) {
+                //$product->attributes()->attach($imageModel->id);
+            //}
 
-            if($request->categories){
+            if($request->has('categories') && is_array($request->categories)){
                 $product->categories()->attach($request->categories);
             }
 
