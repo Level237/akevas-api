@@ -15,7 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'product_name',
+        'product_description',
+        'product_url',
+        'product_price',
+        'product_quantity',
+    ];
     protected $keyType = 'string';
     public $incrementing = false;
     protected $primaryKey = 'id';

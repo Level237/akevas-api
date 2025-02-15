@@ -48,7 +48,6 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::get("ads/shops/{id}",[ShopListController::class,"adsShops"]);
 
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
-
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}',[SubscribeProductController::class,'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback",[SubscribeProductController::class,"paymentCallBack"]);

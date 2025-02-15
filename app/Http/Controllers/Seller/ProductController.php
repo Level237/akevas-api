@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductRequest;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\Shop;
@@ -27,26 +26,34 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
         try{
             
             $product=new Product;
-        $product->product_name=$request->product_name;
+            $user=Auth::guard('api')->user();
+            $shop=Shop::where('user_id',$user->id)->first();
+            if(!$shop->products()->count()===0){
+                $shop->shop_level="3";
+                $shop->save();
+            }
+            
+                $product->product_name=$request->product_name;
         $product->product_url=(new GenerateUrlResource())->generateUrl($request->product_name);
         $product->product_description=$request->product_description;
-        $product->shop_id=$request->shop_id;
+        $product->shop_id=$shop->id;
         $product->product_price=$request->product_price;
         $product->product_quantity=$request->product_quantity;
         $product_profile = $request->file('product_profile');
         $product->product_profile=$product_profile->store('product/profile','public');
-
-        if ($request->hasFile('images')) {
+        
+        if($product->save()){
+             if ($request->hasFile('images')) {
             $images = $request->file('images');
 
             foreach ($images as $image) {
                  $i=new Image;
-                $i->image_path=$image->store('shop/images','public');
+                $i->image_path=$image->store('product/images','public');
                 if($i->save()){
                     $product->images()->attach($i);
                 }
@@ -56,13 +63,15 @@ class ProductController extends Controller
             //}
 
             if($request->has('categories') && is_array($request->categories)){
-                $product->categories()->attach($request->categories);
-            }
-
-            if($product->save){
-                return response()->json(['message'=>"Product created successfully"],201);
+                $product->categories()->attach(array_map('intval', $request->categories));
             }
         }
+        }
+       
+            
+                return response()->json(['message'=>"Product created successfully"],201);
+            
+        
     }catch(\Exception $e){
         return response()->json([
             'success' => false,
