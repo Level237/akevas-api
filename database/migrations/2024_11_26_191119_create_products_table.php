@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('product_url');
             $table->string('product_price');
             $table->string('product_quantity');
+            $table->string('product_profile');
             $table->boolean("status")->default(0);
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();

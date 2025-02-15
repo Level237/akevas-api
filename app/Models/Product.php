@@ -18,7 +18,7 @@ class Product extends Model
 
     protected $keyType = 'string';
     public $incrementing = false;
-
+    protected $primaryKey = 'id';
     public function images():BelongsToMany{
         return $this->belongsToMany(Image::class);
     }
