@@ -30,6 +30,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try{
+            
             $product=new Product;
         $product->product_name=$request->product_name;
         $product->product_url=(new GenerateUrlResource())->generateUrl($request->product_name);

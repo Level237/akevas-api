@@ -28,7 +28,6 @@ class DatabaseSeeder extends Seeder
             QuarterSeeder::class,
             RoleSeeder::class,
             AdminSeeder::class,
-            SellerSeeder::class,
             DeliverySeeder::class,
             CategorySeeder::class
         ]);

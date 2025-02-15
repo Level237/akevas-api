@@ -3,8 +3,9 @@
 namespace Tests\Feature\Seller;
 
 use Tests\TestCase;
-use App\Models\User;
+use App\Models\Role;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,7 +17,10 @@ class CreateSellerControllerTest extends TestCase
     public function test_can_create_seller_with_shop()
     {
         Storage::fake('public');
-
+    $role = Role::create([
+            'id' => 2,
+            'role_name' => 'seller'
+        ]);
         $sellerData = [
             'firstName' => 'Jean',
             'lastName' => 'Dupont',
