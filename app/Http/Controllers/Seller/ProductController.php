@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Seller;
 
-use App\Http\Controllers\Controller;
+use App\Models\Shop;
 use App\Models\Image;
 use App\Models\Product;
-use App\Models\Shop;
-use App\Services\GenerateUrlResource;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Services\GenerateUrlResource;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -20,7 +21,7 @@ class ProductController extends Controller
         $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
         $products=Product::where('shop_id',$shop->id)->get();
 
-        return $products;
+        return ProductResource::collection($products);
     }
 
     /**
@@ -33,7 +34,7 @@ class ProductController extends Controller
             $product=new Product;
             $user=Auth::guard('api')->user();
             $shop=Shop::where('user_id',$user->id)->first();
-            if(!$shop->products()->count()===0){
+            if($shop->products()->count()===0){
                 $shop->shop_level="3";
                 $shop->save();
             }
@@ -45,6 +46,7 @@ class ProductController extends Controller
         $product->product_price=$request->product_price;
         $product->product_quantity=$request->product_quantity;
         $product_profile = $request->file('product_profile');
+        $product->status=1;
         $product->product_profile=$product_profile->store('product/profile','public');
         
         if($product->save()){
