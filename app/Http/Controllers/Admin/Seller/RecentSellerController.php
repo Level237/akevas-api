@@ -11,6 +11,6 @@ class RecentSellerController extends Controller
 {
     public function recentSeller(){
 
-        return SellerResource::collection(User::where('role_id',2)->take(2)->get());
+        return SellerResource::collection(User::where('role_id',2)->orderBy('created_at', 'desc')->take(2)->get());
     }
 }

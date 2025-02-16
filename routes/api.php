@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
+use App\Http\Controllers\Admin\Product\RecentProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,7 +64,7 @@ Route::middleware(['auth:api','scopes:seller'])->prefix('v1')->group(function(){
 });
 
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
-
+    Route::get('/recent/products',[RecentProductController::class,'index']);
     Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
     Route::post('/shop/confirm/{id}',[ConfirmStatusSellerController::class,'index']);
     Route::apiResource('sellers',SellerController::class);
