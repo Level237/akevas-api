@@ -16,9 +16,9 @@ class AdminSeeder extends Seeder
         User::create([
             'userName'=>'akevas',
             'role_id'=>1,
-            'phone_number'=>'690394365',
+            'phone_number'=>'673948372',
             'email'=>'contact@akevas.com',
-            'password'=>bcrypt('password'),
+            'password'=>bcrypt('akevas123'),
         ]);
     }
 }
