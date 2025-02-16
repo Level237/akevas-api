@@ -15,7 +15,7 @@ class SellerController extends Controller
      */
     public function index()
     {
-         return SellerResource::collection(User::where('role_id',2)->get());
+         return SellerResource::collection(User::where('role_id',2)->orderBy('created_at', 'desc')->get());
     }
 
     /**
