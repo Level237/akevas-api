@@ -6,7 +6,7 @@ use App\Models\Shop;
 use Illuminate\Http\Request;
 use App\Http\Resources\ShopResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use Illuminate\Support\Facades\URL;
 class SellerResource extends JsonResource
 {
     /**
@@ -26,9 +26,9 @@ class SellerResource extends JsonResource
             "role_id"=>$this->role_id,
             "phone_number"=>$this->phone_number,
             "isWholesaler"=>$this->isWholesaler,
-            "identity_card_in_front"=>$this->identity_card_in_front,
-            "identity_card_in_back"=>$this->identity_card_in_back,
-            "identity_card_with_the_person"=>$this->identity_card_with_the_person,
+            "identity_card_in_front"=>URL("/storage/".$this->identity_card_in_front),
+            "identity_card_in_back"=>URL("/storage/".$this->identity_card_in_back),
+            "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
             "isSeller"=>$this->isSeller,
             "shop"=>ShopResource::make(Shop::where('user_id',$this->id)->first()),
             "created_at"=>$this->created_at
