@@ -19,7 +19,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('shop_name');
             $table->string('shop_key')->unique();
-            $table->string("shop_description");
+            $table->text("shop_description");
             $table->foreignIdFor(User::class)
             ->constrained()
             ->restrictOnDelete()
