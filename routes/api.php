@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
+use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,6 +37,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | be assigned to the "api" middleware group. Make something great!
 |
     */
+    Route::get('/check/emailandphone',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
     Route::get('/shop/{id}',[SellerController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/towns',[TownController::class,'index']);
