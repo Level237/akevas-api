@@ -19,4 +19,12 @@ class Category extends Model
     public function shops():BelongsToMany{
         return $this->belongsToMany(Shop::class);
     }
+
+    public function parents():BelongsToMany{
+        return $this->belongsToMany(Category::class, 'category_parent', 'category_id', 'parent_id');
+    }
+
+    public function children():BelongsToMany{
+        return $this->belongsToMany(Category::class, 'category_parent', 'parent_id', 'category_id');
+    }
 }

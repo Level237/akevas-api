@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -24,4 +25,5 @@ class CheckIfInputExistInDatabaseController extends Controller
 
         return response()->json(["status" => "success", "message" => "Email and phone number are not in the database"], 200);
     }
+
 }
