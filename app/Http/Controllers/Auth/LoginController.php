@@ -21,7 +21,7 @@ class LoginController extends Controller
             ]);
 
             if ($valid->fails()) {
-                return response()->json(['error'=>$valid->errors()], 400);
+                return response()->json(['error'=>"le numero de telephone ou le mot de passe sont incorrect"], 400);
             }
             $data = request()->only('phone_number','password');
             $loginUser=(new LoginService())->login($data);
