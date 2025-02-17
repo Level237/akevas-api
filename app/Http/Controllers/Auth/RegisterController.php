@@ -5,15 +5,19 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Auth\RegisterService;
+use App\Repositories\GetClientRepository;
+use App\Services\Auth\GenerateTokenUserService;
 
 class RegisterController extends Controller
 {
         public function register(Request $request){
 
         try{
-            $valid = validator($request->only('phone_number','password'), [
+            $valid = validator($request->only('phone_number','password',"userName","email"), [
                 'phone_number' => 'required',
                 'password' => 'required|string',
+                'userName' => 'required|string',
+                'email' => 'required|email',
             ]);
 
             if ($valid->fails()) {
