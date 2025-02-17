@@ -37,7 +37,7 @@ use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 | be assigned to the "api" middleware group. Make something great!
 |
     */
-    Route::get('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
+    Route::post('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
     Route::get('/shop/{id}',[SellerController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/towns',[TownController::class,'index']);
