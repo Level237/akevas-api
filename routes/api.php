@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Seller\ShopController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Admin\QuarterController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
@@ -22,11 +23,11 @@ use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
+use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
-use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +39,7 @@ use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 |
     */
     Route::post('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
+    Route::post('/register',[RegisterController::class,'register']);
     Route::get('/shop/{id}',[SellerController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/towns',[TownController::class,'index']);
