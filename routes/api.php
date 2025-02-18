@@ -42,6 +42,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::post('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
     Route::post('/register',[RegisterController::class,'register']);
     Route::get('/categories/with-children/{parentId}',[ListCategoryController::class,'index']);
+    Route::get('/categories/with-parent-id-null',[ListCategoryController::class,'getCategoryWithParentIdNull']);
     Route::get('/shop/{id}',[SellerController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/towns',[TownController::class,'index']);

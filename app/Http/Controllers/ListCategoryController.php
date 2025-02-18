@@ -14,4 +14,9 @@ class ListCategoryController extends Controller
         
         return new CategoryWithChildrenResource($parentCategory);
     }
+    public function getCategoryWithParentIdNull(){
+        $rootCategories = Category::whereDoesntHave('parent')->get();
+
+        return response()->json(['categories'=>$rootCategories],200);
+    }
 }
