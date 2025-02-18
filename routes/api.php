@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Seller\ShopController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\ListCategoryController;
 use App\Http\Controllers\Admin\QuarterController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     */
     Route::post('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
     Route::post('/register',[RegisterController::class,'register']);
+    Route::get('/categories/with-children/{parentId}',[ListCategoryController::class,'index']);
     Route::get('/shop/{id}',[SellerController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/towns',[TownController::class,'index']);

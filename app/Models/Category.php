@@ -15,16 +15,31 @@ class Category extends Model
     public function products():BelongsToMany{
         return $this->belongsToMany(Product::class);
     }
+public function getParentsAttribute()
+{
+    $parents = collect([]);
 
+    $parent = $this->parents;
+
+    while(!is_null($parent)) {
+        $parents->push($parent);
+        $parent = $parent->parents;
+    }
+
+    return $parents;
+}
     public function shops():BelongsToMany{
         return $this->belongsToMany(Shop::class);
     }
 
-    public function parents():BelongsToMany{
+    public function parent():BelongsToMany{
         return $this->belongsToMany(Category::class, 'category_parent', 'category_id', 'parent_id');
     }
 
-    public function children():BelongsToMany{
+    public function children()
+    {
         return $this->belongsToMany(Category::class, 'category_parent', 'parent_id', 'category_id');
     }
+
+   
 }

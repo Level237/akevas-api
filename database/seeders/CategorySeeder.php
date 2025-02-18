@@ -2,392 +2,292 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Category;
+
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        Category::create([
-            'category_name' => 'Vêtements',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures',
-        ]);
-        Category::create([
-            'category_name' => 'Parfums',
-        ]);
-        Category::create([
-            'category_name' => 'Mèches',
-        ]);
-        Category::create([
-            'category_name' => 'Beauté',
-            'parent_id' => null,
-        ]);
-         Category::create([
-            'category_name' => 'Sports',
-            ]);
-        Category::create([
-            'category_name' => 'Accessoires',
-        ]);
-        Category::create([
-            'category_name' => 'Spéciale Layette',
-        ]);
-        Category::create([
-            'category_name' => 'Spéciale Mariage',
-        ]);
-        Category::create([
-            'category_name' => 'Hommes',
-        ]);
-        Category::create([
-            'category_name' => 'Femmes',
-        ]);
-        Category::create([
-            'category_name' => 'Enfants',
-        ]);
-        Category::create([
-            'category_name' => 'T-shirts et polos',
-        ]);
-        Category::create([
-            'category_name' => 'Chemises',
-        ]);
-        Category::create([
-            'category_name' => 'Pantalons',
-        ]);
-        Category::create([
-            'category_name' => 'Costumes et smokings',
-        ]);
-        Category::create([
-            'category_name' => 'Shorts',
-        ]);
-        Category::create([
-            'category_name' => 'Sous-vêtements et Chaussettes',
-        ]);
-        Category::create([
-            'category_name' => 'Sweats & Hoodies',
-        ]);
-        Category::create([
-            'category_name' => 'Pyjamas',
-        ]);
-        Category::create([
-            'category_name' => 'Vestes',
-        ]);
-        Category::create([
-            'category_name' => 'Blousons',
-        ]);
-        Category::create([
-            'category_name' => 'Manteaux',
-        ]);
-        Category::create([
-            'category_name' => 'Tenues traditionnelles',
-        ]);
-        Category::create([
-            'category_name' => 'Tops',
-        ]);
-        Category::create([
-            'category_name' => 'Robes',
-        ]);
-        Category::create([
-            'category_name' => 'Jupes',
-        ]);
-        Category::create([
-            'category_name' => 'Pantalons et leggings',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements de sport',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements de grossesse',
-        ]);
-        Category::create([
-            'category_name' => 'Sous-vêtements et lingerie',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements de nuit',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements de nuit',
-        ]);
-        Category::create([
-            'category_name' => 'Vestes, blousons et manteaux',
-        ]);
-        Category::create([
-            'category_name' => 'T-shirts et chemises',
-        ]);
-        Category::create([
-            'category_name' => 'Robes et jupes',
-        ]);
-        Category::create([
-            'category_name' => 'Shorts et pantalons',
-        ]);
-        Category::create([
-            'category_name' => 'Tenues scolaires',
-        ]);
-        Category::create([
-            'category_name' => 'Accessoires(casquettes, bonnets)',
-        ]);
-        Category::create([
-            'category_name' => 'Colliers (perles, pendentifs, chokers)',
-        ]);
-        Category::create([
-            'category_name' => 'Bracelets (joncs, chaînes, bracelets personnalisés)',
-        ]);
-        Category::create([
-            'category_name' => 'Boucles d’oreilles (clous, pendantes, créoles)',
-        ]);
-        Category::create([
-            'category_name' => 'Bagues (engagement, mode, alliance)',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux pour hommes (bracelets en cuir, chevalières)',
-        ]);
-        Category::create([
-            'category_name' => 'Montres (sport, luxe, connectées)',
-        ]);
-        Category::create([
-            'category_name' => 'Broches et pinces',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux ethniques',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux personnalisables (gravures)',
-        ]);
-        Category::create([
-            'category_name' => 'Coffrets de bijoux',
-        ]);
-        Category::create([
-            'category_name' => 'Baskets et sneakers',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures de ville (cuir, mocassins)',
-        ]);
-        Category::create([
-            'category_name' => 'Sandales et tongs',
-        ]);
-        Category::create([
-            'category_name' => 'Bottes et bottines',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures pour occasions spéciales',
-        ]);
-        Category::create([
-            'category_name' => 'Escarpins',
-        ]);
-        Category::create([
-            'category_name' => 'Sandales (plates, compensées, à talons)',
-        ]);
-        Category::create([
-            'category_name' => 'Bottes et cuissardes',
-        ]);
-        Category::create([
-            'category_name' => 'Mocassins et ballerines',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures de soirée',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures de mariage',
-        ]);
-        Category::create([
-            'category_name' => 'Sandales',
-        ]);
-        Category::create([
-            'category_name' => 'Bottines',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures scolaires',
-        ]);
+        // Création des catégories principales
+        $vetements = Category::create(['category_name' => 'Vêtements']);
+        $bijoux = Category::create(['category_name' => 'Bijoux']);
+        $chaussures = Category::create(['category_name' => 'Chaussures']);
+        $parfums = Category::create(['category_name' => 'Parfums']);
+        $meches = Category::create(['category_name' => 'Mèches']);
+        $beaute = Category::create(['category_name' => 'Beauté']);
+        $sport = Category::create(['category_name' => 'Sport']);
+        $accessoires = Category::create(['category_name' => 'Accessoires']);
+        $layette = Category::create(['category_name' => 'Spéciale Layette']);
+        $mariage = Category::create(['category_name' => 'Spéciale Mariage']);
 
-        Category::create([
-            'category_name' => 'Parfums de luxe',
-        ]);
-        Category::create([
-            'category_name' => 'Eau de toilette',
-        ]);
-        Category::create([
-            'category_name' => 'Eau de parfum',
-        ]);
-        Category::create([
-            'category_name' => 'Brumes corporelles',
-        ]);
-        Category::create([
-            'category_name' => 'Parfums unisexes',
-        ]);
-        Category::create([
-            'category_name' => 'Coffrets cadeaux',
-        ]);
-        Category::create([
-            'category_name' => 'Parfums pour occasions spéciales',
-        ]);
-        Category::create([
-            'category_name' => 'Miniatures de parfum',
-        ]);
-        Category::create([
-            'category_name' => 'Parfums bio et naturels',
-        ]);
-        Category::create([
-            'category_name' => 'Tissages brésiliens',
-        ]);
-        Category::create([
-            'category_name' => 'Extensions naturelles',
-        ]);
-        Category::create([
-            'category_name' => 'Extensions synthétiques',
-        ]);
-        Category::create([
-            'category_name' => 'Perruques',
-        ]);
-        Category::create([
-            'category_name' => 'Tresses africaines',
-        ]);
-        Category::create([
-            'category_name' => 'Franges et postiches',
-        ]);
-        Category::create([
-            'category_name' => 'Colorations de mèches',
-        ]);
-        Category::create([
-            'category_name' => 'Kits de soins pour mèches',
-        ]);
-        Category::create([
-            'category_name' => 'Accessoires pour cheveux (peignes, bonnets)',
-        ]);
-        Category::create([
-            'category_name' => 'Nettoyants et exfoliants',
-        ]);
-        Category::create([
-            'category_name' => 'Masques et peelings',
-        ]);
-        Category::create([
-            'category_name' => 'Crèmes hydratantes',
-        ]);
-        Category::create([
-            'category_name' => 'Sérums et huiles',
-        ]);
-        Category::create([
-            'category_name' => 'Crèmes pour le visage',
-        ]);
-        Category::create([
-            'category_name' => 'Soins anti-âge',
-        ]);
-        Category::create([
-            'category_name' => 'Soins pour peaux spécifiques (acné, tâches)',
-        ]);
-        Category::create([
-            'category_name' => 'Teint (fond de teint, poudres, correcteurs)',
-        ]);
-        Category::create([
-            'category_name' => 'Lèvres (rouges à lèvres, gloss, baumes)',
-        ]);
-        Category::create([
-            'category_name' => 'Yeux (mascara, eye-liner, palettes)',
-        ]);
-        Category::create([
-            'category_name' => 'Ongles (vernis, accessoires)',
-        ]);
-        Category::create([
-            'category_name' => 'Crèmes et laits hydratants',
-        ]);
-        Category::create([
-            'category_name' => 'Gommages corporels',
-        ]);
-        Category::create([
-            'category_name' => 'Huiles essentielles et de massage',
-        ]);
-        Category::create([
-            'category_name' => 'Produits éclaircissants',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements de sport',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures de sport',
-        ]);
-        Category::create([
-            'category_name' => 'Équipements',
-        ]);
-        Category::create([
-            'category_name' => 'Accessoires pour sport',
-        ]);
-        Category::create([
-            'category_name' => 'Articles de sport nautique',
-        ]);
-        Category::create([
-            'category_name' => 'Équipements de musculation',
-        ]);
-        Category::create([
-            'category_name' => 'Sacs',
-        ]);
-        Category::create([
-            'category_name' => 'Portefeuilles',
-        ]);
-        Category::create([
-            'category_name' => 'Lunettes de soleil',
-        ]);
-        Category::create([
-            'category_name' => 'Ceintures',
-        ]);
-        Category::create([
-            'category_name' => 'Chapeaux',
-        ]);
-        Category::create([
-            'category_name' => 'Montres',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux fantaisie',
-        ]);
-        Category::create([
-            'category_name' => 'Vêtements pour nouveau-nés',
-        ]);
-        Category::create([
-            'category_name' => 'Chaussures pour nourrissons',
-        ]);
-        Category::create([
-            'category_name' => 'Couvertures et gigoteuses',
-        ]);
-        Category::create([
-            'category_name' => 'Bavoirs',
-        ]);
-        Category::create([
-            'category_name' => 'Accessoires (bonnets, chaussons)',
-        ]);
-        Category::create([
-            'category_name' => 'Jouets pour bébés',
-        ]);
-        Category::create([
-            'category_name' => 'Kits pour la maternité',
-        ]);
-        Category::create([
-            'category_name' => 'Robes de mariée',
-        ]);
-        Category::create([
-            'category_name' => 'Costumes de mariage',
-        ]);
-        Category::create([
-            'category_name' => 'Bijoux pour mariés',
-        ]);
-        Category::create([
-            'category_name' => 'Accessoires (voiles, gants, couronnes)',
-        ]);
-        Category::create([
-            'category_name' => 'Décorations de mariage (tables, voitures)',
-        ]);
-        Category::create([
-            'category_name' => 'Cadeaux pour invités (boîtes personnalisées, objets souvenir)',
-        ]);
-        Category::create([
-            'category_name' => 'Tenues pour demoiselles d’honneur et enfants',
-        ]);
-        
+        // Création des sous-catégories Hommes, Femmes, Enfants une seule fois
+        $hommes = Category::create(['category_name' => 'Hommes']);
+        $femmes = Category::create(['category_name' => 'Femmes']);
+        $enfants = Category::create(['category_name' => 'Enfants']);
 
+        $traditionnel = Category::create(['category_name' => 'Tenues traditionnelles']);
+        $pyjama = Category::create(['category_name' => 'Pyjamas']);
+        $vetement_sport = Category::create(['category_name' => 'Vêtements de sport']);
+        // Ajout des sous-catégories aux catégories Vêtements et Chaussures
+        $vetements->children()->attach([$hommes->id, $femmes->id, $enfants->id]);
+        $chaussures->children()->attach([$hommes->id, $femmes->id, $enfants->id]);
+
+        // Sous-catégories Vêtements Hommes
+        $hommes_categories = [
+            'T-shirts et polos',
+            'Chemises',
+            'Pantalons (jeans, chinos, cargos, pagne)',
+            'Costumes et smokings',
+            'Shorts',
+            'Sous-vêtements et Chaussettes',
+            'Sweats & Hoodies',
+            'Vestes',
+            'Blousons',
+            'Manteaux',
+        ];
+        $hommes->children()->attach($traditionnel->id);
+        $vetements->children()->attach($traditionnel->id);
+        $hommes->children()->attach($pyjama->id);
+        $vetements->children()->attach($pyjama->id);
+        foreach ($hommes_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $hommes->children()->attach($sub_cat->id);
+            $vetements->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Vêtements Femmes
+        $femmes_categories = [
+            'Tops (T-shirts, débardeurs, chemisiers)',
+            'Robes (soirée, décontractées, cérémonies)',
+            'Jupes (longues, courtes, plissées)',
+            'Pantalons et leggings',
+            'Vêtements de grossesse',
+            'Sous-vêtements et lingerie',
+            'Vestes, blousons et manteaux',
+        ];
+        $femmes->children()->attach($vetement_sport->id);
+        $vetements->children()->attach($vetement_sport->id);
+        $femmes->children()->attach($traditionnel->id);
+        $vetements->children()->attach($traditionnel->id);
+        foreach ($femmes_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $femmes->children()->attach($sub_cat->id);
+            $vetements->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Vêtements Enfants
+        $enfants_categories = [
+            'T-shirts et chemises',
+            'Robes et jupes',
+            'Shorts et pantalons',
+            'Tenues scolaires',
+            'Accessoires (casquettes, bonnets)'
+        ];
+        $enfants->children()->attach($vetement_sport->id);
+        $vetements->children()->attach($vetement_sport->id);
+        $enfants->children()->attach($pyjama->id);
+        $vetements->children()->attach($pyjama->id);
+        foreach ($enfants_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $enfants->children()->attach($sub_cat->id);
+            $vetements->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Bijoux
+        $bijoux_categories = [
+            'Colliers (perles, pendentifs, chokers)',
+            'Bracelets (joncs, chaînes, bracelets personnalisés)',
+            'Boucles d’oreilles (clous, pendantes, créoles)',
+            'Bagues (engagement, mode, alliance)',
+            'Bijoux pour hommes (bracelets en cuir, chevalières)',
+            'Montres (sport, luxe, connectées)',
+            'Broches et pinces',
+            'Bijoux ethniques',
+            'Bijoux personnalisables (gravures)',
+            'Coffrets de bijoux'
+        ];
+        foreach ($bijoux_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $bijoux->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Chaussures Hommes
+        $hommes_chaussures_categories = [
+            'Baskets et sneakers',
+            'Chaussures de ville (cuir, mocassins)',
+            'Sandales et tongs',
+            'Bottes et bottines',
+            'Chaussures pour occasions spéciales'
+        ];
+        foreach ($hommes_chaussures_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $hommes->children()->attach($sub_cat->id);
+            $chaussures->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Chaussures Femmes
+        $femmes_chaussures_categories = [
+            'Escarpins',
+            'Sandales (plates, compensées, à talons)',
+            'Baskets et sneakers',
+            'Bottes et cuissardes',
+            'Mocassins et ballerines',
+            'Chaussures de soirée',
+            'Chaussures de mariage'
+        ];
+        foreach ($femmes_chaussures_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $femmes->children()->attach($sub_cat->id);
+            $chaussures->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Chaussures Enfants
+        $enfants_chaussures_categories = [
+            'Baskets et sneakers',
+            'Sandales',
+            'Bottines',
+            'Chaussures scolaires'
+        ];
+        foreach ($enfants_chaussures_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $enfants->children()->attach($sub_cat->id);
+            $chaussures->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Parfums
+        $parfums_categories = [
+            'Parfums de luxe',
+            'Eau de toilette',
+            'Eau de parfum',
+            'Brumes corporelles',
+            'Parfums unisexes',
+            'Coffrets cadeaux',
+            'Parfums pour occasions spéciales',
+            'Miniatures de parfum',
+            'Parfums bio et naturels'
+        ];
+        foreach ($parfums_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $parfums->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Mèches
+        $meches_categories = [
+            'Tissages brésiliens',
+            'Extensions naturelles',
+            'Extensions synthétiques',
+            'Perruques (courtes, longues, bouclées, lisses)',
+            'Tresses africaines',
+            'Franges et postiches',
+            'Colorations de mèches',
+            'Kits de soins pour mèches',
+            'Accessoires pour cheveux (peignes, bonnets)'
+        ];
+        foreach ($meches_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $meches->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Beauté
+        $soins_visage = Category::create(['category_name' => 'Soins du visage']);
+        $maquillage = Category::create(['category_name' => 'Maquillage']);
+        $soins_corps = Category::create(['category_name' => 'Soins du corps']);
         
+        $beaute->children()->attach([$soins_visage->id, $maquillage->id, $soins_corps->id]);
+
+        $soins_visage_categories = [
+            'Nettoyants et exfoliants',
+            'Masques et peelings',
+            'Crèmes hydratantes',
+            'Sérums et huiles',
+            'Soins anti-âge',
+            'Soins pour peaux spécifiques (acné, tâches)'
+        ];
+        foreach ($soins_visage_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $soins_visage->children()->attach($sub_cat->id);
+        }
+
+        $maquillage_categories = [
+            'Teint (fond de teint, poudres, correcteurs)',
+            'Lèvres (rouges à lèvres, gloss, baumes)',
+            'Yeux (mascara, eye-liner, palettes)',
+            'Ongles (vernis, accessoires)'
+        ];
+        foreach ($maquillage_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $maquillage->children()->attach($sub_cat->id);
+        }
+
+        $soins_corps_categories = [
+            'Crèmes et laits hydratants',
+            'Gommages corporels',
+            'Huiles essentielles et de massage',
+            'Produits éclaircissants'
+        ];
+        foreach ($soins_corps_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $soins_corps->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Sport
+        $sport_categories = [
+            'Chaussures de sport (course, fitness, randonnée)',
+            'Équipements (ballons, haltères, tapis)',
+            'Accessoires (bouteilles, serviettes)',
+            'Articles de sport nautique',
+            'Équipements de musculation'
+        ];
+        $sport->children()->attach($vetement_sport->id);
+        foreach ($sport_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $sport->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Accessoires
+        $accessoires_categories = [
+            'Sacs (sacs à main, sacs à dos, pochettes)',
+            'Portefeuilles',
+            'Lunettes de soleil',
+            'Ceintures',
+            'Chapeaux (casquettes, bérets)',
+            'Montres',
+            'Bijoux fantaisie'
+        ];
+        foreach ($accessoires_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $accessoires->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Spéciale Layette
+        $layette_categories = [
+            'Vêtements pour nouveau-nés',
+            'Chaussures pour nourrissons',
+            'Couvertures et gigoteuses',
+            'Bavoirs',
+            'Accessoires (bonnets, chaussons)',
+            'Jouets pour bébés',
+            'Kits pour la maternité'
+        ];
+        foreach ($layette_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $layette->children()->attach($sub_cat->id);
+        }
+
+        // Sous-catégories Spéciale Mariage
+        $mariage_categories = [
+            'Robes de mariée (classiques, modernes, traditionnelles)',
+            'Costumes de mariage',
+            'Bijoux pour mariés',
+            'Accessoires (voiles, gants, couronnes)',
+            'Décorations de mariage (tables, voitures)',
+            'Cadeaux pour invités (boîtes personnalisées, objets souvenir)',
+            'Tenues pour demoiselles d’honneur et enfants'
+        ];
+        foreach ($mariage_categories as $cat) {
+            $sub_cat = Category::create(['category_name' => $cat]);
+            $mariage->children()->attach($sub_cat->id);
+        }
     }
 }
