@@ -39,6 +39,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | be assigned to the "api" middleware group. Make something great!
 |
     */
+    Route::get('/category/gender/{id}',[ListCategoryController::class,'getCategoriesByGender']);
     Route::post('/check/email-and-phone-number',[CheckIfInputExistInDatabaseController::class,'checkEmailAndPhoneNumber']);
     Route::post('/register',[RegisterController::class,'register']);
     Route::get('/categories/with-children/{parentId}',[ListCategoryController::class,'index']);

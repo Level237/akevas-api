@@ -2,292 +2,521 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\Gender;
 use App\Models\Category;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
     public function run()
     {
-        // Création des catégories principales
-        $vetements = Category::create(['category_name' => 'Vêtements']);
-        $bijoux = Category::create(['category_name' => 'Bijoux']);
-        $chaussures = Category::create(['category_name' => 'Chaussures']);
-        $parfums = Category::create(['category_name' => 'Parfums']);
-        $meches = Category::create(['category_name' => 'Mèches']);
-        $beaute = Category::create(['category_name' => 'Beauté']);
-        $sport = Category::create(['category_name' => 'Sport']);
-        $accessoires = Category::create(['category_name' => 'Accessoires']);
-        $layette = Category::create(['category_name' => 'Spéciale Layette']);
-        $mariage = Category::create(['category_name' => 'Spéciale Mariage']);
-
-        // Création des sous-catégories Hommes, Femmes, Enfants une seule fois
-        $hommes = Category::create(['category_name' => 'Hommes']);
-        $femmes = Category::create(['category_name' => 'Femmes']);
-        $enfants = Category::create(['category_name' => 'Enfants']);
-
-        $traditionnel = Category::create(['category_name' => 'Tenues traditionnelles']);
-        $pyjama = Category::create(['category_name' => 'Pyjamas']);
-        $vetement_sport = Category::create(['category_name' => 'Vêtements de sport']);
-        // Ajout des sous-catégories aux catégories Vêtements et Chaussures
-        $vetements->children()->attach([$hommes->id, $femmes->id, $enfants->id]);
-        $chaussures->children()->attach([$hommes->id, $femmes->id, $enfants->id]);
-
-        // Sous-catégories Vêtements Hommes
-        $hommes_categories = [
-            'T-shirts et polos',
-            'Chemises',
-            'Pantalons (jeans, chinos, cargos, pagne)',
-            'Costumes et smokings',
-            'Shorts',
-            'Sous-vêtements et Chaussettes',
-            'Sweats & Hoodies',
-            'Vestes',
-            'Blousons',
-            'Manteaux',
+       
+        // Création des genres
+        $homme = Gender::create(['gender_name' => 'Homme']);
+        $femme = Gender::create(['gender_name' => 'Femme']);
+        $enfant = Gender::create(['gender_name' => 'Enfant']);
+         $categories = [
+            ['name' => 'Vêtements'],
+            ['name' => 'Bijoux', 'url' => 'bijoux'],
+            ['name' => 'Chaussures', 'url' => 'chaussures'],
+            ['name' => 'Parfums', 'url' => 'parfums'],
+            ['name' => 'Mèches', 'url' => 'meches'],
+            ['name' => 'Beauté', 'url' => 'beaute'],
+            ['name' => 'Sport', 'url' => 'sport'],
+            ['name' => 'Accessoires', 'url' => 'accessoires'],
         ];
-        $hommes->children()->attach($traditionnel->id);
-        $vetements->children()->attach($traditionnel->id);
-        $hommes->children()->attach($pyjama->id);
-        $vetements->children()->attach($pyjama->id);
-        foreach ($hommes_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $hommes->children()->attach($sub_cat->id);
-            $vetements->children()->attach($sub_cat->id);
+
+
+        foreach ($categories as $categoryData) {
+            $category = Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => Str::slug($categoryData['name']),
+                'parent_id' => null // Pas de parent pour les catégories principales
+            ]);
+            $parentCategories[$categoryData['name']] = $category;
+            $category->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        }
+        $parentCategories['Vêtements']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        $parentCategories['Bijoux']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        $parentCategories['Chaussures']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        $parentCategories['Parfums']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        $parentCategories['Mèches']->genders()->attach($femme->id);
+        $parentCategories['Beauté']->genders()->attach($femme->id);
+        $parentCategories['Sport']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        $parentCategories['Accessoires']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
+        // Sous-catégories pour Vêtements
+        $vetements = $parentCategories['Vêtements'];
+        $sousCategoriesHommeVetements = [
+            
+                ["name"=>'T-shirts et polos',"url"=>"t-shirts-et-polos-homme"],
+                ["name"=>'Chemises',"url"=>"chemises-homme"],
+                ["name"=>'Pantalons',"url"=>"pantalons-homme"],
+                ["name"=>'Costumes et smokings',"url"=>"costumes-et-smokings-homme"],
+                ["name"=>'Shorts',"url"=>"shorts-homme"],
+                ["name"=>'Sous-vêtements et Chaussettes',"url"=>"sous-vetement-et-chaussettes-homme"],
+                ["name"=>'Sweats & Hoodies',"url"=>"sweats-&-hoodies-homme"],
+                ["name"=>'Pyjamas',"url"=>"pyjamas-homme"],
+                ["name"=>'Vestes',"url"=>"vestes-homme"],
+                ["name"=>'Blousons',"url"=>"blousons-homme"],
+                ["name"=>'Manteaux',"url"=>"manteaux-homme"],
+                ["name"=>'Tenues traditionnelles',"url"=>"tenues-traditionnelles-homme"],
+        ];
+
+        foreach ($sousCategoriesHommeVetements as $categoryData) {
+            $category = Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' =>$vetements->id
+            ]);
+            $category->genders()->attach($homme->id);
         }
 
-        // Sous-catégories Vêtements Femmes
-        $femmes_categories = [
-            'Tops (T-shirts, débardeurs, chemisiers)',
-            'Robes (soirée, décontractées, cérémonies)',
-            'Jupes (longues, courtes, plissées)',
-            'Pantalons et leggings',
-            'Vêtements de grossesse',
-            'Sous-vêtements et lingerie',
-            'Vestes, blousons et manteaux',
+        $sousCategoriesFemmeVetements = [
+            ["name" => 'Tops', "url" => "tops-femme"],
+            ["name" => 'Robes', "url" => "robes-femme"],
+            ["name" => 'Jupes', "url" => "jupes-femme"],
+            ["name" => 'Pantalons', "url" => "pantalons-femme"],
+            ["name" => 'Vêtements de sport', "url" => "vetements-de-sport-femme"],
+            ["name" => 'Sous-vêtements', "url" => "sous-vetements-femme"],
+            ["name" => 'Vestes', "url" => "vestes-femme"],
+            ["name" => 'Manteaux', "url" => "manteaux-femme"],
+            ["name" => 'Tenues traditionnelles', "url" => "tenues-traditionnelles-femme"],
         ];
-        $femmes->children()->attach($vetement_sport->id);
-        $vetements->children()->attach($vetement_sport->id);
-        $femmes->children()->attach($traditionnel->id);
-        $vetements->children()->attach($traditionnel->id);
-        foreach ($femmes_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $femmes->children()->attach($sub_cat->id);
-            $vetements->children()->attach($sub_cat->id);
+
+        foreach ($sousCategoriesFemmeVetements as $categoryData) {
+            $category=Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' => $vetements->id
+            ]);
+             $category->genders()->attach($femme->id);
         }
 
-        // Sous-catégories Vêtements Enfants
-        $enfants_categories = [
-            'T-shirts et chemises',
-            'Robes et jupes',
-            'Shorts et pantalons',
-            'Tenues scolaires',
-            'Accessoires (casquettes, bonnets)'
+        $sousCategoriesEnfantVetements = [
+            
+                ["name"=>'T-shirts et polos',"url"=>"t-shirts-et-polos-enfant"],
+                ["name"=>'Chemises',"url"=>"chemises-enfant"],
+                ["name"=>'Pantalons',"url"=>"pantalons-enfant"],
+                ["name"=>'Costumes et smokings',"url"=>"costumes-et-smokings-enfant"],
+                ["name"=>'Shorts',"url"=>"shorts-enfant"],
+                ["name"=>'Sous-vêtements et Chaussettes',"url"=>"sous-vetement-et-chaussettes-enfant"],
+                ["name"=>'Sweats & Hoodies',"url"=>"sweats-&-hoodies-enfant"],
+                ["name"=>'Pyjamas',"url"=>"pyjamas-enfant"],
+                ["name"=>'Vestes',"url"=>"vestes-enfant"],
+                ["name"=>'Blousons',"url"=>"blousons-enfant"],
+                ["name"=>'Manteaux',"url"=>"manteaux-enfant"],
+                ["name"=>'Tenues traditionnelles',"url"=>"tenues-traditionnelles-enfant"],
         ];
-        $enfants->children()->attach($vetement_sport->id);
-        $vetements->children()->attach($vetement_sport->id);
-        $enfants->children()->attach($pyjama->id);
-        $vetements->children()->attach($pyjama->id);
-        foreach ($enfants_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $enfants->children()->attach($sub_cat->id);
-            $vetements->children()->attach($sub_cat->id);
+
+        foreach ($sousCategoriesEnfantVetements as $categoryData) {
+            $category=Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' => $vetements->id
+            ]);
+             $category->genders()->attach($enfant->id);
+        }
+        // Sous-catégories pour Bijoux
+        $bijoux = $parentCategories['Bijoux'];
+        $sousCategoriesBijouxHommes = [
+            ["name" => 'Colliers', "url" => "colliers-homme"],
+            ["name" => 'Bracelets', "url" => "bracelets-homme"],
+            ["name" => 'Broche et pinces', "url" => "broche-et-pinces-homme"],
+            ["name" => 'Bagues', "url" => "bagues-homme"],
+            ["name" => 'Bijoux ethniques', "url" => "bijoux-ethniques-homme"],
+            ["name" => 'Bijoux personalisable', "url" => "bijoux-personalisable-homme"],
+            ["name" => 'Coffrets de bijoux', "url" => "coffrets-de-bijoux-homme"],
+        ];
+
+        foreach ($sousCategoriesBijouxHommes as $categoryData) {
+            $category=Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' => $bijoux->id
+            ]);
+             $category->genders()->attach($homme->id);
         }
 
-        // Sous-catégories Bijoux
-        $bijoux_categories = [
-            'Colliers (perles, pendentifs, chokers)',
-            'Bracelets (joncs, chaînes, bracelets personnalisés)',
-            'Boucles d’oreilles (clous, pendantes, créoles)',
-            'Bagues (engagement, mode, alliance)',
-            'Bijoux pour hommes (bracelets en cuir, chevalières)',
-            'Montres (sport, luxe, connectées)',
-            'Broches et pinces',
-            'Bijoux ethniques',
-            'Bijoux personnalisables (gravures)',
-            'Coffrets de bijoux'
+        $sousCategoriesBijouxFemmes = [
+            ["name" => 'Colliers', "url" => "colliers-femme"],
+            ["name" => 'Bracelets', "url" => "bracelets-femme"],
+            ["name" => 'Boucles', "url" => "boucles-femmes"],
+            ["name" => 'Broche et pinces', "url" => "broche-et-pinces-femme"],
+            ["name" => 'Bijoux ethniques', "url" => "bijoux-ethniques-femme"],
+            ["name" => 'Bijoux personalisable', "url" => "bijoux-personalisable-femme"],
+            ["name" => 'Coffrets de bijoux', "url" => "coffrets-de-bijoux-femme"],
         ];
-        foreach ($bijoux_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $bijoux->children()->attach($sub_cat->id);
+
+        foreach ($sousCategoriesBijouxFemmes as $categoryData) {
+            $category=Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' => $bijoux->id
+            ]);
+             $category->genders()->attach($femme->id);
         }
 
-        // Sous-catégories Chaussures Hommes
-        $hommes_chaussures_categories = [
-            'Baskets et sneakers',
-            'Chaussures de ville (cuir, mocassins)',
-            'Sandales et tongs',
-            'Bottes et bottines',
-            'Chaussures pour occasions spéciales'
+        $sousCategoriesBijouxEnfants = [
+            ["name" => 'Colliers', "url" => "colliers-enfants"],
+            ["name" => 'Bracelets', "url" => "bracelets-enfants"],
+            ["name" => 'Boucles', "url" => "boucles-enfants"],
+            ["name" => 'Broche et pinces', "url" => "broche-et-pinces-enfants"],
+            ["name" => 'Bijoux ethniques', "url" => "bijoux-ethniques-enfants"],
+            ["name" => 'Bijoux personalisable', "url" => "bijoux-personalisable-enfants"],
+            ["name" => 'Coffrets de bijoux', "url" => "coffrets-de-bijoux-enfants"],
         ];
-        foreach ($hommes_chaussures_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $hommes->children()->attach($sub_cat->id);
-            $chaussures->children()->attach($sub_cat->id);
+
+        foreach ($sousCategoriesBijouxEnfants as $categoryData) {
+            $category=Category::create([
+                'category_name' => $categoryData['name'],
+                'category_url' => $categoryData['url'],
+                'parent_id' => $bijoux->id
+            ]);
+             $category->genders()->attach($enfant->id);
         }
 
-        // Sous-catégories Chaussures Femmes
-        $femmes_chaussures_categories = [
-            'Escarpins',
-            'Sandales (plates, compensées, à talons)',
-            'Baskets et sneakers',
-            'Bottes et cuissardes',
-            'Mocassins et ballerines',
-            'Chaussures de soirée',
-            'Chaussures de mariage'
-        ];
-        foreach ($femmes_chaussures_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $femmes->children()->attach($sub_cat->id);
-            $chaussures->children()->attach($sub_cat->id);
-        }
+        $chaussures = $parentCategories['Chaussures'];
 
-        // Sous-catégories Chaussures Enfants
-        $enfants_chaussures_categories = [
-            'Baskets et sneakers',
-            'Sandales',
-            'Bottines',
-            'Chaussures scolaires'
+        // Sous-catégories pour Hommes
+        $sousCategoriesChaussuresHommes = [
+            ["name" => 'Baskets et sneakers', "url" => "baskets-et-sneakers-homme"],
+            ["name" => 'Chaussures de ville (cuir, mocassins)', "url" => "chaussures-de-ville-homme"],
+            ["name" => 'Sandales et tongs', "url" => "sandales-et-tongs-homme"],
+            ["name" => 'Bottes et bottines', "url" => "bottes-et-bottines-homme"],
+            ["name" => 'Chaussures pour occasions spéciales', "url" => "chaussures-occasions-speciales-homme"],
         ];
-        foreach ($enfants_chaussures_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $enfants->children()->attach($sub_cat->id);
-            $chaussures->children()->attach($sub_cat->id);
-        }
 
-        // Sous-catégories Parfums
-        $parfums_categories = [
-            'Parfums de luxe',
-            'Eau de toilette',
-            'Eau de parfum',
-            'Brumes corporelles',
-            'Parfums unisexes',
-            'Coffrets cadeaux',
-            'Parfums pour occasions spéciales',
-            'Miniatures de parfum',
-            'Parfums bio et naturels'
-        ];
-        foreach ($parfums_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $parfums->children()->attach($sub_cat->id);
-        }
 
-        // Sous-catégories Mèches
-        $meches_categories = [
-            'Tissages brésiliens',
-            'Extensions naturelles',
-            'Extensions synthétiques',
-            'Perruques (courtes, longues, bouclées, lisses)',
-            'Tresses africaines',
-            'Franges et postiches',
-            'Colorations de mèches',
-            'Kits de soins pour mèches',
-            'Accessoires pour cheveux (peignes, bonnets)'
-        ];
-        foreach ($meches_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $meches->children()->attach($sub_cat->id);
-        }
+foreach ($sousCategoriesChaussuresHommes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $chaussures->id
+    ]);
+     $category->genders()->attach($homme->id);
+}
 
-        // Sous-catégories Beauté
-        $soins_visage = Category::create(['category_name' => 'Soins du visage']);
-        $maquillage = Category::create(['category_name' => 'Maquillage']);
-        $soins_corps = Category::create(['category_name' => 'Soins du corps']);
-        
-        $beaute->children()->attach([$soins_visage->id, $maquillage->id, $soins_corps->id]);
+// Sous-catégories pour Femmes
+$sousCategoriesChaussuresFemmes = [
+    ["name" => 'Escarpins', "url" => "escarpins-femme"],
+    ["name" => 'Sandales (plates, compensées, à talons)', "url" => "sandales-femme"],
+    ["name" => 'Baskets et sneakers', "url" => "baskets-et-sneakers-femme"],
+    ["name" => 'Bottes et cuissardes', "url" => "bottes-et-cuissardes-femme"],
+    ["name" => 'Mocassins et ballerines', "url" => "mocassins-et-ballerines-femme"],
+    ["name" => 'Chaussures de soirée', "url" => "chaussures-de-soiree-femme"],
+    ["name" => 'Chaussures de mariage', "url" => "chaussures-de-mariage-femme"],
+];
 
-        $soins_visage_categories = [
-            'Nettoyants et exfoliants',
-            'Masques et peelings',
-            'Crèmes hydratantes',
-            'Sérums et huiles',
-            'Soins anti-âge',
-            'Soins pour peaux spécifiques (acné, tâches)'
-        ];
-        foreach ($soins_visage_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $soins_visage->children()->attach($sub_cat->id);
-        }
+foreach ($sousCategoriesChaussuresFemmes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $chaussures->id
+    ]);
+     $category->genders()->attach($femme->id);
+}
 
-        $maquillage_categories = [
-            'Teint (fond de teint, poudres, correcteurs)',
-            'Lèvres (rouges à lèvres, gloss, baumes)',
-            'Yeux (mascara, eye-liner, palettes)',
-            'Ongles (vernis, accessoires)'
-        ];
-        foreach ($maquillage_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $maquillage->children()->attach($sub_cat->id);
-        }
+// Sous-catégories pour Enfants
+$sousCategoriesChaussuresEnfants = [
+    ["name" => 'Baskets et sneakers', "url" => "baskets-et-sneakers-enfants"],
+    ["name" => 'Sandales', "url" => "sandales-enfants"],
+    ["name" => 'Bottines', "url" => "bottines-enfants"],
+    ["name" => 'Chaussures scolaires', "url" => "chaussures-scolaires-enfants"],
+];
 
-        $soins_corps_categories = [
-            'Crèmes et laits hydratants',
-            'Gommages corporels',
-            'Huiles essentielles et de massage',
-            'Produits éclaircissants'
-        ];
-        foreach ($soins_corps_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $soins_corps->children()->attach($sub_cat->id);
-        }
+foreach ($sousCategoriesChaussuresEnfants as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $chaussures->id
+    ]);
+     $category->genders()->attach($enfant->id);
+}
 
-        // Sous-catégories Sport
-        $sport_categories = [
-            'Chaussures de sport (course, fitness, randonnée)',
-            'Équipements (ballons, haltères, tapis)',
-            'Accessoires (bouteilles, serviettes)',
-            'Articles de sport nautique',
-            'Équipements de musculation'
-        ];
-        $sport->children()->attach($vetement_sport->id);
-        foreach ($sport_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $sport->children()->attach($sub_cat->id);
-        }
+// Sous-catégories pour Parfums
+$parfums = $parentCategories['Parfums'];
 
-        // Sous-catégories Accessoires
-        $accessoires_categories = [
-            'Sacs (sacs à main, sacs à dos, pochettes)',
-            'Portefeuilles',
-            'Lunettes de soleil',
-            'Ceintures',
-            'Chapeaux (casquettes, bérets)',
-            'Montres',
-            'Bijoux fantaisie'
-        ];
-        foreach ($accessoires_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $accessoires->children()->attach($sub_cat->id);
-        }
+// Sous-catégories pour Hommes
+$sousCategoriesParfumsHommes = [
+    ["name" => 'Parfums de luxe', "url" => "parfums-de-luxe-homme"],
+    ["name" => 'Eau de toilette', "url" => "eau-de-toilette-homme"],
+    ["name" => 'Eau de parfum', "url" => "eau-de-parfum-homme"],
+    ["name" => 'Brumes corporelles', "url" => "brumes-corporelles-homme"],
+    ["name" => 'Parfums unisexes', "url" => "parfums-unisexes-homme"],
+    ["name" => 'Coffrets cadeaux', "url" => "coffrets-cadeaux-homme"],
+    ["name" => 'Parfums pour occasions spéciales', "url" => "parfums-occasions-speciales-homme"],
+    ["name" => 'Miniatures de parfum', "url" => "miniatures-de-parfum-homme"],
+    ["name" => 'Parfums bio et naturels', "url" => "parfums-bio-et-naturels-homme"],
+];
 
-        // Sous-catégories Spéciale Layette
-        $layette_categories = [
-            'Vêtements pour nouveau-nés',
-            'Chaussures pour nourrissons',
-            'Couvertures et gigoteuses',
-            'Bavoirs',
-            'Accessoires (bonnets, chaussons)',
-            'Jouets pour bébés',
-            'Kits pour la maternité'
-        ];
-        foreach ($layette_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $layette->children()->attach($sub_cat->id);
-        }
+foreach ($sousCategoriesParfumsHommes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $parfums->id
+    ]);
+     $category->genders()->attach($homme->id);
+}
 
-        // Sous-catégories Spéciale Mariage
-        $mariage_categories = [
-            'Robes de mariée (classiques, modernes, traditionnelles)',
-            'Costumes de mariage',
-            'Bijoux pour mariés',
-            'Accessoires (voiles, gants, couronnes)',
-            'Décorations de mariage (tables, voitures)',
-            'Cadeaux pour invités (boîtes personnalisées, objets souvenir)',
-            'Tenues pour demoiselles d’honneur et enfants'
-        ];
-        foreach ($mariage_categories as $cat) {
-            $sub_cat = Category::create(['category_name' => $cat]);
-            $mariage->children()->attach($sub_cat->id);
-        }
+// Sous-catégories pour Femmes
+$sousCategoriesParfumsFemmes = [
+    ["name" => 'Parfums de luxe', "url" => "parfums-de-luxe-femme"],
+    ["name" => 'Eau de toilette', "url" => "eau-de-toilette-femme"],
+    ["name" => 'Eau de parfum', "url" => "eau-de-parfum-femme"],
+    ["name" => 'Brumes corporelles', "url" => "brumes-corporelles-femme"],
+    ["name" => 'Parfums unisexes', "url" => "parfums-unisexes-femme"],
+    ["name" => 'Coffrets cadeaux', "url" => "coffrets-cadeaux-femme"],
+    ["name" => 'Parfums pour occasions spéciales', "url" => "parfums-occasions-speciales-femme"],
+    ["name" => 'Miniatures de parfum', "url" => "miniatures-de-parfum-femme"],
+    ["name" => 'Parfums bio et naturels', "url" => "parfums-bio-et-naturels-femme"],
+];
+
+foreach ($sousCategoriesParfumsFemmes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $parfums->id
+    ]);
+     $category->genders()->attach($femme->id);
+}
+
+// Sous-catégories pour Enfants
+$sousCategoriesParfumsEnfants = [
+    ["name" => 'Parfums de luxe', "url" => "parfums-de-luxe-enfants"],
+    ["name" => 'Eau de toilette', "url" => "eau-de-toilette-enfants"],
+    ["name" => 'Eau de parfum', "url" => "eau-de-parfum-enfants"],
+    ["name" => 'Brumes corporelles', "url" => "brumes-corporelles-enfants"],
+    ["name" => 'Parfums unisexes', "url" => "parfums-unisexes-enfants"],
+    ["name" => 'Coffrets cadeaux', "url" => "coffrets-cadeaux-enfants"],
+    ["name" => 'Parfums pour occasions spéciales', "url" => "parfums-occasions-speciales-enfants"],
+    ["name" => 'Miniatures de parfum', "url" => "miniatures-de-parfum-enfants"],
+    ["name" => 'Parfums bio et naturels', "url" => "parfums-bio-et-naturels-enfants"],
+];
+
+foreach ($sousCategoriesParfumsEnfants as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $parfums->id
+    ]);
+
+     $category->genders()->attach($enfant->id);
+}
+
+$meches = $parentCategories['Mèches'];
+
+// Sous-catégories pour Femmes
+$sousCategoriesMechesFemmes = [
+    ["name" => 'Tissages brésiliens', "url" => "tissages-bresiliens-femme"],
+    ["name" => 'Extensions naturelles', "url" => "extensions-naturelles-femme"],
+    ["name" => 'Extensions synthétiques', "url" => "extensions-synthetiques-femme"],
+    ["name" => 'Perruques (courtes, longues, bouclées, lisses)', "url" => "perruques-femme"],
+    ["name" => 'Tresses africaines', "url" => "tresses-africaines-femme"],
+    ["name" => 'Franges et postiches', "url" => "franges-et-postiches-femme"],
+    ["name" => 'Colorations de mèches', "url" => "colorations-de-meches-femme"],
+    ["name" => 'Kits de soins pour mèches', "url" => "kits-de-soins-pour-meches-femme"],
+    ["name" => 'Accessoires pour cheveux (peignes, bonnets)', "url" => "accessoires-pour-cheveux-femme"],
+];
+
+foreach ($sousCategoriesMechesFemmes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $meches->id
+    ]);
+     $category->genders()->attach($femme->id);
+}
+
+// Catégorie parente : Beauté
+$beauté = $parentCategories['Beauté'];
+
+// Sous-catégories pour Soins du visage
+$soinsVisage = Category::create([
+    'category_name' => 'Soins du visage',
+    'category_url' => 'soins-du-visage',
+    'parent_id' => $beauté->id,
+]);
+
+// Enfants de Soins du visage
+$sousCategoriesVisage = [
+    ["name" => 'Nettoyants et exfoliants', "url" => "nettoyants-et-exfoliants"],
+    ["name" => 'Masques et peelings', "url" => "masques-et-peelings"],
+    ["name" => 'Crèmes hydratantes', "url" => "cremes-hydratantes"],
+    ["name" => 'Sérums et huiles', "url" => "serums-et-huiles"],
+    ["name" => 'Soins anti-âge', "url" => "soins-anti-age"],
+    ["name" => 'Soins pour peaux spécifiques (acné, tâches)', "url" => "soins-peaux-specifiques"],
+];
+
+foreach ($sousCategoriesVisage as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $soinsVisage->id
+    ]);
+    
+}
+
+// Sous-catégories pour Maquillage
+$maquillage = Category::create([
+    'category_name' => 'Maquillage',
+    'category_url' => 'maquillage',
+    'parent_id' => $beauté->id,
+]);
+
+// Enfants de Maquillage
+$sousCategoriesMaquillage = [
+    ["name" => 'Teint (fond de teint, poudres, correcteurs)', "url" => "teint"],
+    ["name" => 'Lèvres (rouges à lèvres, gloss, baumes)', "url" => "levres"],
+    ["name" => 'Yeux (mascara, eye-liner, palettes)', "url" => "yeux"],
+    ["name" => 'Ongles (vernis, accessoires)', "url" => "ongles"],
+];
+
+foreach ($sousCategoriesMaquillage as $categoryData) {
+    Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $maquillage->id
+    ]);
+}
+
+// Sous-catégories pour Soins du corps
+$soinsCorps = Category::create([
+    'category_name' => 'Soins du corps',
+    'category_url' => 'soins-du-corps',
+    'parent_id' => $beauté->id,
+]);
+
+// Enfants de Soins du corps
+$sousCategoriesCorps = [
+    ["name" => 'Crèmes et laits hydratants', "url" => "cremes-et-laits-hydratants"],
+    ["name" => 'Gommages corporels', "url" => "gommages-corporels"],
+    ["name" => 'Huiles essentielles et de massage', "url" => "huiles-essentielles"],
+    ["name" => 'Produits éclaircissants', "url" => "produits-eclaircissants"],
+];
+
+foreach ($sousCategoriesCorps as $categoryData) {
+    Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $soinsCorps->id
+    ]);
+}
+
+// Sous-catégories pour Parfums
+$sport = $parentCategories['Sport'];
+
+// Sous-catégories pour Hommes
+$sousCategoriesSportHommes = [
+    ["name" => 'Vêtements de sport', "url" => "vetements-de-sport-homme"],
+    ["name" => 'Chaussures de sport', "url" => "chaussure-de-sport-homme"],
+    ["name" => 'Équipements (ballons, haltères, tapis)', "url" => "equipement-de-sport-homme"],
+    ["name" => 'Accessoires (bouteilles, serviettes)', "url" => "accessoire-de-sport-homme"],
+    ["name" => 'Équipements de musculation', "url" => "equipement-de-musculation-homme"],
+];
+
+foreach ($sousCategoriesSportHommes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $sport->id
+    ]);
+     $category->genders()->attach($homme->id);
+}
+
+// Sous-catégories pour Hommes
+$sousCategoriesSportFemmes = [
+    ["name" => 'Vêtements de sport', "url" => "vetements-de-sport-femme"],
+    ["name" => 'Chaussures de sport', "url" => "chaussure-de-sport-femme"],
+    ["name" => 'Équipements (ballons, haltères, tapis)', "url" => "equipement-de-sport-femme"],
+    ["name" => 'Accessoires (bouteilles, serviettes)', "url" => "accessoire-de-sport-femme"],
+    ["name" => 'Équipements de musculation', "url" => "equipement-de-musculation-femme"],
+];
+
+foreach ($sousCategoriesSportFemmes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $sport->id
+    ]);
+     $category->genders()->attach($femme->id);
+}
+      $sousCategoriesSportEnfant = [
+    ["name" => 'Vêtements de sport', "url" => "vetements-de-sport-enfant"],
+    ["name" => 'Chaussures de sport', "url" => "chaussure-de-sport-enfant"],
+    ["name" => 'Équipements (ballons, haltères, tapis)', "url" => "equipement-de-sport-enfant"],
+    ["name" => 'Accessoires (bouteilles, serviettes)', "url" => "accessoire-de-sport-enfant"],
+    ["name" => 'Équipements de musculation', "url" => "equipement-de-musculation-enfant"],
+];
+
+foreach ($sousCategoriesSportEnfant as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $sport->id
+    ]);
+     $category->genders()->attach($enfant->id);
+}      
+
+$accessoire = $parentCategories['Accessoires'];
+
+ $sousCategoriesAccessoireHomme = [
+    ["name" => 'Sacs (sacs à main, sacs à dos, pochettes)', "url" => "sacs-homme"],
+    ["name" => 'Portefeuilles', "url" => "portefeuilles-homme"],
+    ["name" => 'Lunettes de soleil', "url" => "lunettes-de-soleil-homme"],
+    ["name" => 'Ceintures', "url" => "ceinture-homme"],
+    ["name" => 'Chapeaux (casquettes, bérets)', "url" => "chapeau-homme"],
+     ["name" => 'Montres', "url" => "montre-homme"],
+      ["name" => 'Bijoux fantaisie', "url" => "bijoux-fantaisie-homme"],
+];
+
+foreach ($sousCategoriesAccessoireHomme as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $accessoire->id
+    ]);
+     $category->genders()->attach($homme->id);
+} 
+
+$sousCategoriesAccessoireFemmes = [
+    ["name" => 'Sacs (sacs à main, sacs à dos, pochettes)', "url" => "sacs-femme"],
+    ["name" => 'Portefeuilles', "url" => "portefeuilles-femme"],
+    ["name" => 'Lunettes de soleil', "url" => "lunettes-de-soleil-femme"],
+    ["name" => 'Ceintures', "url" => "ceinture-femme"],
+    ["name" => 'Chapeaux (casquettes, bérets)', "url" => "chapeau-femme"],
+     ["name" => 'Montres', "url" => "montre-femme"],
+      ["name" => 'Bijoux fantaisie', "url" => "bijoux-fantaisie-femme"],
+];
+
+foreach ($sousCategoriesAccessoireFemmes as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $accessoire->id
+    ]);
+     $category->genders()->attach($femme->id);
+} 
+
+$sousCategoriesAccessoireEnfants = [
+    ["name" => 'Sacs (sacs à main, sacs à dos, pochettes)', "url" => "sacs-enfant"],
+    ["name" => 'Portefeuilles', "url" => "portefeuilles-enfant"],
+    ["name" => 'Lunettes de soleil', "url" => "lunettes-de-soleil-enfant"],
+    ["name" => 'Ceintures', "url" => "ceinture-enfant"],
+    ["name" => 'Chapeaux (casquettes, bérets)', "url" => "chapeau-enfant"],
+     ["name" => 'Montres', "url" => "montre-enfant"],
+      ["name" => 'Bijoux fantaisie', "url" => "bijoux-fantaisie-enfant"],
+];
+
+foreach ($sousCategoriesAccessoireEnfants as $categoryData) {
+    $category=Category::create([
+        'category_name' => $categoryData['name'],
+        'category_url' => $categoryData['url'],
+        'parent_id' => $accessoire->id
+    ]);
+     $category->genders()->attach($enfant->id);
+} 
+
+
     }
 }

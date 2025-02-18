@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Shop;
+use App\Models\Gender;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,13 +33,19 @@ public function getParentsAttribute()
         return $this->belongsToMany(Shop::class);
     }
 
-    public function parent():BelongsToMany{
-        return $this->belongsToMany(Category::class, 'category_parent', 'category_id', 'parent_id');
+    public function genders()
+    {
+        return $this->belongsToMany(Gender::class, 'category_gender');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function children()
     {
-        return $this->belongsToMany(Category::class, 'category_parent', 'parent_id', 'category_id');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
    
