@@ -13,6 +13,10 @@ class ShopListController extends Controller
         return ShopResource::collection(Shop::orderBy('created_at', 'desc')->take(7)->get());
     }
 
+    public function all(){
+        return ShopResource::collection(Shop::orderBy('created_at', 'desc')->get());
+    }
+
     public function adsShops($id){
         return ShopResource::collection(Shop::Where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
     }
