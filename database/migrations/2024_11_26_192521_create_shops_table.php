@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('shop_name');
             $table->string('shop_key')->unique();
             $table->text("shop_description");
+            $table->string('shop_gender');
             $table->foreignIdFor(User::class)
             ->constrained()
             ->restrictOnDelete()

@@ -22,6 +22,7 @@ class CreateSellerController extends Controller
         $seller->email=$request->email;
         $seller->phone_number=$request->phone_number;
         $seller->birthDate=$request->birthDate;
+        $seller->shop_gender=$request->shop_gender;
         $seller->isWholesaler=$request->isWholesaler;
         $seller->role_id=2;
         $seller->nationality=$request->nationality;
