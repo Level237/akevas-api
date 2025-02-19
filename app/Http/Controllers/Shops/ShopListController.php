@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ShopListController extends Controller
 {
     public function index(){
-        return ShopResource::collection(Shop::orderBy('subscribe_id','DESC')->where('status',1)->get());
+        return ShopResource::collection(Shop::orderBy('created_at', 'desc')->take(7)->get());
     }
 
     public function adsShops($id){

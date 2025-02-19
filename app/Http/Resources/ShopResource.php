@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 class ShopResource extends JsonResource
 {
     /**
@@ -26,12 +27,14 @@ class ShopResource extends JsonResource
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "products_count"=>$this->products->count(),
+            "products"=>ProductResource::collection($this->products),
             "expire"=>$this->expire,
             "subscribe_id"=>$this->subscribe_id,
             "town"=>$this->town->town_name,
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
             "categories"=>CategoryResource::collection($this->categories),
+            
             "state"=>$this->state,
             "level"=>$this->shop_level,
             "cover"=>URL("/storage/".$this->shop_banner),
