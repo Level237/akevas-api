@@ -22,7 +22,6 @@ class CreateSellerController extends Controller
         $seller->email=$request->email;
         $seller->phone_number=$request->phone_number;
         $seller->birthDate=$request->birthDate;
-        $seller->shop_gender=$request->shop_gender;
         $seller->isWholesaler=$request->isWholesaler;
         $seller->role_id=2;
         $seller->nationality=$request->nationality;
@@ -50,6 +49,7 @@ class CreateSellerController extends Controller
             $shop->town_id=intval($request->town_id);
             $shop->quarter_id=intval($request->quarter_id);
             $shop->product_type=$request->product_type;
+            $shop->shop_gender=(string)$request->shop_gender;
             $shop_profile = $request->file('shop_profile');
             $shop->shop_profile=$shop_profile->store('shop/profile','public');
             
