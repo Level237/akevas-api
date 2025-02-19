@@ -34,7 +34,8 @@ class ListCategoryController extends Controller
     public function getCategoryWithParentIdNull(){
         $rootCategories = Category::whereDoesntHave('parent')->get();
 
-        return response()->json(['data'=>$rootCategories],200);
+        
+        return CategoryResource::collection($rootCategories);
     }
 public function getCategoriesByGender($parentCategoryId) {
     // Récupérer la catégorie parente
@@ -80,7 +81,7 @@ public function getCategoriesByGender($parentCategoryId) {
             }
         }
     }
-
+    
     return response()->json($categoriesByGender);
 }
 

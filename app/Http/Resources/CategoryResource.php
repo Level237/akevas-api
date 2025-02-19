@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
@@ -17,6 +18,7 @@ class CategoryResource extends JsonResource
         return [
             "id"=>$this->id,
             "category_name"=>$this->category_name,
+            "category_profile"=>URL("/storage/".$this->category_profile)
         ];
     }
 }

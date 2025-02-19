@@ -17,14 +17,14 @@ class CategorySeeder extends Seeder
         $femme = Gender::create(['gender_name' => 'Femme']);
         $enfant = Gender::create(['gender_name' => 'Enfant']);
          $categories = [
-            ['name' => 'Vêtements', 'url' => 'vetements'],
-            ['name' => 'Bijoux', 'url' => 'bijoux'],
-            ['name' => 'Chaussures', 'url' => 'chaussures'],
-            ['name' => 'Parfums', 'url' => 'parfums'],
-            ['name' => 'Mèches', 'url' => 'meches'],
-            ['name' => 'Beauté', 'url' => 'beaute'],
-            ['name' => 'Sport', 'url' => 'sport'],
-            ['name' => 'Accessoires', 'url' => 'accessoires'],
+            ['name' => 'Vêtements', 'url' => 'vetements','category_profile'=>"/categories/profile/dress.jpg"],
+            ['name' => 'Bijoux', 'url' => 'bijoux','category_profile'=>"/categories/profile/bijoux.jpg"],
+            ['name' => 'Chaussures', 'url' => 'chaussures','category_profile'=>"/categories/profile/chaussures.jpg"],
+            ['name' => 'Parfums', 'url' => 'parfums','category_profile'=>"/categories/profile/parfums.jpg"],
+            ['name' => 'Mèches', 'url' => 'meches','category_profile'=>"/categories/profile/meches.jpg"],
+            ['name' => 'Beauté', 'url' => 'beaute','category_profile'=>"/categories/profile/beaute.jpg"],
+            ['name' => 'Sport', 'url' => 'sport','category_profile'=>"/categories/profile/sports.jpg"],
+            ['name' => 'Accessoires', 'url' => 'accessoires','category_profile'=>"/categories/profile/accessoires.jpg"],
         ];
 
 
@@ -32,6 +32,7 @@ class CategorySeeder extends Seeder
             $category = Category::create([
                 'category_name' => $categoryData['name'],
                 'category_url' => Str::slug($categoryData['name']),
+                'category_profile'=> $categoryData['category_profile'],
                 'parent_id' => null // Pas de parent pour les catégories principales
             ]);
             $parentCategories[$categoryData['name']] = $category;
