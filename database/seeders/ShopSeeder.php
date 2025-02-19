@@ -1,5 +1,6 @@
- <?php
+<?php
 
+namespace Database\Seeders;
 
 use App\Models\Shop;
 use App\Models\User;
@@ -7,12 +8,16 @@ use App\Models\Image;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Services\Shop\generateShopNameService;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ShopSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        $shops = [
+         $shops = [
             [
                 'user' => [
                     'firstName' => 'Jean',
@@ -75,7 +80,7 @@ class ShopSeeder extends Seeder
                     'town_id' => 1,
                     'quarter_id' => 3,
                     "shop_profile"=>"shop/profile/shop3.jpg",
-                    'product_type' => 'Sport',
+                    'product_type' => '1',
                     'shop_gender' => "4",
                     'categories' => [7]
                 ]
@@ -314,8 +319,8 @@ class ShopSeeder extends Seeder
                 'shop' => [
                     'shop_name' => 'Mode Africaine',
                     'shop_description' => 'Vêtements traditionnels africains',
-                    'town_id' => 2,
-                    'quarter_id' => 49,
+                    'town_id' =>1,
+                    'quarter_id' =>1,
                     "shop_profile"=>"shop/profile/shop14.jpg",
                     'product_type' => "0",
                     'shop_gender' => "4",
@@ -326,7 +331,7 @@ class ShopSeeder extends Seeder
 
         foreach ($shops as $shopData) {
             // Créer l'utilisateur
-            $user = new User();
+            $user = new User;
             $user->firstName = $shopData['user']['firstName'];
             $user->lastName = $shopData['user']['lastName'];
             $user->email = $shopData['user']['email'];
@@ -345,7 +350,7 @@ class ShopSeeder extends Seeder
             $user->save();
 
             // Créer la boutique
-            $shop = new Shop();
+            $shop = new Shop;
             $shop->shop_name = $shopData['shop']['shop_name'];
             $shop->shop_key = (new generateShopNameService)->generateUniqueShopName($shopData['shop']['shop_name']);
             $shop->shop_description = $shopData['shop']['shop_description'];
@@ -363,7 +368,7 @@ class ShopSeeder extends Seeder
 
             // Ajouter 3 images par défaut
             for ($i = 1; $i <= 3; $i++) {
-                $image = new Image();
+                $image = new Image;
                 $image->image_path = "shop/images/images{$i}.jpg";
                 $image->save();
                 $shop->images()->attach($image);
