@@ -17,7 +17,7 @@ class CategorySeeder extends Seeder
         $femme = Gender::create(['gender_name' => 'Femme']);
         $enfant = Gender::create(['gender_name' => 'Enfant']);
          $categories = [
-            ['name' => 'Vêtements'],
+            ['name' => 'Vêtements', 'url' => 'vetements'],
             ['name' => 'Bijoux', 'url' => 'bijoux'],
             ['name' => 'Chaussures', 'url' => 'chaussures'],
             ['name' => 'Parfums', 'url' => 'parfums'],
@@ -35,7 +35,6 @@ class CategorySeeder extends Seeder
                 'parent_id' => null // Pas de parent pour les catégories principales
             ]);
             $parentCategories[$categoryData['name']] = $category;
-            $category->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         }
         $parentCategories['Vêtements']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         $parentCategories['Bijoux']->genders()->attach([$homme->id, $femme->id, $enfant->id]);

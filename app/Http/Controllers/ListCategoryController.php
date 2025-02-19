@@ -4,15 +4,26 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
-use App\Http\Resources\CategoryWithChildrenResource;
-
+use App\Http\Resources\CategoryResource;
+use App\Models\Gender;
 class ListCategoryController extends Controller
 {
-    public function index($parentId)
-    {
-        $parentCategory = Category::with('children')->findOrFail($parentId);
+
+    public function showCategoryByGender($id){
         
-        return new CategoryWithChildrenResource($parentCategory);
+        
+        $categories = Category::whereHas('genders', function($query) use ($id) {
+            $finalIds = [];
+        if($id==4){
+            $finalIds = [1, 2,3];
+        }else{
+            $finalIds = [$id];
+        }
+            $query->whereIn('genders.id', $finalIds);
+        })->whereDoesntHave('parent')->get();
+        
+        //$response = CategoryResource::collection($categories);
+        return $categories;
     }
     public function getCategoryWithParentIdNull(){
         $rootCategories = Category::whereDoesntHave('parent')->get();
