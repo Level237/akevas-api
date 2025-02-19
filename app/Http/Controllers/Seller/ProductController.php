@@ -45,6 +45,7 @@ class ProductController extends Controller
         $product->shop_id=$shop->id;
         $product->product_price=$request->product_price;
         $product->product_quantity=$request->product_quantity;
+        $product->product_gender=$request->product_gender;
         $product_profile = $request->file('product_profile');
         $product->status=1;
         $product->product_profile=$product_profile->store('product/profile','public');
@@ -66,6 +67,9 @@ class ProductController extends Controller
 
             if($request->has('categories') && is_array($request->categories)){
                 $product->categories()->attach(array_map('intval', $request->categories));
+            }
+             if($request->has('sub_categories') && is_array($request->sub_categories)){
+                $product->categories()->attach(array_map('intval', $request->sub_categories));
             }
         }
         }

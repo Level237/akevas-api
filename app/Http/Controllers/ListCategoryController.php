@@ -9,6 +9,12 @@ use App\Models\Gender;
 class ListCategoryController extends Controller
 {
 
+    public function getSubCategoriesByParentId($arrayIds){
+        $array = trim($arrayIds, '[]');
+        $items = explode(',', $array);
+        $categories = Category::whereIn('parent_id',$items)->get();
+        return response()->json(['categories'=>$categories],200);
+    }
     public function showCategoryByGender($id){
         
         
@@ -23,7 +29,7 @@ class ListCategoryController extends Controller
         })->whereDoesntHave('parent')->get();
         
         //$response = CategoryResource::collection($categories);
-        return $categories;
+        return response()->json(['categories'=>$categories],200);
     }
     public function getCategoryWithParentIdNull(){
         $rootCategories = Category::whereDoesntHave('parent')->get();

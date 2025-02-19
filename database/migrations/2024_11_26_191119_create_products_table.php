@@ -29,6 +29,7 @@ return new class extends Migration
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();
             $table->string('subscribe_id')->nullable();
+            $table->string('product_gender');
             $table->timestamps();
         });
     }
