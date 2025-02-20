@@ -2,9 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Shop;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\ShopResource;
+use App\Http\Resources\CategoryResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+
 class GenderResource extends JsonResource
 {
     /**
@@ -19,6 +24,10 @@ class GenderResource extends JsonResource
             'gender_name' => $this->gender_name,
             'gender_profile' => URL("/storage/".$this->gender_profile),
             'gender_description' => $this->gender_description,
+            'categories' => CategoryResource::collection(Category::whereHas('genders', function($query) {
+                $query->where('gender_id', $this->id);
+            })->where('parent_id', null)->get()),
+            'shops' => ShopResource::collection(Shop::where('shop_gender',$this->id)->orWhere('shop_gender',4)->take(7)->get()),
         ];
     }
 }

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
+use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Products\ProductListController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
@@ -58,6 +59,8 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::get("/home/shops",[ShopListController::class,"index"]);
     Route::get("ads/shops/{id}",[ShopListController::class,"adsShops"]);
     Route::get("all/shops",[ShopListController::class,"all"]);
+    Route::get("current/gender/{id}",[CurrentGenderController::class,"show"]);
+
     
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
