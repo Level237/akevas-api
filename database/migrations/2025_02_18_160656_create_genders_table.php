@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('genders', function (Blueprint $table) {
             $table->id();
             $table->string('gender_name');
+            $table->string('gender_profile')->nullable();
+            $table->string('gender_description')->nullable();
             $table->timestamps();
         });
     }

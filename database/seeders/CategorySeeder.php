@@ -13,9 +13,9 @@ class CategorySeeder extends Seeder
     {
        
         // Création des genres
-        $homme = Gender::create(['gender_name' => 'Homme']);
-        $femme = Gender::create(['gender_name' => 'Femme']);
-        $enfant = Gender::create(['gender_name' => 'Enfant']);
+        $homme = Gender::create(['gender_name' => 'Homme',"gender_profile"=>"/genders/mens.jpg","gender_description"=>"Découvrez notre collection exclusive pour hommes - Du style pour tous les jours"]);
+        $femme = Gender::create(['gender_name' => 'Femme',"gender_profile"=>"/genders/girl.jpg","gender_description"=>"Découvrez notre collection exclusive pour femmes - Du style pour tous les jours"]);
+        $enfant = Gender::create(['gender_name' => 'Enfant',"gender_profile"=>"/genders/enfants.jpg","gender_description"=>"Découvrez notre collection exclusive pour enfants - Du style pour tous les jours"]);
          $categories = [
             ['name' => 'Vêtements', 'url' => 'vetements','category_profile'=>"/categories/profile/dress.jpg"],
             ['name' => 'Bijoux', 'url' => 'bijoux','category_profile'=>"/categories/profile/bijoux.jpg"],
