@@ -21,6 +21,7 @@ use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Products\ProductListController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
+use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -61,6 +62,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::get("all/shops",[ShopListController::class,"all"]);
     Route::get("current/gender/{id}",[CurrentGenderController::class,"show"]);
 
+    Route::get("product/detail/{product_url}",[DetailProductController::class,"index"]);
     
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
