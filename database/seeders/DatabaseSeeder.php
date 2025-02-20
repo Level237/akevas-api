@@ -30,7 +30,8 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             DeliverySeeder::class,
             CategorySeeder::class,
-            ShopSeeder::class
+            ShopSeeder::class,
+            ProductSeeder::class
         ]);
     }
 }

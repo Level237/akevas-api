@@ -54,7 +54,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::post("login",[LoginController::class,"login"]);
     Route::post('create/seller',[CreateSellerController::class,'create']);
     Route::get('shop/show/{id}',[ShopController::class,'show']);
-    Route::get("products",[ProductListController::class,'index']);
+    Route::get("home/products",[ProductListController::class,'index']);
     Route::get("ads/products/{id}",[ProductListController::class,"adsProducts"]);
     Route::get("/home/shops",[ShopListController::class,"index"]);
     Route::get("ads/shops/{id}",[ShopListController::class,"adsShops"]);
