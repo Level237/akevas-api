@@ -63,7 +63,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
     Route::get("current/gender/{id}",[CurrentGenderController::class,"show"]);
 
     Route::get("product/detail/{product_url}",[DetailProductController::class,"index"]);
-    
+    Route::get("all/products",[ProductListController::class,"allProducts"]);
 Route::middleware(['auth:api','scopes:seller',"isSeller"])->prefix('v1')->group(function(){
     Route::post("init/payment/subscription/product",[SubscribeProductController::class,"initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}',[SubscribeProductController::class,'initPaymentPending']);
