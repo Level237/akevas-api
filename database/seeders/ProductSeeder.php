@@ -16,15 +16,15 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $productProfiles = [
-            'products/profile/bag1.jpg', 'products/profile/bag2.jpg', 'products/profile/bag3.jpg',
-            'products/profile/bag4.jpg', 'products/profile/bag5.jpg', 'products/profile/bag6.jpg',
-            'products/profile/bag7.jpg', 'products/profile/bag8.jpg', 'products/profile/bag9.jpg',
-            'products/profile/bag10.jpg', 'products/profile/bag11.jpg', 'products/profile/bag12.jpg',
-            'products/profile/bag13.jpg',
-            'products/profile/dress1.webp', 'products/profile/dress2.webp', 'products/profile/dress3.webp',
-            'products/profile/dress4.webp', 'products/profile/dress5.webp',
-            'products/profile/shoes1.webp', 'products/profile/shoes2.webp', 'products/profile/shoes3.webp',
-            'products/profile/shoes4.webp', 'products/profile/shoes5.webp'
+            'product/profile/bag1.jpg', 'product/profile/bag2.jpg', 'product/profile/bag3.jpg',
+            'product/profile/bag4.jpg', 'product/profile/bag5.jpg', 'product/profile/bag6.jpg',
+            'product/profile/bag7.jpg', 'product/profile/bag8.jpg', 'product/profile/bag9.jpg',
+            'product/profile/bag10.jpg', 'product/profile/bag11.jpg', 'product/profile/bag12.jpg',
+            'product/profile/bag13.jpg',
+            'product/profile/dress1.webp', 'product/profile/dress2.webp', 'product/profile/dress3.webp',
+            'product/profile/dress4.webp', 'product/profile/dress5.webp',
+            'product/profile/shoes.webp', 'product/profile/shoes2.webp', 'product/profile/shoes3.webp',
+            'product/profile/shoes4.webp', 'products/profile/shoes5.webp'
         ];
 
         $productImages = [
