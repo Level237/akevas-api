@@ -22,6 +22,7 @@ use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Product\DetailProductController;
+use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Admin\Product\ListProductController;
@@ -87,6 +88,7 @@ Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
     Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
     Route::get('/recent/deliveries',[RecentDeliveryController::class,'recentDelivery']);
     Route::get('admin/products',[ListProductController::class,'index']);
+    Route::apiResource('deliveries',DeliveryController::class);
     Route::post('/shop/confirm/{id}',[ConfirmStatusSellerController::class,'index']);
     Route::apiResource('sellers',SellerController::class);
     Route::apiResource('categories',CategoryController::class);
