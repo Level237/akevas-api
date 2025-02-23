@@ -6,10 +6,12 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class CreateDeliveryController extends Controller
 {
     public function create(Request $request){
+        
          try{
         $delivery=new User;
         $delivery->firstName=$request->firstName;
@@ -20,7 +22,7 @@ class CreateDeliveryController extends Controller
         $delivery->role_id=4;
         $delivery->nationality=$request->nationality;
         $delivery->residence=$request->residence;
-
+        $delivery->card_number=$request->card_number;
 
         $file_cni_front = $request->file('identity_card_in_front');
         $image_path_cni_front = $file_cni_front->store('cni/front', 'public');
@@ -37,8 +39,9 @@ class CreateDeliveryController extends Controller
         $delivery->password=Hash::make($request->password);
         if( $delivery->save()){
             $vehicle=new Vehicle;
-            $vehicle->vehicle_modal=$request->vehicle_modal;
+            $vehicle->vehicle_model=$request->vehicle_model;
             $vehicle->vehicle_number=$request->vehicle_number;
+            $vehicle->vehicle_state=$request->vehicle_state;
             $vehicle->vehicle_type=$request->vehicle_type;
             $vehicle->user_id=$delivery->id;
 
@@ -48,9 +51,10 @@ class CreateDeliveryController extends Controller
             
             }
             if($vehicle->save()){
-                foreach($request->towns as $town){
-                $vehicle->towns()->attach($town);
+                foreach($request->quarters as $quarter){
+                $vehicle->quarters()->attach($quarter);
             }
+            
            
             return response()->json(['message'=>"delivery created successfully",'success'=>true],201);
         }

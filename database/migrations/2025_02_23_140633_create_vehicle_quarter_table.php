@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\Quarter;
+use App\Models\Vehicle;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Models\Quarter;
 
 return new class extends Migration
 {
@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quarter_delivery', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(User::class)
+        Schema::create('vehicle_quarter', function (Blueprint $table) {
+           $table->id();
+            $table->foreignIdFor(Vehicle::class)
             ->constrained()
             ->cascadeOnDelete()
             ->cascadeOnUpdate();
@@ -23,7 +23,6 @@ return new class extends Migration
             ->constrained()
             ->cascadeOnDelete()
             ->cascadeOnUpdate();
-            
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quarter_delivery');
+        Schema::dropIfExists('vehicle_quarter');
     }
 };

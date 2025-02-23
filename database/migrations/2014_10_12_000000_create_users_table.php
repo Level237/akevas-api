@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('identity_card_with_the_person')->nullable();
             $table->string('profile')->nullable();
             $table->string("drivers_license")->nullable();
+            $table->string('card_number')->nullable();
             $table->string('residence')->nullable();
             $table->boolean('isSeller')->default(0);
             $table->boolean('isDelivery')->default(0);

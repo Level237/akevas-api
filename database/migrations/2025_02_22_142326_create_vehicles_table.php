@@ -14,10 +14,11 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->string('vehicle_modal')->nullable();
+            $table->string('vehicle_model')->nullable();
             $table->string('vehicle_number')->nullable();
             $table->string('vehicle_type')->nullable();
             $table->string('vehicle_image');
+            $table->string('vehicle_state')->nullable();
             $table->foreignIdFor(User::class)
             ->constrained()
             ->cascadeOnDelete()
