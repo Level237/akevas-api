@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Shop;
+use App\Models\Vehicle;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -59,5 +60,9 @@ class User extends Authenticatable
 
     public function shops():HasMany{
         return $this->hasMany(Shop::class);
+    }
+
+    public function vehicles():HasMany{
+        return $this->hasMany(Vehicle::class);
     }
 }
