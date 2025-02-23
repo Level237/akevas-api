@@ -32,6 +32,7 @@ use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
+use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 /*
@@ -88,8 +89,9 @@ Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
     Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
     Route::get('/recent/deliveries',[RecentDeliveryController::class,'recentDelivery']);
     Route::get('admin/products',[ListProductController::class,'index']);
-    Route::apiResource('deliveries',DeliveryController::class);
+    Route::apiResource('admin/deliveries',DeliveryController::class);
     Route::post('/shop/confirm/{id}',[ConfirmStatusSellerController::class,'index']);
+    Route::post('/delivery/confirm/{id}',[ConfirmStatusDeliveryController::class,'confirmStatusDelivery']);
     Route::apiResource('sellers',SellerController::class);
     Route::apiResource('categories',CategoryController::class);
     Route::apiResource('towns',TownController::class);

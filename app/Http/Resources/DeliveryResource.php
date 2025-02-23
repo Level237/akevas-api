@@ -24,6 +24,7 @@ class DeliveryResource extends JsonResource
             "lastName"=>$this->lastName,
             "birthDate"=>$this->birthDate,
             "nationality"=>$this->nationality,
+            "drivers_license"=>URL("/storage/".$this->drivers_license),
             "role_id"=>$this->role_id,
             "phone_number"=>$this->phone_number,
             "identity_card_in_front"=>URL("/storage/".$this->identity_card_in_front),
