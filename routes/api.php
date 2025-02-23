@@ -18,16 +18,17 @@ use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
-use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
+use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
+use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
@@ -84,6 +85,7 @@ Route::middleware(['auth:api','scopes:seller'])->prefix('v1')->group(function(){
 Route::middleware(['auth:api','scopes:admin'])->prefix('v1')->group(function(){
     Route::get('/recent/products',[RecentProductController::class,'index']);
     Route::get('/recent/sellers',[RecentSellerController::class,'recentSeller']);
+    Route::get('/recent/deliveries',[RecentDeliveryController::class,'recentDelivery']);
     Route::get('admin/products',[ListProductController::class,'index']);
     Route::post('/shop/confirm/{id}',[ConfirmStatusSellerController::class,'index']);
     Route::apiResource('sellers',SellerController::class);
