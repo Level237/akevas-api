@@ -18,7 +18,7 @@ use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
-
+use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
@@ -42,6 +42,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | be assigned to the "api" middleware group. Make something great!
 |
     */
+    Route::post('create/delivery',[CreateDeliveryController::class,'create']);
     Route::get('/category/gender/{id}',[ListCategoryController::class,'getCategoriesByGender']);
     Route::get('/get/category/by-gender/{id}',[ListCategoryController::class,'showCategoryByGender']);
     Route::get('/get/sub-categories/{arrayIds}',[ListCategoryController::class,'getSubCategoriesByParentId']);
