@@ -15,10 +15,11 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Admin\Seller\SellerController;
+use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
+
 use App\Http\Controllers\Gender\CurrentGenderController;
-use App\Http\Controllers\Products\ProductListController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Product\DetailProductController;
