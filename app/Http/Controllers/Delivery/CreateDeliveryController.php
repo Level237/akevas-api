@@ -22,15 +22,17 @@ class CreateDeliveryController extends Controller
         $delivery->role_id=4;
         $delivery->nationality=$request->nationality;
         $delivery->residence=$request->residence;
-        $delivery->card_number=$request->card_number;
 
         $file_cni_front = $request->file('identity_card_in_front');
         $image_path_cni_front = $file_cni_front->store('cni/front', 'public');
         $delivery->identity_card_in_front=$image_path_cni_front;
-
-        $file_drivers_license = $request->file('drivers_license');
-        $image_path_drivers_license = $file_drivers_license->store('drivers_license', 'public');
-        $delivery->drivers_license=$image_path_drivers_license;
+        
+        if($request->file('drivers_license')){
+            $file_drivers_license = $request->file('drivers_license');
+            $image_path_drivers_license = $file_drivers_license->store('drivers_license', 'public');
+            $delivery->drivers_license=$image_path_drivers_license;
+        }
+        
 
         $file_cni_with_the_person = $request->file('identity_card_with_the_person');
         $image_path_cni_with_the_person = $file_cni_with_the_person->store('cni/person', 'public');
