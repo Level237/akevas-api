@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminSeeder::class,
             DeliverySeeder::class,
+            AttributeSeeder::class,
+            AttributeValueSeeder::class,
             CategorySeeder::class,
             ShopSeeder::class,
             ProductSeeder::class

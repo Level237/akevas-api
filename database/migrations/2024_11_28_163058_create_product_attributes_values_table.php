@@ -15,18 +15,19 @@ return new class extends Migration
     {
         Schema::create('product_attributes_values', function (Blueprint $table) {
 
-                $table->id();
-                $table->foreignIdFor(Product::class)
+            $table->id();
+            $table->foreignIdFor(Product::class)
                 ->constrained()
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
-                $table->foreignIdFor(AttributeValue::class)
+            $table->foreignIdFor(AttributeValue::class)
                 ->constrained()
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
-                $table->timestamps();
-            });
-
+            $table->string('image_path')->nullable();
+            $table->string('price')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

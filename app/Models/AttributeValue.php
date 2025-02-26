@@ -11,7 +11,9 @@ class AttributeValue extends Model
 {
     use HasFactory;
 
-    public function products():BelongsToMany{
-        return $this->belongsToMany(Product::class);
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_attribute_value')
+            ->withPivot('price', 'image_path');
     }
 }

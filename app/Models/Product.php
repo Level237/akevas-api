@@ -25,17 +25,22 @@ class Product extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $primaryKey = 'id';
-    public function images():BelongsToMany{
+    public function images(): BelongsToMany
+    {
         return $this->belongsToMany(Image::class);
     }
-    public function shop():BelongsTo{
+    public function shop(): BelongsTo
+    {
         return $this->belongsTo(Shop::class);
     }
-    public function attributes():BelongsToMany{
-        return $this->belongsToMany(AttributeValue::class);
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany(AttributeValue::class, 'product_attribute_value')
+            ->withPivot('price', 'image_path');
     }
 
-    public function categories():BelongsToMany{
+    public function categories(): BelongsToMany
+    {
         return $this->belongsToMany(Category::class);
     }
 
@@ -47,5 +52,4 @@ class Product extends Model
             $model->id = Uuid::uuid4()->toString();
         });
     }
-
 }

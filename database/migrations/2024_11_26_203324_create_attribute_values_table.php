@@ -16,11 +16,10 @@ return new class extends Migration
         Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Attribute::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+                ->constrained()
+                ->restrictOnDelete()
+                ->restrictOnUpdate();
             $table->string("value");
-            $table->string('value_hex')->nullable();
             $table->timestamps();
         });
     }
