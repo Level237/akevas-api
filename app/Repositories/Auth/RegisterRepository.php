@@ -14,6 +14,7 @@ class RegisterRepository{
         $user->password=$data["password"];
         $user->userName=$data["userName"];
         $user->email=$data["email"];
+        $user->residence=$data['residence'];
         $user->save();
 
         return $user;

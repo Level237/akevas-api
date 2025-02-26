@@ -9,10 +9,18 @@ use App\Models\Gender;
 class ListCategoryController extends Controller
 {
 
-    public function getSubCategoriesByParentId($arrayIds){
+    public function getSubCategoriesByParentId($arrayIds,$id){
         $array = trim($arrayIds, '[]');
         $items = explode(',', $array);
-        $categories = Category::whereIn('parent_id',$items)->get();
+        $categories = Category::whereIn('parent_id',$items)->whereHas('genders', function($query) use ($id) {
+            $finalIds = [];
+        if($id==4){
+            $finalIds = [1, 2,3];
+        }else{
+            $finalIds = [$id];
+        }
+            $query->whereIn('genders.id', $finalIds);
+        })->get();
         return response()->json(['categories'=>$categories],200);
     }
     public function showCategoryByGender($id){

@@ -12,17 +12,21 @@ class CheckIfInputExistInDatabaseController extends Controller
     {
         $email = $request->email;
         $phoneNumber = $request->phone;
+        $userName=$request->userName;
 
-        $user = User::where('email', $email)->first();
-        if ($user) {
+        $userMail = User::where('email', $email)->first();
+        if ($userMail) {
             return response()->json(['message' => 'Cet email est déjà utilisé'], 400);
         }
 
-        $user = User::where('phone_number', $phoneNumber)->first();
-        if ($user) {
+        $userPhone = User::where('phone_number', $phoneNumber)->first();
+        if ($userPhone) {
             return response()->json(['message' => 'Ce numéro de téléphone est déjà utilisé'], 400);
         }
-
+        $userInName = User::where('userName', $userName)->first();
+        if ($userInName) {
+            return response()->json(["message' => 'Ce nom d'utilisateur est déjà utilisé"], 400);
+        }
         return response()->json(["status" => "success", "message" => "Email and phone number are not in the database"], 200);
     }
 
