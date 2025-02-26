@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('product_name');
             $table->text('product_description');
             $table->foreignIdFor(Shop::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+                ->constrained()
+                ->restrictOnDelete()
+                ->restrictOnUpdate();
             $table->string('product_url');
             $table->string('product_price');
             $table->string('product_quantity');
@@ -30,6 +30,8 @@ return new class extends Migration
             $table->timestamp('expire')->nullable();
             $table->string('subscribe_id')->nullable();
             $table->string('product_gender');
+            $table->string('whatsapp_number')->nullable();
+            $table->string('product_residence')->nullable();
             $table->timestamps();
         });
     }
