@@ -26,6 +26,8 @@ return new class extends Migration
                 ->restrictOnUpdate();
             $table->string('image_path')->nullable();
             $table->string('price')->nullable();
+            $table->string('whatsapp_number')->nullable();
+            $table->string('product_residence')->nullable();
             $table->timestamps();
         });
     }
