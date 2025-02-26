@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('image_path')->nullable();
             $table->string('price')->nullable();
             $table->string('quantity')->nullable();
+            $table->string('variant_name');
             $table->timestamps();
         });
     }

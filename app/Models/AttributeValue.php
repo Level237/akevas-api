@@ -14,7 +14,7 @@ class AttributeValue extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'product_attribute_value')
+        return $this->belongsToMany(Product::class, 'product_attributes_values')
             ->withPivot('price', 'image_path');
     }
 

@@ -30,59 +30,59 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+            $product = Product::find("01269ba7-f88d-4535-b685-465c8c3b340e");
+            $variantNameMap = [];
+            $allAttributesData = [];
 
-            $product = new Product;
-            $user = Auth::guard('api')->user();
-            $shop = Shop::where('user_id', $user->id)->first();
-            if ($shop->products()->count() === 0) {
-                $shop->shop_level = "3";
-                $shop->save();
-            }
+            foreach (json_decode($request->variants) as $index => $variant) {
+                // Vérifier si le variant_name existe déjà
+                if (isset($variantNameMap[$variant->variant_name])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Duplicate variant name found: ' . $variant->variant_name
+                    ], 422);
+                }
 
-            $product->product_name = $request->product_name;
-            $product->product_url = (new GenerateUrlResource())->generateUrl($request->product_name);
-            $product->product_description = $request->product_description;
-            $product->shop_id = $shop->id;
-            $product->product_price = $request->product_price;
-            $product->product_quantity = $request->product_quantity;
-            $product->product_gender = (string)$request->product_gender;
-            $product_profile = $request->file('product_profile');
-            $product->status = 1;
-            $product->whatsapp_number = $request->whatsapp_number;
-            $product->product_residence = $request->product_residence;
-            $product->product_profile = $product_profile->store('product/profile', 'public');
+                $image_path = $request->variant_images[$index]->store("product/variants", "public");
 
-            if ($product->save()) {
-                if ($request->hasFile('images')) {
-                    $images = $request->file('images');
+                // Stocker la première occurrence de chaque variant_name
+                $variantNameMap[$variant->variant_name] = true;
 
-                    foreach ($images as $image) {
-                        $i = new Image;
-                        $i->image_path = $image->store('product/images', 'public');
-                        if ($i->save()) {
-                            $product->images()->attach($i);
-                        }
-                    }
-                    //if ($request->filled('attributs')) {
-                    //$product->attributes()->attach($imageModel->id);
-                    //}
-
-                    if ($request->has('categories') && is_array($request->categories)) {
-                        $product->categories()->attach(array_map('intval', $request->categories));
-                    }
-                    if ($request->has('sub_categories') && is_array($request->sub_categories)) {
-                        $product->categories()->attach(array_map('intval', $request->sub_categories));
-                    }
+                // Pour chaque variant, on ne prend que le premier attribute_value_id
+                if (!empty($variant->attribute_value_id)) {
+                    $attribute = $variant->attribute_value_id[0]; // Prendre seulement le premier attribut
+                    $allAttributesData[] = [
+                        'attribute_id' => $attribute,
+                        'quantity' => (string)$variant->stock,
+                        'price' => (string)$variant->price,
+                        'image_path' => $image_path,
+                        'variant_name' => $variant->variant_name
+                    ];
                 }
             }
 
+            // Supprimer d'abord toutes les anciennes relations
+            $product->attributes()->detach();
 
-            return response()->json(['message' => "Product created successfully"], 201);
+            // Attacher les nouvelles relations
+            foreach ($allAttributesData as $data) {
+                $product->attributes()->attach($data['attribute_id'], [
+                    'quantity' => $data['quantity'],
+                    'price' => $data['price'],
+                    'image_path' => $data['image_path'],
+                    'variant_name' => $data['variant_name']
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product variants saved successfully'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
-                'errors' => $e
+                'errors' => $e->getMessage()
             ], 500);
         }
     }
