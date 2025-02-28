@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Town;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -35,6 +36,7 @@ class ProductResource extends JsonResource
             "product_price" => $this->product_price,
             "product_quantity" => $this->product_quantity,
             "product_categories" => CategoryResource::collection($this->categories),
+            "residence"=>Town::where('id',$this->product_residence)->select('town_name')->first()->town_name,
             "status" => $this->status,
             "isSubscribe" => $this->isSubscribe,
             "expire" => $this->expire,

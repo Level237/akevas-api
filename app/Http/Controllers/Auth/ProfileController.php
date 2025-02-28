@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+
 class ProfileController extends Controller
 {
      public function currentUser(){
         $User=Auth::guard('api')->user();
-        return $User;
+        $user=UserResource::make($User);
+        
+         return response()->json($user);
     }
 }

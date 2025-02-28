@@ -71,7 +71,7 @@ Route::get("all/shops", [ShopListController::class, "all"]);
 Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
 
 Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
-Route::get("product/similar/{id}",[SimilarProductController::class,"getSimilarProducts"]);
+Route::get("/similar/products/{id}",[SimilarProductController::class,"getSimilarProducts"]);
 Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
 

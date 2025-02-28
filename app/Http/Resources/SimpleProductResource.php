@@ -20,6 +20,7 @@ class SimpleProductResource extends JsonResource
             "product_description" => $this->product_description,
             "product_profile" => URL("/storage/" . $this->product_profile),
             "product_price" => $this->product_price,
+            "product_url"=>$this->product_url,
             "product_quantity" => $this->product_quantity,
         ];
     }
