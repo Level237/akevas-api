@@ -5,7 +5,7 @@ namespace App\Providers;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-
+use Illuminate\Support\Facades\Log;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -41,5 +41,6 @@ class AuthServiceProvider extends ServiceProvider
         );
         Passport::cookie('level_token');
         Passport::enablePasswordGrant(); 
+         Log::info('Passport cookie name:', ['name' => config('passport.cookie.name')]);
     }
 }

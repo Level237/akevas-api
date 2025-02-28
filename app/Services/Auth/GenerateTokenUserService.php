@@ -34,18 +34,6 @@ class GenerateTokenUserService implements GenerateTokenInterface{
         'oauth/token',
         'POST'
     );
-      $response = Route::dispatch($token);
-    if ($response->getStatusCode() == 200) {
-        $data = json_decode($response->getContent(), true);
-        $token = $data['access_token'];
-
-         $cookie = cookie('level_token', $token, 60 * 24 * 15); // 15 jours
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Login successful'
-        ])->withCookie($cookie);
-    }
-
-    return response()->json(['message' => 'Failed to generate token'], 401);
+    return Route::dispatch($token);
         }
     }

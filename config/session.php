@@ -167,7 +167,7 @@ return [
     | the cookie from being sent to you when it can't be done securely.
     |
     */
-
+    'http_only' => true, // Activer le cookie HTTP only
     'secure' => env('SESSION_SECURE_COOKIE',false),
 
     /*

@@ -32,7 +32,7 @@ class LoginController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
-                'errors' => $e
+                'errors' => $e->getMessage()
               ], 500);
         }
     }
