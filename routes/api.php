@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\ListCategoryController;
 use App\Http\Controllers\Admin\QuarterController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\GetAttributesController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Product\DetailProductController;
+use App\Http\Controllers\Product\SimilarProductController;
 use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
@@ -33,7 +35,6 @@ use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
-use App\Http\Controllers\GetAttributesController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 /*
@@ -70,6 +71,7 @@ Route::get("all/shops", [ShopListController::class, "all"]);
 Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
 
 Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
+Route::get("product/similar/{id}",[SimilarProductController::class,"getSimilarProducts"]);
 Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
 

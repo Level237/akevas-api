@@ -2,10 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\SimpleProductResource;
 use App\Http\Resources\ProductAttributeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
