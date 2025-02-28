@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\TownController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -62,6 +62,7 @@ Route::get('/towns', [TownController::class, 'index']);
 Route::get('/quarters', [QuarterController::class, 'index']);
 Route::get('/check/token', [CheckTokenValidityController::class, 'checkToken']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/refresh/token', [AuthController::class, 'refresh']);
 Route::post('create/seller', [CreateSellerController::class, 'create']);
 Route::get('shop/show/{id}', [ShopController::class, 'show']);
 Route::get("home/products", [ProductListController::class, 'index']);
