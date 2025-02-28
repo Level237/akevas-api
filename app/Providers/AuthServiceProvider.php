@@ -32,11 +32,14 @@ class AuthServiceProvider extends ServiceProvider
         ]);
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
+        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
         Passport::personalAccessClient(
             config('passport.personal_access_client.id')
         );
         Passport::personalAccessClient(
             config('passport.personal_access_client.secret')
         );
+        Passport::cookie('level_token');
+        Passport::enablePasswordGrant(); 
     }
 }

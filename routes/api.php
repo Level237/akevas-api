@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\TownController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -60,7 +61,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/towns', [TownController::class, 'index']);
 Route::get('/quarters', [QuarterController::class, 'index']);
 Route::get('/check/token', [CheckTokenValidityController::class, 'checkToken']);
-Route::post("login", [LoginController::class, "login"]);
+Route::post('/login', [LoginController::class, 'login']);
 Route::post('create/seller', [CreateSellerController::class, 'create']);
 Route::get('shop/show/{id}', [ShopController::class, 'show']);
 Route::get("home/products", [ProductListController::class, 'index']);
@@ -113,4 +114,5 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
+    Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
 });
