@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('transaction_ref')->nullable();
             $table->string('payment_of')->nullable();
             $table->integer('product_id')->nullable();
-            $table->integer('shop_id')->nullable();
             $table->integer("order_id")->nullable();
             $table->integer('subscription_id')->nullable();
             $table->string("status")->nullable();
