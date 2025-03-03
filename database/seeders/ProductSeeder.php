@@ -45,6 +45,7 @@ class ProductSeeder extends Seeder
                 'product_description' => "Description du produit " . $i,
                 'shop_id' => $shop->id,
                 'product_price' => rand(1000, 100000),
+                'product_residence' => rand(1, 2),
                 'product_quantity' => rand(1, 50),
                 'product_gender' => (string)rand(1, 3),
                 'product_profile' => $productProfiles[array_rand($productProfiles)],

@@ -22,13 +22,15 @@ class PaymentController extends Controller
                 'amount' => $this->calculateRealNumber($request->amount), // Montant en cents
                 'currency' => 'eur',
                 'source' => $request->stripeToken,
-                'description' => 'Investissement',
+                'description' => 'Achat d\'un produit',
             ]);
-            foreach($request->productsPayment as $product){
+            foreach($request->productsPayments as $product){
                 $order=new Order;
             $order->user_id=Auth::guard("api")->user()->id;
             $order->isPay=1;
             $order->total=$request->amount;
+            $order->fee_of_shipping=$request->shipping;
+            $order->payment_method="0";
             if($order->save()){
                 $orderDetails=new OrderDetail;
                 $orderDetails->order_id=$order->id;
@@ -37,9 +39,14 @@ class PaymentController extends Controller
                 $orderDetails->unit_price=$product['price'];
                 $orderDetails->save();
             }
+             return response()->json([
+                'success' => true,
+                'message' => 'Payment successful',
+                'order' => $order,
+            ], 200);
             }
             
-            return response()->json($charge);
+           
         }catch(\Exception $e){
             return response()->json([
                 'success' => false,

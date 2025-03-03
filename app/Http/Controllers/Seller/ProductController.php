@@ -85,7 +85,6 @@ class ProductController extends Controller
                                 $attribute = $variant->attribute_value_id[0]; // Prendre seulement le premier attribut
                                 $allAttributesData[] = [
                                     'attribute_id' => $attribute,
-                                    'quantity' => (string)$variant->stock,
                                     'price' => (string)$variant->price,
                                     'image_path' => $image_path,
                                     'variant_name' => $variant->variant_name
@@ -99,7 +98,6 @@ class ProductController extends Controller
                         // Attacher les nouvelles relations
                         foreach ($allAttributesData as $data) {
                             $product->attributes()->attach($data['attribute_id'], [
-                                'quantity' => $data['quantity'],
                                 'price' => $data['price'],
                                 'image_path' => $data['image_path'],
                                 'variant_name' => $data['variant_name']

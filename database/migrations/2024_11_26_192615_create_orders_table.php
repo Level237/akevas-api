@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('isTake')->default(0);
             $table->string('total');
             $table->string('fee_of_shipping')->default("0");
+            $table->string('payment_method');
             $table->timestamps();
         });
     }
