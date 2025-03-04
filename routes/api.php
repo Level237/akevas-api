@@ -30,9 +30,11 @@ use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
+use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
+use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
@@ -109,10 +111,17 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
+    Route::apiResource('admin/customers', CustomerController::class);
+    Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
 });
 
-
+Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
+    Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
+    Route::get('/show/order/{id}', [ShowOrderController::class, 'showOrder']);
+    Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
+    Route::get('/current/stats', [StatShopController::class, 'currentStats']);
+});
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post("init/payment/buy/product", [BuyProductProcessController::class, "initPayment"]);
@@ -122,8 +131,5 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
-    Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
-    Route::get('/show/order/{id}', [ShowOrderController::class, 'showOrder']);
-    Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
-    Route::get('/current/stats', [StatShopController::class, 'currentStats']);
+
 });
