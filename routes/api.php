@@ -16,6 +16,7 @@ use App\Http\Controllers\User\StatShopController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
+use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
@@ -123,5 +124,6 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
     Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
     Route::get('/show/order/{id}', [ShowOrderController::class, 'showOrder']);
+    Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
 });
