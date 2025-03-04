@@ -44,7 +44,7 @@ class PaymentController extends Controller
                 $request->shipping,
                 $request->productId,
                 $request->quantity,
-                $request->amount,
+                $request->price,
                 $request->quarter_delivery);
                 return response()->json([
                     'success' => true,

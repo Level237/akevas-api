@@ -18,8 +18,8 @@ class OrderDetailResource extends JsonResource
         return [
             'id'=>$this->id,
             'product'=>ProductResource::make($this->product),
-            'quantity'=>$this->quantity,
-            'price'=>$this->price,
+            'quantity'=>$this->order_product_quantity,
+            'price'=>$this->unit_price,
             'created_at'=>$this->created_at,
             'updated_at'=>$this->updated_at,
         ];

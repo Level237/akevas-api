@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Quarter;
 use Illuminate\Http\Request;
 use App\Http\Resources\OrderDetailResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,6 +24,14 @@ class OrderResource extends JsonResource
            'quarter_delivery'=>$this->quarter_delivery,
            'order_details'=>OrderDetailResource::collection($this->orderDetails)        ,
             'itemsCount'=>$this->orderDetails->count(),
+            'payment_method'=>$this->payment_method,
+            'isPay'=>$this->isPay,
+            'userName'=>$this->user->userName,
+            'userPhone'=>$this->user->phone_number,
+            'email'=>$this->user->email,
+            'isTake'=>$this->isTake,
+            'fee_of_shipping'=>$this->fee_of_shipping,
+            'residence'=>Quarter::find($this->user->residence)->quarter_name,
         ];
     }
 }
