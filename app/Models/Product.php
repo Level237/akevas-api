@@ -6,8 +6,10 @@ use App\Models\Shop;
 use App\Models\Image;
 use Ramsey\Uuid\Uuid;
 use App\Models\Category;
+use App\Models\OrderDetail;
 use App\Models\AttributeValue;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -51,5 +53,8 @@ class Product extends Model
         static::creating(function ($model) {
             $model->id = Uuid::uuid4()->toString();
         });
+    }
+    public function orderDetails():HasMany{
+        return $this->hasMany(OrderDetail::class);
     }
 }
