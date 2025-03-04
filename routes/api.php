@@ -12,6 +12,7 @@ use App\Http\Controllers\ListCategoryController;
 use App\Http\Controllers\Admin\QuarterController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GetAttributesController;
+use App\Http\Controllers\User\StatShopController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
@@ -118,4 +119,5 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
+    Route::get('/current/stats', [StatShopController::class, 'currentStats']);
 });
