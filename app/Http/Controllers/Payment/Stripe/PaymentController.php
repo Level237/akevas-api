@@ -10,7 +10,7 @@ use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Product;
 class PaymentController extends Controller
 {
     public function pay(Request $request)
@@ -31,7 +31,8 @@ class PaymentController extends Controller
                     $request->shipping,
                     $product['product_id'],
                     $product['quantity'],
-                    $product['price']);
+                    $product['price'],
+                    $request->quarter_delivery);
                 }
              return response()->json([
                 'success' => true,
@@ -43,7 +44,8 @@ class PaymentController extends Controller
                 $request->shipping,
                 $request->productId,
                 $request->quantity,
-                $request->amount);
+                $request->amount,
+                $request->quarter_delivery);
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment successful',
@@ -64,7 +66,7 @@ class PaymentController extends Controller
     function calculateRealNumber($amount) {
         return (($amount)*100);
     }
-    private function createOrder($amount,$shipping,$productId,$quantity,$price){
+    private function createOrder($amount,$shipping,$productId,$quantity,$price,$quarter_delivery){
 
          $order=new Order;
             $order->user_id=Auth::guard("api")->user()->id;
@@ -72,14 +74,26 @@ class PaymentController extends Controller
             $order->total=$amount;
             $order->fee_of_shipping=$shipping;
             $order->payment_method="0";
+            if(isset($quarter_delivery)){
+                $order->quarter_delivery=$quarter_delivery;
+            }
             if($order->save()){
                 $orderDetails=new OrderDetail;
                 $orderDetails->order_id=$order->id;
                 $orderDetails->product_id=$productId;
                 $orderDetails->order_product_quantity=$quantity;
                 $orderDetails->unit_price=$price;
-                $orderDetails->save();
+                if($orderDetails->save()){
+                    $this->reduceQuantity($productId,$quantity);
+                    return $order;
+                }
             }
-            return $order;
+            return null;
+    }
+
+    private function reduceQuantity($productId,$quantity){
+        $product=Product::find($productId);
+        $product->product_quantity-=$quantity;
+        $product->save();
     }
 }

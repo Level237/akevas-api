@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Quarter;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\QuarterResource;
+
 class QuarterController extends Controller
 {
     /**
@@ -13,7 +15,7 @@ class QuarterController extends Controller
     public function index()
     {
         $quarters = Quarter::all();
-        return response()->json(['quarters'=>$quarters]);
+        return response()->json(['quarters'=>QuarterResource::collection($quarters)]);
     }
 
     /**

@@ -17,6 +17,8 @@ class QuarterResource extends JsonResource
         return [
             "id"=>$this->id,
             "quarter_name"=>$this->quarter_name,
+            "town_name"=>$this->town->town_name,
+            "town_id"=>$this->town->id,
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Shop;
+use App\Models\Town;
 use App\Models\Quarter;
 use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Model;
@@ -21,5 +22,9 @@ class Quarter extends Model
 
     public function shops():HasMany{
         return $this->hasMany(Shop::class);
+    }
+
+    public function town():BelongsTo{
+        return $this->belongsTo(Town::class);
     }
 }
