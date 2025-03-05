@@ -15,9 +15,10 @@ class LoginController extends Controller
     public function login(Request $request){
 
         try{
-            $valid = validator($request->only('phone_number','password'), [
+             $valid = validator($request->only('phone_number','password','role_id'), [
                 'phone_number' => 'required|string|exists:users',
                 'password' => 'required|string',
+                'role_id' => 'required|integer|exists:roles,id',
             ]);
 
             if ($valid->fails()) {
@@ -27,7 +28,7 @@ class LoginController extends Controller
             $loginUser=(new LoginService())->login($data);
             $client=(new GetClientRepository())->getClient();
 
-            if($request->role_id !== $loginUser['role_id']){
+            if($request->role_id != $loginUser['role_id']){
                 return response()->json(['error'=>"vous n'avez pas les droits d'acces à cette application"], 403);
             }
             $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
