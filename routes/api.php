@@ -18,6 +18,7 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
+use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Admin\Seller\SellerController;
@@ -56,6 +57,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 |
     */
 
+Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
 Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
 Route::get('/get/category/by-gender/{id}', [ListCategoryController::class, 'showCategoryByGender']);
