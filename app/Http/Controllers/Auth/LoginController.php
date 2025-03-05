@@ -29,7 +29,7 @@ class LoginController extends Controller
             $client=(new GetClientRepository())->getClient();
 
             if($request->role_id != $loginUser['role_id']){
-                return response()->json(['error'=>"vous n'avez pas les droits d'acces à cette application"], 403);
+                return response()->json(['message'=>"vous n'avez pas les droits d'acces à cette application"], 403);
             }
             $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
             return $tokenUser;
