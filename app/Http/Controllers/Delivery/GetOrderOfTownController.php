@@ -19,7 +19,7 @@ class GetOrderOfTownController extends Controller
             ->where('quarter_name', $quarterInresidence->quarter_name)
             ->first();
             $ordArray=[];
-            $orders=Order::with('user')->get();
+            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->orderBy('created_at','desc')->get();
             foreach($orders as $order){
                $quarter=Quarter::where('quarter_name',$order->quarter_delivery)->first();
                if($quarter->town_id==$quarterUser->town->id){
