@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Town;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -22,9 +23,9 @@ class UserResource extends JsonResource
             'drivers_license'=>$this->drivers_license,
             'email'=>$this->email,
             'firstName'=>$this->firstName,
-            "identity_card_in_back"=>$this->identity_card_in_back,
-            "identity_card_in_front"=>$this->identity_card_in_front,
-            "identity_card_with_the_person"=>$this->identity_card_with_the_person,
+            "identity_card_in_back"=>URL("/storage/".$this->identity_card_in_back),
+            "identity_card_in_front"=>URL("/storage/".$this->identity_card_in_front),
+            "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
             "isDelivery"=>$this->isDelivery,
             "isSeller"=>$this->isSeller,
             "isWholesaler"=>$this->isWholesaler,

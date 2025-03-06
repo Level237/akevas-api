@@ -6,14 +6,17 @@ use App\Models\Order;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
 
 class GetOrderOfTownController extends Controller
 {
-    public function getOrders($quarter_residence)
+    public function getOrdersByTown()
     {
+        $user=Auth::guard('api')->user();
+        $quarterInresidence=Quarter::where('id',intval($user->residence))->first();
        $quarterUser = Quarter::with('town')
-            ->where('quarter_name', $quarter_residence)
+            ->where('quarter_name', $quarterInresidence->quarter_name)
             ->first();
             $ordArray=[];
             $orders=Order::with('user')->get();

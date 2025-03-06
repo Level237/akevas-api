@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\ValidateProductController;
+use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
+use App\Http\Controllers\Delivery\GetPreferenceOrderController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
@@ -139,5 +141,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
-    Route::get('/get/orders/town/{quarter_name}', [GetOrderOfTownController::class, 'getOrders']);
+    Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
+    Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
+    Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);
 });
