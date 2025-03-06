@@ -19,6 +19,8 @@ class GenerateTokenUserService implements GenerateTokenInterface{
         }
         else if($userData['role_id']===3){
             $scope="customer";
+        }else if($userData['role_id']===4){
+            $scope="delivery";
         }
         $request->request->add([
             "grant_type" => "password",

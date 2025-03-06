@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
+use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -56,6 +57,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 | be assigned to the "api" middleware group. Make something great!
 |
     */
+
 
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
@@ -134,4 +136,8 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
 
+});
+
+Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
+    Route::get('/get/orders/town/{quarter_name}', [GetOrderOfTownController::class, 'getOrders']);
 });

@@ -32,6 +32,7 @@ class OrderResource extends JsonResource
             'isTake'=>$this->isTake,
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->quarter_name,
+            "created_at"=>$this->created_at,
         ];
     }
 }

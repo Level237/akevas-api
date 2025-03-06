@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Payment\Stripe;
 
 use Stripe\Charge;
 use Stripe\Stripe;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
+
 class PaymentController extends Controller
 {
     public function pay(Request $request)
@@ -95,5 +97,19 @@ class PaymentController extends Controller
         $product=Product::find($productId);
         $product->product_quantity-=$quantity;
         $product->save();
+    }
+
+    public function getOrders($quarter_name)
+    {
+        $delivery = User::where('role_id', 4)
+            ->with(['vehicles.quarters' => function($query) use ($quarter_name) {
+                $query->where('quarter_name', $quarter_name);
+            }])
+            ->whereHas('vehicles.quarters', function($query) use ($quarter_name) {
+                $query->where('quarter_name', $quarter_name);
+            })
+            ->get();
+        
+        return $delivery;
     }
 }
