@@ -18,6 +18,7 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
+use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
@@ -144,4 +145,5 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
     Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);
+    Route::get('/show/order/{id}', [DeliveryShowOrderController::class, 'showOrder']);
 });
