@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
+use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Delivery\GetPreferenceOrderController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
@@ -123,7 +124,8 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('admin/customers', CustomerController::class);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
-    Route::get('/active/stat', [ActiveStatController::class, 'activeStat']);
+    Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
+    Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {

@@ -14,8 +14,8 @@ class ActiveStatController extends Controller
         $totalPrice=Order::where("created_at",">",now()->subDays(30))->sum("total");
         $totalProducts=Product::count();
         return response()->json([
-            "active"=>$active,
-            "totalPrice"=>$totalPrice,
+            "activeOrders"=>$active,
+            "revenues"=>$totalPrice,
             "totalProducts"=>$totalProducts
         ]);
         
