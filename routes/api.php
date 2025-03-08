@@ -18,7 +18,6 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
-use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
@@ -28,8 +27,8 @@ use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
+use App\Http\Controllers\Admin\Stat\ActiveStatController;
 use App\Http\Controllers\Admin\ValidateProductController;
-use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
@@ -50,6 +49,8 @@ use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
+use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
+use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -61,6 +62,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 |
     */
 
+   
 
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
@@ -121,6 +123,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('admin/customers', CustomerController::class);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
+    Route::get('/active/stat', [ActiveStatController::class, 'activeStat']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
