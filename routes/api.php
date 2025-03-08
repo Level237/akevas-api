@@ -153,4 +153,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
     Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);
     Route::get('/show/order/{id}', [DeliveryShowOrderController::class, 'showOrder']);
+    Route::get('/orders/quarter/{residence_id}', [GetOrderOfTownController::class, 'getOrderInQuarter']);
 });
+

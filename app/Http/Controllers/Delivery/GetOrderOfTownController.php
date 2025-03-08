@@ -14,7 +14,26 @@ class GetOrderOfTownController extends Controller
     public function getOrdersByTown()
     {
         $user=Auth::guard('api')->user();
-        $quarterInresidence=Quarter::where('id',intval($user->residence))->first();
+        $ordArray=$this->getOrderOfQuarter($user->residence);
+        return response()->json(OrderResource::collection($ordArray));
+    }
+
+    public function getOrderInQuarter($residence_id){
+
+        
+        $quarterInresidence=Quarter::where('id',intval($residence_id))->first();
+       $quarterUser = Quarter::with('town')
+            ->where('quarter_name', $quarterInresidence->quarter_name)
+            ->first();
+            
+            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->orderBy('created_at','desc')->where('quarter_delivery',$quarterUser->quarter_name)->get();
+           
+            
+        return response()->json(OrderResource::collection($orders));
+    }
+
+    private function getOrderOfQuarter($residence){
+        $quarterInresidence=Quarter::where('id',intval($residence))->first();
        $quarterUser = Quarter::with('town')
             ->where('quarter_name', $quarterInresidence->quarter_name)
             ->first();
@@ -26,6 +45,6 @@ class GetOrderOfTownController extends Controller
                 $ordArray[]=$order;
                }
             }
-        return response()->json(OrderResource::collection($ordArray));
+            return $ordArray;
     }
 }

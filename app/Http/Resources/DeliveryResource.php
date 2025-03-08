@@ -37,6 +37,10 @@ class DeliveryResource extends JsonResource
             where('id',
             Quarter::where("id",intval($this->residence))->select('town_id')->first()->town_id)
             ->select('town_name')->first()->town_name,
+            "residence_id"=>Town::
+            where('id',
+            Quarter::where("id",intval($this->residence))->select('town_id')->first()->town_id)
+            ->select('id')->first()->id,
             "vehicle"=>VehicleResource::make(Vehicle::where('user_id',$this->id)->first()),
             "myOrders"=>OrderResource::collection($this->orders),
             "ordersCount"=>$this->orders->count(),
