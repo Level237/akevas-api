@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
+use App\Http\Controllers\Delivery\OrderCompletedController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -158,5 +159,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/orders/quarter/{residence_id}', [GetOrderOfTownController::class, 'getOrderInQuarter']);
     Route::post('/take/order/{id}', [TakeOrderProcessController::class, 'takeOrder']);
     Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
+    Route::post('/order/completed/{id}', [OrderCompletedController::class, 'orderCompleted']);
 });
 
