@@ -157,6 +157,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/show/order/{id}', [DeliveryShowOrderController::class, 'showOrder']);
     Route::get('/orders/quarter/{residence_id}', [GetOrderOfTownController::class, 'getOrderInQuarter']);
     Route::post('/take/order/{id}', [TakeOrderProcessController::class, 'takeOrder']);
-    Route::get('/order/history', [OrderHistoryController::class, 'getOrderHistory']);
+    Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
 });
 
