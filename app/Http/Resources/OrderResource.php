@@ -33,6 +33,7 @@ class OrderResource extends JsonResource
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->quarter_name,
             'status'=>$this->status,
+            'duration_of_delivery'=>$this->duration_of_delivery,
             "created_at"=>$this->created_at,
         ];
     }
