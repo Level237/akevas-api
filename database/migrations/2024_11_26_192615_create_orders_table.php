@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('fee_of_shipping')->default("0");
             $table->string('payment_method');
             $table->string('quarter_delivery')->nullable();
+            $table->string("duration_of_delivery")->nullable();
             $table->timestamps();
         });
     }

@@ -135,7 +135,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
     Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
-    Route::get('/show/order/{id}', [ShowOrderController::class, 'showOrder']);
+    Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
 });
@@ -159,6 +159,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/orders/quarter/{residence_id}', [GetOrderOfTownController::class, 'getOrderInQuarter']);
     Route::post('/take/order/{id}', [TakeOrderProcessController::class, 'takeOrder']);
     Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
-    Route::post('/order/completed/{id}', [OrderCompletedController::class, 'orderCompleted']);
+    Route::post('/order/completed/{id}/{duration}', [OrderCompletedController::class, 'orderCompleted']);
 });
 
