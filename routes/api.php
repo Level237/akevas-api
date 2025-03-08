@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Delivery\GetPreferenceOrderController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
+use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
@@ -126,6 +127,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
+    Route::get('/admin/active/delivery/stats', [ActiveDeliveryStatController::class, 'activeDeliveryStat']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
