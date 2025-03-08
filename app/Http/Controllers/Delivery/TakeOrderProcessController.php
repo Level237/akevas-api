@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TakeOrderProcessController extends Controller
 {
-    public function take($order_id){
+    public function takeOrder($order_id){
 
         $delivery=User::find(Auth::guard('api')->user()->id);
         $order=Order::find($order_id);
@@ -19,6 +19,6 @@ class TakeOrderProcessController extends Controller
         $order->isTake=1;
         $order->save();
         $delivery->processOrders()->attach($order_id,['isAccepted'=>true]);
-        return response()->json(["message"=>"Order accept"]);
+        return response()->json(["message"=>"Order accepted"]);
     }
 }
