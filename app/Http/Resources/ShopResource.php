@@ -6,9 +6,11 @@ use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
-use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\CategoryResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+
 class ShopResource extends JsonResource
 {
     /**
@@ -34,7 +36,11 @@ class ShopResource extends JsonResource
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
             "categories"=>CategoryResource::collection($this->categories),
-            
+            "orders"=>OrderResource::collection($this->products->flatMap(function($product) {
+                return $product->orderDetails->map(function($orderDetail) {
+                    return $orderDetail->order;
+                });
+            })->unique('id')->values()),
             "state"=>$this->state,
             "level"=>$this->shop_level,
             "cover"=>URL("/storage/".$this->shop_banner),
