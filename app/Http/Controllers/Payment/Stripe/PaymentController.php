@@ -84,7 +84,7 @@ class PaymentController extends Controller
                 $orderDetails->order_id=$order->id;
                 $orderDetails->product_id=$productId;
                 $orderDetails->order_product_quantity=$quantity;
-                $orderDetails->unit_price=$price;
+                $orderDetails->unit_price=$price/$quantity;
                 if($orderDetails->save()){
                     $this->reduceQuantity($productId,$quantity);
                     return $order;

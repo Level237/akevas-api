@@ -41,6 +41,16 @@ class ShopResource extends JsonResource
                     return $orderDetail->order;
                 });
             })->unique('id')->values()),
+            "orders_count"=>$this->products->flatMap(function($product) {
+                return $product->orderDetails->map(function($orderDetail) {
+                    return $orderDetail->order;
+                });
+            })->unique('id')->values()->count(),
+            "total_earnings"=>$this->products->flatMap(function($product) {
+                return $product->orderDetails->map(function($orderDetail) {
+                    return $orderDetail->unit_price * $orderDetail->order_product_quantity;
+                });
+            })->sum(),
             "state"=>$this->state,
             "level"=>$this->shop_level,
             "cover"=>URL("/storage/".$this->shop_banner),
