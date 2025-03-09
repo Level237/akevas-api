@@ -36,4 +36,37 @@ class StatOverviewController extends Controller
               ], 500);
         }
     }
+
+    public function statsByDay()
+    {
+        try {
+            $delivery = User::find(Auth::guard('api')->user()->id);
+            $orders = $delivery->processOrders;
+
+            $stats = [
+                'Lundi' => 0,
+                'Mardi' => 0,
+                'Mercredi' => 0,
+                'Jeudi' => 0,
+                'Vendredi' => 0,
+                'Samedi' => 0,
+                'Dimanche' => 0
+            ];
+
+            foreach ($orders as $order) {
+                $dayName = \Carbon\Carbon::parse($order->created_at)->locale('fr')->isoFormat('dddd');
+                $dayName = ucfirst($dayName); // Première lettre en majuscule
+                $stats[$dayName]++;
+            }
+
+            return response()->json($stats);
+
+        } catch(\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e
+            ], 500);
+        }
+    }
 }

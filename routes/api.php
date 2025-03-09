@@ -162,5 +162,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
     Route::post('/order/completed/{id}/{duration}', [OrderCompletedController::class, 'orderCompleted']);
     Route::get('/delivery/stats/overview',[StatOverviewController::class,'getStatOverview']);
+    Route::get('/delivery/stats/by-day',[StatOverviewController::class,'statsByDay']);
 });
 
