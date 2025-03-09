@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Delivery\TakeOrderProcessController;
+use App\Http\Controllers\Product\ProductByCategoryController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
 use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
@@ -70,6 +71,7 @@ use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderContro
 
    
 
+Route::get('/product/by-category/{id}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
 Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
