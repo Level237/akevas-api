@@ -71,7 +71,7 @@ use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderContro
 
    
 
-Route::get('/product/by-category/{id}', [ProductByCategoryController::class, 'index']);
+Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
 Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
