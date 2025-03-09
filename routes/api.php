@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Delivery\OrderHistoryController;
 use App\Http\Controllers\Delivery\StatOverviewController;
 use App\Http\Controllers\Product\DetailProductController;
+use App\Http\Controllers\Category\CategoryByUrlController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
 use App\Http\Controllers\Admin\Customer\CustomerController;
@@ -69,7 +70,8 @@ use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderContro
 |
     */
 
-   
+
+Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
 
 Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
