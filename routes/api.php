@@ -30,6 +30,7 @@ use App\Http\Controllers\Seller\CurrentSellerController;
 use App\Http\Controllers\Admin\Stat\ActiveStatController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Delivery\OrderHistoryController;
+use App\Http\Controllers\Delivery\StatOverviewController;
 use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
@@ -160,5 +161,6 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::post('/take/order/{id}', [TakeOrderProcessController::class, 'takeOrder']);
     Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
     Route::post('/order/completed/{id}/{duration}', [OrderCompletedController::class, 'orderCompleted']);
+    Route::get('/delivery/stats/overview',[StatOverviewController::class,'getStatOverview']);
 });
 
