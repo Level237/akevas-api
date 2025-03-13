@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->integer('rating');
             $table->text('comment');
+            $table->boolean('is_approved')->default(0);
             $table->timestamps();
         });
     }
