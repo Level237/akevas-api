@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
+use App\Http\Resources\ReviewResource;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\SimpleProductResource;
 use App\Http\Resources\ProductAttributeResource;
@@ -41,6 +42,7 @@ class ProductResource extends JsonResource
             "isSubscribe" => $this->isSubscribe,
             "expire" => $this->expire,
             "variants" => ProductAttributeResource::collection($this->attributes),
+            "reviews" => ReviewResource::collection($this->reviews),
             "created_at" => $this->created_at,
             "subscribe_id" => $this->subscribe_id
         ];

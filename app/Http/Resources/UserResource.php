@@ -6,6 +6,7 @@ use App\Models\Town;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\ReviewResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -39,6 +40,7 @@ class UserResource extends JsonResource
             where('id',
             Quarter::where("id",intval($this->residence))->select('town_id')->first()->town_id)
             ->select('town_name')->first()->town_name,
+            "reviews"=>ReviewResource::collection($this->reviews),
             "updated_at"=>$this->updated_at,
             "created_at"=>$this->created_at,
         ];

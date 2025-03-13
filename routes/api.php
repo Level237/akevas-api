@@ -41,6 +41,7 @@ use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Delivery\OrderCompletedController;
+use App\Http\Controllers\User\MakeCommentProductController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -153,7 +154,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
-
+    Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {

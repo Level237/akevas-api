@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Shop;
 use App\Models\Image;
 use Ramsey\Uuid\Uuid;
+use App\Models\Review;
 use App\Models\Category;
 use App\Models\OrderDetail;
 use App\Models\AttributeValue;
@@ -56,5 +57,8 @@ class Product extends Model
     }
     public function orderDetails():HasMany{
         return $this->hasMany(OrderDetail::class);
+    }
+    public function reviews():HasMany{
+        return $this->hasMany(Review::class);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Shop;
+use App\Models\Order;
+use App\Models\Review;
 use App\Models\Vehicle;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -11,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Order;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -72,5 +74,8 @@ class User extends Authenticatable
 
     public function processOrders():BelongsToMany{
         return $this->belongsToMany(Order::class, 'delivery_order', 'user_id', 'order_id')->withPivot('isAccepted');
+    }
+    public function reviews():HasMany{
+        return $this->hasMany(Review::class);
     }
 }
