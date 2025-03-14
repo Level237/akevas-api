@@ -11,7 +11,7 @@ class ListReviewController extends Controller
 {
     public function index($product_id){
 
-        $reviews=Review::where('product_id',$product_id)->get();
+        $reviews=Review::where('product_id',$product_id)->where("is_approved",1)->get();
 
         return response()->json(ReviewResource::collection($reviews));
     }
