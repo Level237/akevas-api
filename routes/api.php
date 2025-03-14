@@ -21,6 +21,7 @@ use App\Http\Controllers\User\ShowOrderController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
+use App\Http\Controllers\Product\ListReviewController;
 use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
@@ -73,7 +74,7 @@ use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderContro
 
 
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
-
+Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
 Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);

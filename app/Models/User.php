@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Shop;
 use App\Models\Order;
 use App\Models\Review;
+use App\Models\History;
 use App\Models\Vehicle;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -77,5 +78,9 @@ class User extends Authenticatable
     }
     public function reviews():HasMany{
         return $this->hasMany(Review::class);
+    }
+
+    public function hystories(){
+        return $this->hasMany(History::class);
     }
 }
