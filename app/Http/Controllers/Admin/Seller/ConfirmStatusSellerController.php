@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Seller;
 
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +17,12 @@ class ConfirmStatusSellerController extends Controller
             if (!$shop) {
                 return response()->json(['message' => 'Boutique non trouvée'], 404);
             }
-
+            if($request->state==="2"){
+                $feedBack=new FeedBack;
+                $feedBack->user_id=$request->user_id;
+                $feedBack->message=$request->message;
+                $feedBack->save();
+            }
             $shop->isPublished = $request->isPublished;
             $shop->shop_level=$request->shop_level;
             $shop->state = $request->state;
