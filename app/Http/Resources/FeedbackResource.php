@@ -21,6 +21,7 @@ class FeedbackResource extends JsonResource
             'message'=>$this->message,
             'user'=>$this->user,
             'shop'=>Shop::where("user_id",$this->user->id)->first(),
+            'status'=>$this->status,
             'created_at'=>$this->created_at
         ];
     }
