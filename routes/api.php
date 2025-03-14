@@ -119,7 +119,12 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
     Route::apiResource("seller/products", ProductController::class);
-    Route::patch("/update/docs",[UpdateSellerController::class,'updateDocuments']);
+    
+});
+
+Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
+    Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
+   
 });
 
 Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
