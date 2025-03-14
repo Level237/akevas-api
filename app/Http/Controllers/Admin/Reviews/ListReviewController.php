@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 class ListReviewController extends Controller
 {
     public function index(){
-        $reviews=Review::with('user')->get();
+        $reviews=Review::with('user')->with('product')->get();
 
         return $reviews;
     }
