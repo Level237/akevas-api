@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Review;
 use App\Models\History;
 use App\Models\Vehicle;
+use App\Models\FeedBack;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -82,5 +83,9 @@ class User extends Authenticatable
 
     public function hystories(){
         return $this->hasMany(History::class);
+    }
+    public function feedbacks(){
+
+        return $this->hasMany(FeedBack::class);
     }
 }
