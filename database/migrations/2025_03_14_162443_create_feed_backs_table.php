@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->string("message");
+            $table->boolean("status");
             $table->timestamps();
         });
     }

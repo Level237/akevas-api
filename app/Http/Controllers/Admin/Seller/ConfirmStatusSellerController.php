@@ -21,6 +21,7 @@ class ConfirmStatusSellerController extends Controller
                 $feedBack=new FeedBack;
                 $feedBack->user_id=$request->user_id;
                 $feedBack->message=$request->message;
+                $feedBack->status=0;
                 $feedBack->save();
             }
             $shop->isPublished = $request->isPublished;
