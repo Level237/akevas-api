@@ -62,6 +62,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
+use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -126,6 +127,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/recent/sellers', [RecentSellerController::class, 'recentSeller']);
     Route::get('/recent/deliveries', [RecentDeliveryController::class, 'recentDelivery']);
     Route::get('admin/products', [ListProductController::class, 'index']);
+    Route::get("/admin/reviews",[AdminListReviewsController::class,'index']);
     Route::apiResource('admin/deliveries', DeliveryController::class);
     Route::post('/shop/confirm/{id}', [ConfirmStatusSellerController::class, 'index']);
     Route::post('/delivery/confirm/{id}', [ConfirmStatusDeliveryController::class, 'confirmStatusDelivery']);
