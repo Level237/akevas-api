@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Models\Shop;
+use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class UpdateSellerController extends Controller
         try {
             $seller=Auth::guard("api")->user();
             $shop = Shop::where('user_id', $seller->id)->firstOrFail();
-
+            $feedBack=FeedBack::where('user_id', $seller->id)->firstOrFail();
             // Update shop profile (logo) if provided
             if ($request->hasFile('shop_profile')) {
                 // Delete old shop profile if exists
@@ -48,7 +49,8 @@ class UpdateSellerController extends Controller
                 }
                 $seller->identity_card_with_the_person = $request->file('identity_card_with_the_person')->store('cni/person', 'public');
             }
-
+            $feedBack->status=1;
+            $feedBack->save();
             $seller->save();
 
             return response()->json([
