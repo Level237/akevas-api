@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\NewSellerRequest;
 use App\Services\Shop\generateShopNameService;
 use App\Models\Image;
+use Illuminate\Support\Facades\Storage;
+
 class CreateSellerController extends Controller
 {
     public function create(Request $request){
@@ -80,5 +82,5 @@ class CreateSellerController extends Controller
     }
             
     }
-    
+
 }

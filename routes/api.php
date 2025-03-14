@@ -26,6 +26,7 @@ use App\Http\Controllers\Product\ListReviewController;
 use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
+use App\Http\Controllers\Seller\UpdateSellerController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
@@ -117,6 +118,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
     Route::apiResource("seller/products", ProductController::class);
+    Route::patch("/update/docs",[UpdateSellerController::class,'updateDocuments']);
 });
 
 Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
