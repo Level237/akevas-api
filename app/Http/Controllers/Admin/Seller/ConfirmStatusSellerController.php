@@ -17,7 +17,7 @@ class ConfirmStatusSellerController extends Controller
             if (!$shop) {
                 return response()->json(['message' => 'Boutique non trouvée'], 404);
             }
-            if($request->state==="2"){
+            if($request->state=="2"){
                 $feedBack=new FeedBack;
                 $feedBack->user_id=$request->user_id;
                 $feedBack->message=$request->message;

@@ -10,6 +10,7 @@ class FeedBack extends Model
 {
     use HasFactory;
 
+    protected $table = "feedbacks";
     public function user(){
         return $this->belongsTo(User::class);
     }
