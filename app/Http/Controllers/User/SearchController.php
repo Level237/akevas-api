@@ -24,7 +24,7 @@ class SearchController extends Controller
         ->orWhere("shop_description","like","%{$query}%")
         ->get();
         
-        if($userId!=null){
+        if($userId!=0){
             $hystory=new History;
             $hystory->user_id=$userId;
             $hystory->search_term=$query;
