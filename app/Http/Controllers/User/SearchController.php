@@ -17,12 +17,12 @@ class SearchController extends Controller
         ->orWhere("product_description","like","%{$query}%")
         ->orWhere("product_price","like","%{$query}%")
         ->orWhere("product_price","like","%{$query}%")
-        ->get();
+        ->take(10);
 
         $shops=Shop::where("shop_name",'like',"%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
-        ->get();
+        ->take(10);
         
         if($userId!=0){
             $hystory=new History;
