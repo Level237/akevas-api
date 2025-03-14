@@ -14,8 +14,8 @@ class UpdateSellerController extends Controller
     public function updateDocuments(Request $request)
     {
         try {
-            
-            $shop = Shop::where('user_id', Auth::guard("api")->user()->id)->firstOrFail();
+            $seller=Auth::guard("api")->user();
+            $shop = Shop::where('user_id', $seller->id)->firstOrFail();
 
             // Update shop profile (logo) if provided
             if ($request->hasFile('shop_profile')) {
