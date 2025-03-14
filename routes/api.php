@@ -50,6 +50,7 @@ use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
 use App\Http\Controllers\Delivery\TakeOrderProcessController;
 use App\Http\Controllers\Product\ProductByCategoryController;
+use App\Http\Controllers\Admin\Feedback\ListFeedbackController;
 use App\Http\Controllers\Admin\Product\RecentProductController;
 use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
@@ -145,6 +146,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
     Route::get('/admin/active/delivery/stats', [ActiveDeliveryStatController::class, 'activeDeliveryStat']);
+    Route::get('/admin/list/feedbacks',[ListFeedbackController::class,'index']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
