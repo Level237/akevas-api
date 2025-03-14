@@ -30,6 +30,7 @@ class SellerResource extends JsonResource
             "identity_card_in_back"=>URL("/storage/".$this->identity_card_in_back),
             "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
             "isSeller"=>$this->isSeller,
+            "feedbacks"=>$this->feedbacks,
             "shop"=>ShopResource::make(Shop::where('user_id',$this->id)->first()),
             "created_at"=>$this->created_at
         ];
