@@ -58,6 +58,7 @@ use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
+use App\Http\Controllers\Admin\Reviews\DeclineOrValidateReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
@@ -123,6 +124,7 @@ Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function (
 });
 
 Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function () {
+    Route::post('/decline/or/validate/{reviewId}/{status}',[DeclineOrValidateReviewController::class,'declineOrValidate']);
     Route::get('/recent/products', [RecentProductController::class, 'index']);
     Route::get('/recent/sellers', [RecentSellerController::class, 'recentSeller']);
     Route::get('/recent/deliveries', [RecentDeliveryController::class, 'recentDelivery']);
