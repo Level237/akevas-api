@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
-    public function search($query){
+    public function search($query,$userId){
 
         $products=Product::where("product_name",'like',"%{$query}%")
         ->orWhere("product_description","like","%{$query}%")
@@ -23,10 +23,10 @@ class SearchController extends Controller
         ->orWhere("shop_description","like","%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
         ->get();
-        $user=Auth::guard('api')->user();
-        if($user){
+        
+        if($userId!=null){
             $hystory=new History;
-            $hystory->user_id=$user->id;
+            $hystory->user_id=$userId;
             $hystory->search_term=$query;
             $hystory->save();
         }
