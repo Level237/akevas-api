@@ -9,6 +9,7 @@ use App\Models\Review;
 use App\Models\History;
 use App\Models\Vehicle;
 use App\Models\FeedBack;
+use App\Models\ShopReview;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -87,5 +88,8 @@ class User extends Authenticatable
     public function feedbacks(){
 
         return $this->hasMany(FeedBack::class);
+    }
+    public function shopReviews(){
+        return $this->hasMany(ShopReview::class);
     }
 }

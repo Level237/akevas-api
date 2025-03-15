@@ -19,7 +19,7 @@ class MakeReviewShopController extends Controller
             }
             $user = Auth::guard("api")->user();
             $review = ShopReview::create([
-                'user_id' => $user->id,
+            'user_id' => $user->id,
             'shop_id' => $shop_id,
             'rating' => $request->rating,
             'comment' => $request->comment,

@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Town;
 use App\Models\User;
+use App\Models\Image;
 use Ramsey\Uuid\Uuid;
 use App\Models\Product;
+use App\Models\Quarter;
 use App\Models\Category;
 use App\Models\ShopType;
+use App\Models\ShopReview;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Image;
-use App\Models\Town;
-use App\Models\Quarter;
+
 class Shop extends Model
 {
     use HasFactory;
@@ -66,5 +68,9 @@ class Shop extends Model
 
     public function quarter():BelongsTo{
         return $this->belongsTo(Quarter::class);
+    }
+
+    public function reviews():HasMany{
+        return $this->hasMany(ShopReview::class);
     }
 }
