@@ -63,6 +63,7 @@ use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
 use App\Http\Controllers\Admin\Reviews\DeclineOrValidateReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
+use App\Http\Controllers\Shops\ListReviewController as ShopReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
@@ -80,7 +81,8 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
-Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
+Route::get('/list/reviews/{productId}',[ShopReviewController::class,'index']);
+Route::get('/list/reviews/shop/{shopId}',[ListReviewController::class,'index']);
 Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
