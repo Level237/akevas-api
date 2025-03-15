@@ -11,6 +11,7 @@ class ShopReview extends Model
 {
     use HasFactory;
 
+    protected $fillable=['id','user_id','rating','is_approved','comment','shop_id'];
     public function user(){
         return $this->belongsTo(User::class);
     }
