@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Product\ProductListController;
 use App\Http\Controllers\Seller\CreateSellerController;
 use App\Http\Controllers\Seller\UpdateSellerController;
+use App\Http\Controllers\User\MakeReviewShopController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
@@ -170,6 +171,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
     Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
+    Route::post('/make/comment/shop/{shop_id}',[MakeReviewShopController::class,'makeCommentShop']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
