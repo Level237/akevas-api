@@ -26,6 +26,8 @@ class ShopResource extends JsonResource
             'shop_description'=>$this->shop_description,
             'shop_profile'=>URL("/storage/".$this->shop_profile),
             'shop_key'=>$this->shop_key,
+            "review_average"=>floatval($this->reviews->avg('rating')),
+            "reviewCount"=>$this->reviews->count(),
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "products_count"=>$this->products->count(),
