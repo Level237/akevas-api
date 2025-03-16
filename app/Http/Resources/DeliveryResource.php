@@ -33,6 +33,7 @@ class DeliveryResource extends JsonResource
             "identity_card_in_front"=>URL("/storage/".$this->identity_card_in_front),
             "isDelivery"=>$this->isDelivery,
             "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
+            "feedbacks"=>$this->feedbacks,
             "residence"=>Town::
             where('id',
             Quarter::where("id",intval($this->residence))->select('town_id')->first()->town_id)
