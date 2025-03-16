@@ -14,7 +14,7 @@ class ShopListController extends Controller
     }
 
     public function all(){
-        return ShopResource::collection(Shop::orderBy('created_at', 'desc')->get());
+        return ShopResource::collection(Shop::orderBy('created_at', 'desc')->paginate(6));
     }
 
     public function adsShops($id){
