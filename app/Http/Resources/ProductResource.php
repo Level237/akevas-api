@@ -31,6 +31,8 @@ class ProductResource extends JsonResource
             "shop_created_at" => $this->shop->created_at,
             "shop_profile" => URL("/storage/" . $this->shop->shop_profile),
             "shop_id" => $this->shop->id,
+            "review_average"=>floatval($this->reviews->avg('rating')),
+            "reviewCount"=>$this->reviews->count(),
             "product_url" => $this->product_url,
             "product_images" => ImageResource::collection($this->images),
             "product_profile" => URL("/storage/" . $this->product_profile),
