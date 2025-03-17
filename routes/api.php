@@ -45,6 +45,7 @@ use App\Http\Controllers\Auth\CheckTokenValidityController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Delivery\OrderCompletedController;
+use App\Http\Controllers\Delivery\UpdateDeliveryController;
 use App\Http\Controllers\User\MakeCommentProductController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
@@ -127,13 +128,14 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     
 });
 
-Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
-    Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
+Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
    
+    Route::post("/delivery/update/docs",[UpdateDeliveryController::class,'updateDocuments']);
 });
 
 Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
+    Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
 });
 
 Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function () {
