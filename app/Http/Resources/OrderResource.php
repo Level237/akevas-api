@@ -32,7 +32,7 @@ class OrderResource extends JsonResource
             'isTake'=>$this->isTake,
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->quarter_name,
-            'quater_delivery'=>Quarter::where("quarter_delivery",$this->quarter_delivery)->first()->quarter_name,
+            'quater_delivery'=>Quarter::where("quarter_name",$this->quarter_delivery)->first()->quarter_name,
             'status'=>$this->status,
             'duration_of_delivery'=>$this->duration_of_delivery,
             "created_at"=>$this->created_at,
