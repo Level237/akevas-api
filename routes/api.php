@@ -154,7 +154,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);
-    Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
+   
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
@@ -162,7 +162,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/list/feedbacks',[ListFeedbackController::class,'index']);
     Route::get('/admin/list/shop/reviews',[ListShopReviewController::class,'index']);
 });
-
+Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
     Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
