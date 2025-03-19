@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Product\Payment;
 
+use App\Models\User;
+use App\Models\Product;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Product\Payment\SucessPaymentController;
 
 class SucessPaymentController extends Controller

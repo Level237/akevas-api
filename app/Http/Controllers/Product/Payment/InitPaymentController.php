@@ -25,7 +25,7 @@ class InitPaymentController extends Controller
                 "amount"=>"100",
                 "currency"=>"XAF",
                 "reference"=>"REFID".rand(123456, 999999),
-                "callback"=>"http://localhost:5173?method=$paymentMethod&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name",
+                "callback"=>"http://localhost:5173/checkout/state?method=$paymentMethod&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name",
                 "metadata"=>[
                     "total"=>$total,
                     "shipping"=>$shipping,
