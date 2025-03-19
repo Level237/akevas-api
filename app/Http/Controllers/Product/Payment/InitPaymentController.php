@@ -15,7 +15,7 @@ class InitPaymentController extends Controller
             $shipping = $request->shipping;
             $productId = $request->productId;
             $quantity = $request->quantity;
-            $name = $request->name;
+            $name = urlencode($request->name);
             $price = $request->price;
             $quarter = $request->quarter;
             $paymentMethod = $request->paymentMethod;
@@ -25,7 +25,7 @@ class InitPaymentController extends Controller
                 "amount"=>"100",
                 "currency"=>"XAF",
                 "reference"=>"REFID".rand(123456, 999999),
-                "callback"=>"http://localhost:5173?method=$paymentMethod&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter",
+                "callback"=>"http://localhost:5173?method=$paymentMethod&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name",
                 "metadata"=>[
                     "total"=>$total,
                     "shipping"=>$shipping,

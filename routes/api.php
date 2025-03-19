@@ -182,6 +182,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
     Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
     Route::post('/make/comment/shop/{shop_id}',[MakeReviewShopController::class,'makeCommentShop']);
+    Route::post('/success/payment', [SucessPaymentController::class, 'successPayment']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
