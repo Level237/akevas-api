@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\Product\RecentProductController;
 use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Delivery\GetPreferenceOrderController;
+use App\Http\Controllers\Product\Payment\InitPaymentController;
 use App\Http\Controllers\Admin\Reviews\ListShopReviewController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
@@ -171,7 +172,8 @@ Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function
 });
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
-    Route::post("init/payment/buy/product", [BuyProductProcessController::class, "initPayment"]);
+    //Route::post("init/payment/buy/product", [BuyProductProcessController::class, "initPayment"]);
+    Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
     Route::post("payment/pending/buy/product", [BuyProductProcessController::class, "paymentPending"]);
     Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);

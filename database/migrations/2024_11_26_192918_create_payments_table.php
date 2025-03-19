@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->string('transaction_ref')->nullable();
             $table->string('payment_of')->nullable();
-            $table->integer('product_id')->nullable();
-            $table->integer("order_id")->nullable();
+            $table->unsignedBigInteger('order_id')->nullable();
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->integer('subscription_id')->nullable();
             $table->string("status")->nullable();
             $table->timestamps();
