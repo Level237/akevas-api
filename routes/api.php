@@ -61,6 +61,7 @@ use App\Http\Controllers\Product\Payment\InitPaymentController;
 use App\Http\Controllers\Admin\Reviews\ListShopReviewController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
+use App\Http\Controllers\Product\Payment\SucessPaymentController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;

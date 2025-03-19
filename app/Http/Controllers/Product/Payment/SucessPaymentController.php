@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Product\Payment;
 
+use Exception;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
@@ -48,7 +50,7 @@ class SucessPaymentController extends Controller
             }
             
            
-        }catch(\Exception $e){
+        }catch(Exception $e){
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
