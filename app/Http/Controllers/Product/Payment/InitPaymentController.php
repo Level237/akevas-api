@@ -12,11 +12,11 @@ class InitPaymentController extends Controller
         $url = "https://api.notchpay.co/payments/initialize";
         $response=Http::acceptJson()->withBody(json_encode(
             [
-                "email"=>$request->email,
-                "amount"=>$request->amount,
+                "email"=>"brams@gmail.com",
+                "amount"=>"100",
                 "currency"=>"XAF",
                 "reference"=>"REFID".rand(123456, 999999),
-                "callback_url"=>$request->redirect_url,
+                "callback"=>"http://localhost:5173?method=".$request->paymentMethod."&total=".$request->total."&shipping=".$request->shipping."&productId=".$request->productId."&quantity=".$request->quantity."&name=".$request->name."&price=".$request->price."&quarter=".$request->quarter,
                     
             ]
             ),'application/json')->withHeaders([
