@@ -19,17 +19,21 @@ class SucessPaymentController extends Controller
         
 
         try{
-            
+            $existingOrder = Order::where('user_id', Auth::guard("api")->user()->id)
+                             ->where('total', $request->amount)
+                             ->where('created_at', '>=', now()->subMinutes(5))
+                             ->first();
+
+        if ($existingOrder) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Order already processed',
+                'order' => $existingOrder,
+            ], 200);
+        }
 
             if(isset($request->productsPayments)){
-                foreach($request->productsPayments as $product){
-                    $order=$this->createOrder($request->amount,
-                    $request->shipping,
-                    $product['product_id'],
-                    $product['quantity'],
-                    $product['price'],
-                    $request->quarter_delivery);
-                }
+               
              return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',
