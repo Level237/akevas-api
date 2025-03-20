@@ -35,7 +35,7 @@ class OrderResource extends JsonResource
             //'phone'=>User::find(DB::table("delivery_order")->where('order_id',$this->id)->select('user_id')->first()->user_id)->phone_number || null,
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->first()->quarter_name,
-            'quater_delivery'=>Quarter::where("quarter_name",$this->quarter_delivery)->first()->quarter_name,
+            'quater_delivery'=> $this->quarter_delivery ? Quarter::where("quarter_name", $this->quarter_delivery)->first()->quarter_name : null,
             'status'=>$this->status,
             'duration_of_delivery'=>$this->duration_of_delivery,
             "created_at"=>$this->created_at,
