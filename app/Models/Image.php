@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Shop;
 use App\Models\Product;
+use App\Models\ProductAttributesValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Shop;
+
 class Image extends Model
 {
     use HasFactory;
@@ -21,5 +23,9 @@ class Image extends Model
 
     public function shops():BelongsToMany{
         return $this->belongsToMany(Shop::class);
+    }
+
+    public function productAttributesValues():BelongsToMany{
+        return $this->belongsToMany(ProductAttributesValue::class, 'product_attributes_value_image');
     }
 }
