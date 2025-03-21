@@ -39,7 +39,7 @@ class Product extends Model
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(AttributeValue::class, 'product_attributes_values')
-            ->withPivot('price', 'image_path', 'variant_name');
+            ->withPivot('price', 'variant_name');
     }
 
     public function categories(): BelongsToMany
