@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
 use App\Http\Resources\ProductResource;
+use App\Models\ProductAttributesValue;
 
 class ProductController extends Controller
 {
@@ -75,18 +76,23 @@ class ProductController extends Controller
                                 ], 422);
                             }
 
-                            $image_path = $request->variant_images[$index]->store("product/variants", "public");
-
                             // Stocker la première occurrence de chaque variant_name
                             $variantNameMap[$variant->variant_name] = true;
 
                             // Pour chaque variant, on ne prend que le premier attribute_value_id
                             if (!empty($variant->attribute_value_id)) {
                                 $attribute = $variant->attribute_value_id[0]; // Prendre seulement le premier attribut
+                                
+                                // Créer un tableau pour stocker les chemins d'images
+                                $image_paths = [];
+                                foreach ($request->variant_images[$index] as $image) {
+                                    $image_paths[] = $image->store("product/variants", "public");
+                                }
+
                                 $allAttributesData[] = [
                                     'attribute_id' => $attribute,
                                     'price' => (string)$variant->price,
-                                    'image_path' => $image_path,
+                                    'image_paths' => $image_paths,
                                     'variant_name' => $variant->variant_name
                                 ];
                             }
@@ -97,11 +103,20 @@ class ProductController extends Controller
 
                         // Attacher les nouvelles relations
                         foreach ($allAttributesData as $data) {
-                            $product->attributes()->attach($data['attribute_id'], [
+                            // Attacher l'attribut au produit
+                            $productAttribute = $product->attributes()->attach($data['attribute_id'], [
                                 'price' => $data['price'],
-                                'image_path' => $data['image_path'],
                                 'variant_name' => $data['variant_name']
                             ]);
+
+                            // Créer les images et les associer au variant
+                            foreach ($data['image_paths'] as $image_path) {
+                                $image = Image::create(['path' => $image_path]);
+                                $productAttributeValue = ProductAttributesValue::where('product_id', $product->id)
+                                    ->where('attribute_value_id', $data['attribute_id'])
+                                    ->first();
+                                $productAttributeValue->images()->attach($image->id);
+                            }
                         }
                     }
 
