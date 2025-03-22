@@ -113,7 +113,7 @@ class ProductController extends Controller
                             foreach ($data['image_paths'] as $image_path) {
                                 $image = Image::create(['path' => $image_path]);
                                 $productAttributeValue = ProductAttributesValue::where('product_id', $product->id)
-                                    ->where('attribute_value_id', $data['attribute_id'])
+                                    ->where('attributes_id', $data['attribute_id'])
                                     ->first();
                                 $productAttributeValue->images()->attach($image->id);
                             }
