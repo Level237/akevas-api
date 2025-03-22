@@ -6,11 +6,12 @@ use App\Models\Shop;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
-use App\Http\Resources\ProductResource;
 use App\Models\ProductAttributesValue;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -39,20 +40,8 @@ class ProductController extends Controller
                 $shop->shop_level = "3";
                 $shop->save();
             }
-
-            $product->product_name = $request->product_name;
-            $product->product_url = (new GenerateUrlResource())->generateUrl($request->product_name);
-            $product->product_description = $request->product_description;
-            $product->shop_id = $shop->id;
-            $product->product_price = $request->product_price;
-            $product->product_quantity = $request->product_quantity;
-            $product->product_gender = (string)$request->product_gender;
-            $product_profile = $request->file('product_profile');
-            $product->status = 1;
-            $product->product_profile = $product_profile->store('product/profile', 'public');
-            $product->whatsapp_number = $request->whatsapp_number;
-            $product->product_residence = $request->product_residence;
-            if ($product->save()) {
+            $product=Product::find("f3e5b8ae-7446-46a3-99c1-c76f13833f0f");
+           
                 if ($request->hasFile('images')) {
                     $images = $request->file('images');
 
@@ -65,27 +54,25 @@ class ProductController extends Controller
                     }
                     if ($request->filled('variants')) {
                         try {
-                            DB::beginTransaction(); // Début de la transaction
-                    
+                            DB::beginTransaction();
+
                             $variantNameMap = [];
                             $allAttributesData = [];
-                            $variants = json_decode($request->variants, true); // Conversion en array PHP
-                    
+                            $variants = json_decode($request->variants, true);
+
                             foreach ($variants as $index => $variant) {
-                                // Validation du nom de variante unique
-                                if (isset($variantNameMap[$variant['variant_name']])) {
-                                    throw new \Exception('Duplicate variant name found: ' . $variant['variant_name']);
-                                }
+                                // Vérifier si la variante existe déjà pour ce produit
+                                
+
+                               
                                 $variantNameMap[$variant['variant_name']] = true;
-                    
-                                // Traitement des attributs
+
                                 if (!empty($variant['attribute_value_id'])) {
                                     $image_paths = [];
                                     
                                     // Vérification et traitement des images
-                                    $variantImageKey = "variant_images_{$index}_0"; // Nouveau format de clé
+                                    $variantImageKey = "variant_images_{$index}_0";
                                     if ($request->hasFile($variantImageKey)) {
-                                        // Traitement de toutes les images pour cette variante
                                         $imageIndex = 0;
                                         while ($request->hasFile("variant_images_{$index}_{$imageIndex}")) {
                                             $image = $request->file("variant_images_{$index}_{$imageIndex}");
@@ -93,11 +80,20 @@ class ProductController extends Controller
                                             $imageIndex++;
                                         }
                                     }
-                    
-                                    // Stockage des données de la variante
+
                                     foreach ($variant['attribute_value_id'] as $attributeId) {
+                                        // Vérifier si la combinaison variant_name/attribute_value_id existe déjà
+                                        $existingAttributeVariant = ProductAttributesValue::where('variant_name', $variant['variant_name'])
+                                            ->where('product_id', $product->id)
+                                            ->where('attribute_value_id', $attributeId)
+                                            ->exists();
+
+                                        if ($existingAttributeVariant) {
+                                            throw new \Exception('This combination of variant name and attribute already exists');
+                                        }
+
                                         $allAttributesData[] = [
-                                            'attribute_id' => $attributeId,
+                                            'attribute_value_id' => $attributeId,
                                             'price' => (string)$variant['price'],
                                             'image_paths' => $image_paths,
                                             'variant_name' => $variant['variant_name']
@@ -105,42 +101,46 @@ class ProductController extends Controller
                                     }
                                 }
                             }
-                    
-                            // Suppression des anciennes relations
-                            $product->attributes()->detach();
-                    
+
                             // Création des nouvelles relations
                             foreach ($allAttributesData as $data) {
-                                // Création de la relation produit-attribut
-                                $product->attributes()->attach($data['attribute_id'], [
-                                    'price' => $data['price'],
-                                    'variant_name' => $data['variant_name']
-                                ]);
-                    
                                 // Création du ProductAttributesValue
-                                $productAttributeValue = ProductAttributesValue::create([
-                                    'product_id' => $product->id,
-                                    'attributes_id' => $data['attribute_id'],
-                                    'price' => $data['price'],
-                                    'variant_name' => $data['variant_name']
-                                ]);
-                    
+                                $existingVariant = ProductAttributesValue::where('variant_name', $data['variant_name'])
+                                    ->where('product_id', $product->id)
+                                    ->exists();
+                                if($existingVariant){
+
+                                }else{
+                                    $productAttributeValue = ProductAttributesValue::create([
+                                        'product_id' => $product->id,
+                                        'attribute_value_id' => $data['attribute_value_id'],
+                                        'price' => $data['price'],
+                                        'variant_name' => $data['variant_name']
+                                    ]);
+                                }
+                                
+
                                 // Création et association des images
                                 foreach ($data['image_paths'] as $image_path) {
                                     $image = Image::create(['path' => $image_path]);
-                                    $productAttributeValue->images()->attach($image->id);
+                                    DB::table('product_attributes_value_image')->insert([
+                                        'attributes_id' => $productAttributeValue->id,
+                                        'image_id' => $image->id,
+                                        'created_at' => now(),
+                                        'updated_at' => now()
+                                    ]);
                                 }
                             }
-                    
-                            DB::commit(); // Validation de la transaction
-                    
+
+                            DB::commit();
+
                             return response()->json([
                                 'success' => true,
                                 'message' => 'Product variants created successfully'
                             ]);
-                    
+
                         } catch (\Exception $e) {
-                            DB::rollBack(); // Annulation en cas d'erreur
+                            DB::rollBack();
                             
                             return response()->json([
                                 'success' => false,
@@ -149,17 +149,12 @@ class ProductController extends Controller
                         }
                     }
 
-                    if ($request->has('categories') && is_array($request->categories)) {
-                        $product->categories()->attach(array_map('intval', $request->categories));
-                    }
-                    if ($request->has('sub_categories') && is_array($request->sub_categories)) {
-                        $product->categories()->attach(array_map('intval', $request->sub_categories));
-                    }
+                    return response()->json(['message' => "Product created successfully"], 201);
                 }
-            }
+            
 
 
-            return response()->json(['message' => "Product created successfully"], 201);
+            //return response()->json(['message' => "Product created successfully"], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

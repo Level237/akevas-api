@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class ProductAttributesValue extends Model
 {
     use HasFactory;
+    protected $fillable=['product_id','attribute_value_id','price','variant_name'];
 
     public function product():BelongsTo{
         return $this->belongsTo(Product::class);
@@ -26,3 +27,5 @@ class ProductAttributesValue extends Model
         return $this->belongsToMany(Image::class, 'product_attributes_value_image');
     }
 }
+
+
