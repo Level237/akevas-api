@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Image;
-use App\Models\ProductAttributesValue;
+
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -15,11 +14,13 @@ return new class extends Migration
     {
         Schema::create('product_attributes_value_image', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(ProductAttributesValue::class)
+            $table->foreignId('attributes_id')
+                ->on('product_attributes_values')
                 ->constrained()
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
-            $table->foreignIdFor(Image::class)
+            $table->foreignId('image_id')
+                ->on('images')
                 ->constrained()
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
