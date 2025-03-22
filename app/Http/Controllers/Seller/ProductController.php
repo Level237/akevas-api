@@ -64,62 +64,88 @@ class ProductController extends Controller
                         }
                     }
                     if ($request->filled('variants')) {
-                        $variantNameMap = [];
-                        $allAttributesData = [];
-
-                        foreach (json_decode($request->variants) as $index => $variant) {
-                            // Vérifier si le variant_name existe déjà
-                            if (isset($variantNameMap[$variant->variant_name])) {
-                                return response()->json([
-                                    'success' => false,
-                                    'message' => 'Duplicate variant name found: ' . $variant->variant_name
-                                ], 422);
-                            }
-
-                            // Stocker la première occurrence de chaque variant_name
-                            $variantNameMap[$variant->variant_name] = true;
-
-                            // Pour chaque variant, on ne prend que le premier attribute_value_id
-                            if (!empty($variant->attribute_value_id)) {
-                                $attribute = $variant->attribute_value_id[0]; // Prendre seulement le premier attribut
-                                
-                                // Créer un tableau pour stocker les chemins d'images
-                                $image_paths = [];
-                                foreach ($request->variant_images[$index] as $image) {
-                                    $image_paths[] = $image->store("product/variants", "public");
+                        try {
+                            DB::beginTransaction(); // Début de la transaction
+                    
+                            $variantNameMap = [];
+                            $allAttributesData = [];
+                            $variants = json_decode($request->variants, true); // Conversion en array PHP
+                    
+                            foreach ($variants as $index => $variant) {
+                                // Validation du nom de variante unique
+                                if (isset($variantNameMap[$variant['variant_name']])) {
+                                    throw new \Exception('Duplicate variant name found: ' . $variant['variant_name']);
                                 }
-
-                                $allAttributesData[] = [
-                                    'attribute_id' => $attribute,
-                                    'price' => (string)$variant->price,
-                                    'image_paths' => $image_paths,
-                                    'variant_name' => $variant->variant_name
-                                ];
+                                $variantNameMap[$variant['variant_name']] = true;
+                    
+                                // Traitement des attributs
+                                if (!empty($variant['attribute_value_id'])) {
+                                    $image_paths = [];
+                                    
+                                    // Vérification et traitement des images
+                                    $variantImageKey = "variant_images_{$index}_0"; // Nouveau format de clé
+                                    if ($request->hasFile($variantImageKey)) {
+                                        // Traitement de toutes les images pour cette variante
+                                        $imageIndex = 0;
+                                        while ($request->hasFile("variant_images_{$index}_{$imageIndex}")) {
+                                            $image = $request->file("variant_images_{$index}_{$imageIndex}");
+                                            $image_paths[] = $image->store("product/variants", "public");
+                                            $imageIndex++;
+                                        }
+                                    }
+                    
+                                    // Stockage des données de la variante
+                                    foreach ($variant['attribute_value_id'] as $attributeId) {
+                                        $allAttributesData[] = [
+                                            'attribute_id' => $attributeId,
+                                            'price' => (string)$variant['price'],
+                                            'image_paths' => $image_paths,
+                                            'variant_name' => $variant['variant_name']
+                                        ];
+                                    }
+                                }
                             }
-                        }
-
-                        // Supprimer d'abord toutes les anciennes relations
-                        $product->attributes()->detach();
-
-                        // Attacher les nouvelles relations
-                        foreach ($allAttributesData as $data) {
-                            // Attacher l'attribut au produit
-                            $productAttribute = $product->attributes()->attach($data['attribute_id'], [
-                                'price' => $data['price'],
-                                'variant_name' => $data['variant_name']
+                    
+                            // Suppression des anciennes relations
+                            $product->attributes()->detach();
+                    
+                            // Création des nouvelles relations
+                            foreach ($allAttributesData as $data) {
+                                // Création de la relation produit-attribut
+                                $product->attributes()->attach($data['attribute_id'], [
+                                    'price' => $data['price'],
+                                    'variant_name' => $data['variant_name']
+                                ]);
+                    
+                                // Création du ProductAttributesValue
+                                $productAttributeValue = ProductAttributesValue::create([
+                                    'product_id' => $product->id,
+                                    'attributes_id' => $data['attribute_id'],
+                                    'price' => $data['price'],
+                                    'variant_name' => $data['variant_name']
+                                ]);
+                    
+                                // Création et association des images
+                                foreach ($data['image_paths'] as $image_path) {
+                                    $image = Image::create(['path' => $image_path]);
+                                    $productAttributeValue->images()->attach($image->id);
+                                }
+                            }
+                    
+                            DB::commit(); // Validation de la transaction
+                    
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'Product variants created successfully'
                             ]);
-
-                            // Créer les images et les associer au variant
-                            foreach ($data['image_paths'] as $image_path) {
-                                $image = Image::create(['path' => $image_path]);
-                                $productAttributeValue=new ProductAttributesValue;
-                                $productAttributeValue->product_id=$product->id;
-                                $productAttributeValue->attributes_id=$data['attribute_id'];
-                                $productAttributeValue->price=$data['price'];
-                                $productAttributeValue->variant_name=$data['variant_name'];
-                                $productAttributeValue->save();
-                                $productAttributeValue->images()->attach($image->id);
-                            }
+                    
+                        } catch (\Exception $e) {
+                            DB::rollBack(); // Annulation en cas d'erreur
+                            
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Error creating variants: ' . $e->getMessage()
+                            ], 422);
                         }
                     }
 
