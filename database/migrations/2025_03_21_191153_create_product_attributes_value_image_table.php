@@ -17,13 +17,13 @@ return new class extends Migration
             $table->foreignId('attributes_id')
                 ->on('product_attributes_values')
                 ->constrained()
-                ->restrictOnDelete()
-                ->restrictOnUpdate();
+                ->OnDelete('cascade')
+                ->OnUpdate('cascade');
             $table->foreignId('image_id')
                 ->on('images')
                 ->constrained()
-                ->restrictOnDelete()
-                ->restrictOnUpdate();
+                ->OnDelete('cascade')
+                ->OnUpdate('cascade');
            
             $table->timestamps();
         });
