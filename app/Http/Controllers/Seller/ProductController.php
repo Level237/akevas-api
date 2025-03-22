@@ -112,9 +112,12 @@ class ProductController extends Controller
                             // Créer les images et les associer au variant
                             foreach ($data['image_paths'] as $image_path) {
                                 $image = Image::create(['path' => $image_path]);
-                                $productAttributeValue = ProductAttributesValue::where('product_id', $product->id)
-                                    ->where('attributes_id', $data['attribute_id'])
-                                    ->first();
+                                $productAttributeValue=new ProductAttributesValue;
+                                $productAttributeValue->product_id=$product->id;
+                                $productAttributeValue->attributes_id=$data['attribute_id'];
+                                $productAttributeValue->price=$data['price'];
+                                $productAttributeValue->variant_name=$data['variant_name'];
+                                $productAttributeValue->save();
                                 $productAttributeValue->images()->attach($image->id);
                             }
                         }
