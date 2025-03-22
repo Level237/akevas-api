@@ -17,7 +17,7 @@ class InitPaymentController extends Controller
             $quantity = $request->quantity;
             $name = urlencode($request->name);
             $price = $request->price;
-            $quarter = urlencode($request->quarter);
+            $quarter = $request->quarter;
             $paymentMethod = $request->paymentMethod;
         $response=Http::acceptJson()->withBody(json_encode(
             [
