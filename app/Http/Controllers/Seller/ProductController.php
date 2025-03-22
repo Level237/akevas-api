@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Seller;
 
+use Exception;
 use App\Models\Shop;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
+use App\Models\ProductAttributesValue;
 use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
@@ -51,7 +54,8 @@ class ProductController extends Controller
             $product->product_profile = $product_profile->store('product/profile', 'public');
             $product->whatsapp_number = $request->whatsapp_number;
             $product->product_residence = $request->product_residence;
-            if ($product->save()) {
+            
+            if($product->save()){   
                 if ($request->hasFile('images')) {
                     $images = $request->file('images');
 
@@ -100,7 +104,7 @@ class ProductController extends Controller
                                             ->exists();
 
                                         if ($existingAttributeVariant) {
-                                            throw new \Exception('This combination of variant name and attribute already exists');
+                                            throw new Exception('This combination of variant name and attribute already exists');
                                         }
 
                                         $allAttributesData[] = [
@@ -143,10 +147,7 @@ class ProductController extends Controller
 
                             DB::commit();
 
-                            return response()->json([
-                                'success' => true,
-                                'message' => 'Product variants created successfully'
-                            ]);
+                            
 
                         } catch (\Exception $e) {
                             DB::rollBack();
@@ -157,13 +158,13 @@ class ProductController extends Controller
                             ], 422);
                         }
                     }
-
                     if ($request->has('categories') && is_array($request->categories)) {
                         $product->categories()->attach(array_map('intval', $request->categories));
                     }
                     if ($request->has('sub_categories') && is_array($request->sub_categories)) {
                         $product->categories()->attach(array_map('intval', $request->sub_categories));
                     }
+                   
                 }
             }
 
