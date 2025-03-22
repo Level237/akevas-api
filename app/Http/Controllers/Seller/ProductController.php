@@ -74,6 +74,7 @@ class ProductController extends Controller
                                     $variantImageKey = "variant_images_{$index}_0";
                                     if ($request->hasFile($variantImageKey)) {
                                         $imageIndex = 0;
+                                        
                                         while ($request->hasFile("variant_images_{$index}_{$imageIndex}")) {
                                             $image = $request->file("variant_images_{$index}_{$imageIndex}");
                                             $image_paths[] = $image->store("product/variants", "public");
@@ -119,15 +120,13 @@ class ProductController extends Controller
                                     ]);
                                 }
                                 
-
+                                
                                 // Création et association des images
                                 foreach ($data['image_paths'] as $image_path) {
-                                    $image = Image::create(['path' => $image_path]);
+                                    $image = Image::create(['image_path' => $image_path]);
                                     DB::table('product_attributes_value_image')->insert([
                                         'attributes_id' => $productAttributeValue->id,
                                         'image_id' => $image->id,
-                                        'created_at' => now(),
-                                        'updated_at' => now()
                                     ]);
                                 }
                             }
