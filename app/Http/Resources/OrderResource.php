@@ -36,6 +36,7 @@ class OrderResource extends JsonResource
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->first()->quarter_name,
             'quater_delivery'=> $this->quarter_delivery ? Quarter::where("quarter_name", $this->quarter_delivery)->first()->quarter_name : null,
+            'Emplacement'=>$this->fee_of_shipping == 0 ? "Dans les locaux $this->user->residence" : "Livraison",
             'status'=>$this->status,
             'duration_of_delivery'=>$this->duration_of_delivery,
             "created_at"=>$this->created_at,
