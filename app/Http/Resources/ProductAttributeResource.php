@@ -19,7 +19,7 @@ class ProductAttributeResource extends JsonResource
         return [
             'id' => $this->id,
             'variant_name' => $this->pivot->variant_name,
-            'images' => ImageResource::collection($this->images),
+            'images' => $this->images ? ImageResource::collection($this->images) : null,
             'quantity' => $this->pivot->quantity,
             'price' => $this->pivot->price,
         ];
