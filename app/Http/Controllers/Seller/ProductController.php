@@ -6,11 +6,9 @@ use App\Models\Shop;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
-use App\Models\ProductAttributesValue;
 use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
@@ -40,8 +38,20 @@ class ProductController extends Controller
                 $shop->shop_level = "3";
                 $shop->save();
             }
-            $product=Product::find("f3e5b8ae-7446-46a3-99c1-c76f13833f0f");
-           
+
+            $product->product_name = $request->product_name;
+            $product->product_url = (new GenerateUrlResource())->generateUrl($request->product_name);
+            $product->product_description = $request->product_description;
+            $product->shop_id = $shop->id;
+            $product->product_price = $request->product_price;
+            $product->product_quantity = $request->product_quantity;
+            $product->product_gender = (string)$request->product_gender;
+            $product_profile = $request->file('product_profile');
+            $product->status = 1;
+            $product->product_profile = $product_profile->store('product/profile', 'public');
+            $product->whatsapp_number = $request->whatsapp_number;
+            $product->product_residence = $request->product_residence;
+            if ($product->save()) {
                 if ($request->hasFile('images')) {
                     $images = $request->file('images');
 
@@ -148,12 +158,17 @@ class ProductController extends Controller
                         }
                     }
 
-                    return response()->json(['message' => "Product created successfully"], 201);
+                    if ($request->has('categories') && is_array($request->categories)) {
+                        $product->categories()->attach(array_map('intval', $request->categories));
+                    }
+                    if ($request->has('sub_categories') && is_array($request->sub_categories)) {
+                        $product->categories()->attach(array_map('intval', $request->sub_categories));
+                    }
                 }
-            
+            }
 
 
-            //return response()->json(['message' => "Product created successfully"], 201);
+            return response()->json(['message' => "Product created successfully"], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
