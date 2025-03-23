@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Http\Resources\CategoryResource;
 use App\Models\Gender;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\CategoryResource;
+
 class ListCategoryController extends Controller
 {
 
@@ -40,21 +42,27 @@ class ListCategoryController extends Controller
         return response()->json(['categories'=>$categories],200);
     }
     public function getCategoryWithParentIdNull(){
-        $rootCategories = Category::whereDoesntHave('parent')->get();
+        $rootCategories = Cache::remember('root_categories', 60, function () {
+            return Category::whereDoesntHave('parent')->get();
+        });
 
         
         return CategoryResource::collection($rootCategories);
     }
 public function getCategoriesByGender($parentCategoryId) {
     // Récupérer la catégorie parente
-    $parentCategory = Category::find($parentCategoryId);
+    $parentCategory = Cache::remember('parent_category_'.$parentCategoryId, 60, function () use ($parentCategoryId) {
+        return Category::find($parentCategoryId);
+    });
 
     if (!$parentCategory) {
         return response()->json(['message' => 'Catégorie parente non trouvée'], 404);
     }
 
     // Récupérer les sous-catégories
-    $children = $parentCategory->children;
+    $children = Cache::remember('children_category_'.$parentCategoryId, 60, function () use ($parentCategory) {
+        return $parentCategory->children;
+    });
 
     // Organiser les sous-catégories par genre
     $categoriesByGender = [];
