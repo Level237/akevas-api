@@ -11,6 +11,8 @@ class InitPaymentController extends Controller
     public function initPayment(Request $request){
         try{
             $url = "https://api.notchpay.co/payments/initialize";
+            $source=$request->s;
+            if($source=="0"){
             $total = $request->total;
             $shipping = $request->shipping;
             $productId = $request->productId;
@@ -19,13 +21,20 @@ class InitPaymentController extends Controller
             $price = $request->price;
             $quarter = $request->quarter;
             $paymentMethod = $request->paymentMethod;
+            $urlCallback="http://localhost:5173/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name";
+                
+            }else{
+                
+                $urlCallback="http://localhost:5173/checkout/state?source=$source";
+            }
+            
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>"brams@gmail.com",
                 "amount"=>"100",
                 "currency"=>"XAF",
                 "reference"=>"REFID".rand(123456, 999999),
-                "callback"=>"http://localhost:5173/checkout/state?method=$paymentMethod&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name",
+                "callback"=>$urlCallback,
                 "metadata"=>[
                     "total"=>$total,
                     "shipping"=>$shipping,
