@@ -19,9 +19,10 @@ class InitPaymentController extends Controller
             $quantity = $request->quantity;
             $name = urlencode($request->name);
             $price = $request->price;
-            $quarter = $request->quarter;
+            $quarter = urlencode($request->quarter);
+            $address = urlencode($request->address);
             $paymentMethod = $request->paymentMethod;
-            $urlCallback="http://localhost:5173/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name";
+            $urlCallback="http://localhost:5173/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name&address=$address";
                 
             }else{
                 
