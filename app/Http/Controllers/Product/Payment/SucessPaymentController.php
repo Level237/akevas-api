@@ -34,6 +34,15 @@ class SucessPaymentController extends Controller
 
             if(isset($request->productsPayments)){
                
+                foreach($request->productsPayments as $product){
+                    $order=$this->createOrder($request->amount,
+                    $request->shipping,
+                    $product['product_id'],
+                    $product['quantity'],
+                    $product['price'],
+                    $request->quarter_delivery,
+                    $request->address);
+                }
              return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',
@@ -45,7 +54,8 @@ class SucessPaymentController extends Controller
                 $request->productId,
                 $request->quantity,
                 $request->price,
-                $request->quarter_delivery);
+                $request->quarter_delivery,
+                $request->address);
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment successful',
@@ -66,7 +76,7 @@ class SucessPaymentController extends Controller
     function calculateRealNumber($amount) {
         return (($amount)*100);
     }
-    private function createOrder($amount,$shipping,$productId,$quantity,$price,$quarter_delivery){
+    private function createOrder($amount,$shipping,$productId,$quantity,$price,$quarter_delivery,$address){
 
          $order=new Order;
             $order->user_id=Auth::guard("api")->user()->id;
