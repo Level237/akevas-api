@@ -87,6 +87,9 @@ class SucessPaymentController extends Controller
             if(isset($quarter_delivery)){
                 $order->quarter_delivery=$quarter_delivery;
             }
+            if(isset($address)){
+                $order->address=$address;
+            }
             if($order->save()){
                 $orderDetails=new OrderDetail;
                 $orderDetails->order_id=$order->id;
