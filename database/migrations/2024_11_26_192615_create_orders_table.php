@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('payment_method');
             $table->string('quarter_delivery')->nullable();
             $table->string("duration_of_delivery")->nullable();
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }
