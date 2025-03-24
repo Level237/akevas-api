@@ -163,8 +163,9 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/active/delivery/stats', [ActiveDeliveryStatController::class, 'activeDeliveryStat']);
     Route::get('/admin/list/feedbacks',[ListFeedbackController::class,'index']);
     Route::get('/admin/list/shop/reviews',[ListShopReviewController::class,'index']);
+    Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
 });
-Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
+
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
     Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
