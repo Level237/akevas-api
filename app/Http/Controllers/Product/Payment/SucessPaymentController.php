@@ -34,28 +34,22 @@ class SucessPaymentController extends Controller
 
             if(isset($request->productsPayments)){
                
-                foreach($request->productsPayments as $product){
-                    $order=$this->createOrder($request->amount,
-                    $request->shipping,
-                    $product['product_id'],
-                    $product['quantity'],
-                    $product['price'],
-                    $request->quarter_delivery,
-                    $request->address);
-                }
+                
+                    $order=$this->multipleOrder($request);
+                
              return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',
                 'order' => $order,
             ], 200);
             }else{
-                $order=$this->createOrder($request->amount,
-                $request->shipping,
-                $request->productId,
-                $request->quantity,
-                $request->price,
-                $request->quarter_delivery,
-                $request->address);
+                    $order=$this->createOrder($request->amount,
+                    $request->shipping,
+                    $request->productId,
+                    $request->quantity,
+                    $request->price,
+                    $request->quarter_delivery,
+                    $request->address);
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment successful',
@@ -101,6 +95,35 @@ class SucessPaymentController extends Controller
                     $this->reduceQuantity($productId,$quantity);
                     return $order;
                 }
+            }
+            return null;
+    }
+
+    private function multipleOrder($request){
+            $order=new Order;
+            $order->user_id=Auth::guard("api")->user()->id;
+            $order->isPay=1;
+            $order->total=$request->amount;
+            $order->fee_of_shipping=$request->shipping;
+            $order->payment_method="0";
+            if(isset($request->quarter_delivery)){
+                $order->quarter_delivery=$request->quarter_delivery;
+            }
+            if(isset($request->address)){
+                $order->address=$request->address;
+            }
+            if($order->save()){
+                foreach($request->productsPayments as $product){
+                    $orderDetails=new OrderDetail;
+                    $orderDetails->order_id=$order->id;
+                    $orderDetails->product_id=$product['product_id'];
+                    $orderDetails->order_product_quantity=$product['quantity'];
+                    $orderDetails->unit_price=$product['price'];
+                    if($orderDetails->save()){
+                        $this->reduceQuantity($product['product_id'],$product['quantity']);
+                    }
+                }
+                return $order;
             }
             return null;
     }
