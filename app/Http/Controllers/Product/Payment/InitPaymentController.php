@@ -36,15 +36,6 @@ class InitPaymentController extends Controller
                 "currency"=>"XAF",
                 "reference"=>"REFID".rand(123456, 999999),
                 "callback"=>$urlCallback,
-                "metadata"=>[
-                    "total"=>$total,
-                    "shipping"=>$shipping,
-                    "productId"=>$productId,
-                    "quantity"=>$quantity,
-                    "name"=>$name,
-                    "price"=>$price,
-                    "quarter"=>$quarter,
-                ]
             ]
             ),'application/json')->withHeaders([
                 "Authorization"=>"pk_test.aucN1k448sPoYBdotSJJ6U5IDXDFDFAhUbNSdVguuwHAuhBIGVC0NHTQgEl30m3Xtq83aqpSvq9rFA1VPi7cRUiaKr0fAh64xFLxIqiof4y7tZ6TuJ9FM4cUHs5Av"
