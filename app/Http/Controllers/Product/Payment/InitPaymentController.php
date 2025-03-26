@@ -14,11 +14,11 @@ class InitPaymentController extends Controller
             $source=$request->s;
             $address = urlencode($request->address);
             $quarter = urlencode($request->quarter);
+            $quantity = $request->quantity;
             if($source=="0"){
             $total = $request->total;
             $shipping = $request->shipping;
             $productId = $request->productId;
-            $quantity = $request->quantity;
             $name = urlencode($request->name);
             $price = $request->price;
             
@@ -28,7 +28,7 @@ class InitPaymentController extends Controller
                 
             }else{
                 
-                $urlCallback="http://localhost:5173/checkout/state?source=$source&quarter=$quarter&address=$address";
+                $urlCallback="http://localhost:5173/checkout/state?source=$source&quarter=$quarter&address=$address&quantity=$quantity";
             }
             
         $response=Http::acceptJson()->withBody(json_encode(
