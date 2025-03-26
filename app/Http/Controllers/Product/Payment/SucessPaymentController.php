@@ -37,11 +37,11 @@ class SucessPaymentController extends Controller
                 
                     $order=$this->multipleOrder($request);
                 
-             return response()->json([
-                'success' => true,
-                'message' => 'Payment successful',
-                'order' => $order,
-            ], 200);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Payment successful',
+                        'order' => $order,
+                    ], 200);
             }else{
                     $order=$this->createOrder($request->amount,
                     $request->shipping,
