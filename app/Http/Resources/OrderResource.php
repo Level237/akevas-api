@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Town;
 use App\Models\User;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
@@ -36,7 +37,8 @@ class OrderResource extends JsonResource
             'fee_of_shipping'=>$this->fee_of_shipping,
             'residence'=>Quarter::find($this->user->residence)->first()->quarter_name,
             //'quater_delivery'=> $this->quarter_delivery ? Quarter::where("quarter_name", $this->quarter_delivery)->first()->quarter_name : null,
-            'Emplacement'=>$this->fee_of_shipping == 0 ? "Dans les locaux $this->user->residence" : "Livraison",
+            'emplacement'=>$this->fee_of_shipping == 0 && Town::find(Quarter::find($this->user->residence)->first()->town_id)->first()->town_name=="Douala" ? "Dans les locaux de Douala" : "Dans les locaux de Yaoundé",
+          
             'status'=>$this->status,
             'duration_of_delivery'=>$this->duration_of_delivery,
             "created_at"=>$this->created_at,
