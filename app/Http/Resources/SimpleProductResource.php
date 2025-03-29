@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +21,9 @@ class SimpleProductResource extends JsonResource
             "product_description" => $this->product_description,
             "product_profile" => URL("/storage/" . $this->product_profile),
             "product_price" => $this->product_price,
+            "review_average"=>floatval($this->reviews->avg('rating')),
             "product_url"=>$this->product_url,
+            "count_seller"=>OrderDetail::where("product_id",$this->id)->count(),
             "product_quantity" => $this->product_quantity,
         ];
     }
