@@ -31,6 +31,7 @@ use App\Http\Controllers\User\MakeReviewShopController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
+use App\Http\Controllers\Shops\GetProfileShopController;
 use App\Http\Controllers\Admin\Stat\ActiveStatController;
 use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Delivery\OrderHistoryController;
@@ -84,6 +85,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
+Route::get('/',[GetProfileShopController::class,'getProfile']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
 Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
