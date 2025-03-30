@@ -10,7 +10,7 @@ use App\Http\Resources\ShopProfileResource;
 class GetProfileShopController extends Controller
 {
     public function getProfile(){
-        return ShopProfileResource::collection(
-            Shop::orderBy('created_at', 'desc')->inRandomOrder()->take(6)->get());
+        return response()->json(ShopProfileResource::collection(
+            Shop::orderBy('created_at', 'desc')->inRandomOrder()->take(6)->get()));
     }
 }
