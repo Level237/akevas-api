@@ -85,7 +85,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
-Route::get('/',[GetProfileShopController::class,'getProfile']);
+Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
 Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
