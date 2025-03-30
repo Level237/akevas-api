@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Town;
 use App\Models\Product;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
@@ -32,6 +33,7 @@ class ProductResource extends JsonResource
             "shop_profile" => URL("/storage/" . $this->shop->shop_profile),
             "shop_id" => $this->shop->id,
             "review_average"=>floatval($this->reviews->avg('rating')),
+            "count_seller"=>OrderDetail::where("product_id",$this->id)->count(),
             "reviewCount"=>$this->reviews->count(),
             "product_url" => $this->product_url,
             "product_images" => ImageResource::collection($this->images),
