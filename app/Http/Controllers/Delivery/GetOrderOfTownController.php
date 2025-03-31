@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Delivery;
 
-use App\Models\User;
 use App\Models\Order;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ class GetOrderOfTownController extends Controller
 {
     public function getOrdersByTown()
     {
-        $user=User::find("18");
+        $user=Auth::guard('api')->user();
         $ordArray=$this->getOrderOfQuarter($user->residence);
         return response()->json(OrderResource::collection($ordArray));
     }
@@ -47,7 +46,6 @@ class GetOrderOfTownController extends Controller
                      $ordArray[]=$order;
                     }
                 }
-               
             }
             return $ordArray;
     }
