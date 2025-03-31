@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 class ActiveStatController extends Controller
 {
     public function activeStat(){
-        $active=Order::where("created_at",">",now()->subDays(30))->count();
+        $active=Order::where("created_at",">",now()->subDays(30))->where("status","0")->count();
         $totalPrice=Order::where("created_at",">",now()->subDays(30))->sum("total");
         $totalProducts=Product::count();
         return response()->json([
