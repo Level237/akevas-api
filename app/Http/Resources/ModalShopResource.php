@@ -26,7 +26,10 @@ class ModalShopResource extends JsonResource
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "products_count"=>$this->products->count(),
-            "cover"=>ImageResource::make($this->images[0])
+            "town"=>$this->town->town_name,
+            "quarter"=>$this->quarter->quarter_name,
+            "cover"=>ImageResource::make($this->images[0]),
+            ""
         ];
 }
 }
