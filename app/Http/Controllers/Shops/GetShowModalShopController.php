@@ -10,7 +10,7 @@ use App\Http\Resources\ModalShopResource;
 class GetShowModalShopController extends Controller
 {
     public function showRandom(){
-        return response()->json(
-            Shop::inRandomOrder()->first());
+        return response()->json(ModalShopResource::collection(
+            Shop::inRandomOrder()->first()));
     }
 }
