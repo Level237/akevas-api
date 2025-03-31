@@ -176,7 +176,7 @@ Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
 });
-
+Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     //Route::post("init/payment/buy/product", [BuyProductProcessController::class, "initPayment"]);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
@@ -192,7 +192,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
-    Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
+    
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
     Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);
     Route::get('/show/order/{id}', [DeliveryShowOrderController::class, 'showOrder']);
