@@ -40,6 +40,7 @@ use App\Http\Controllers\Product\DetailProductController;
 use App\Http\Controllers\Category\CategoryByUrlController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
+use App\Http\Controllers\Shops\GetShowModalShopController;
 use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
@@ -86,6 +87,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
     */
 
 Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
+Route::get("/get/modal/shop",[GetShowModalShopController::class,'showRandom']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
 Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
