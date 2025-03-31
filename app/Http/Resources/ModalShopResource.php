@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\ImageResource;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ModalShopResource extends JsonResource
@@ -23,6 +24,7 @@ class ModalShopResource extends JsonResource
             'shop_key'=>$this->shop_key,
             "review_average"=>floatval($this->reviews->avg('rating')),
             "reviewCount"=>$this->reviews->count(),
+            "categories"=>CategoryResource::collection($this->categories),
             "status"=>$this->status,
             "isSubscribe"=>$this->isSubscribe,
             "products_count"=>$this->products->count(),
