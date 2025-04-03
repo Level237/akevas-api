@@ -33,7 +33,8 @@ class DatabaseSeeder extends Seeder
             AttributeValueSeeder::class,
             CategorySeeder::class,
             ShopSeeder::class,
-            ProductSeeder::class
+            ProductSeeder::class,
+            SubscriptionSeeder::class
         ]);
     }
 }
