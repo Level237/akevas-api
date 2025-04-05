@@ -41,8 +41,6 @@ class DescriptionSeeder extends Seeder
             'description_name' => 'Modal overwiew sur votre boutique',
         ]);
 
-        Description::create([
-            'description_name' => 'Support client',
-        ]);
+        
     }
 }

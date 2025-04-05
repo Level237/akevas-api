@@ -10,8 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Description extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'description_name',
+    ];
     public function subscriptions():BelongsToMany{
-        return $this->belongsToMany(Subscription::class);
+        return $this->belongsToMany(Subscription::class, 'description_subscription');
     }
+
+    
 }
