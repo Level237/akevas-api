@@ -13,7 +13,7 @@ class SubscriptionSeeder extends Seeder
     public function run(): void
     {
         Subscription::create([
-            'subscription_name' => 'Free',
+            'subscription_name' => 'Gratuit',
             'subscription_price' => "0",
             'subscription_duration' => '0',
         ]);
