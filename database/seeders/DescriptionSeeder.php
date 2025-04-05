@@ -26,8 +26,12 @@ class DescriptionSeeder extends Seeder
         ]);
 
         Description::create([
+            'description_name' => 'Personalisation de votre boutique',
+        ]);
+        Description::create([
             'description_name' => 'Catalogue de produits',
         ]);
+        
         
          Description::create([
             'description_name' => 'Visibilité de votre boutique sur le moteur de recherche akevas',
@@ -38,9 +42,18 @@ class DescriptionSeeder extends Seeder
         ]);
 
         Description::create([
-            'description_name' => 'Modal overwiew sur votre boutique',
+            'description_name' => '50 credits offerts',
+        ]);
+        Description::create([
+            'description_name' => 'Modal overwiew',
         ]);
 
+        Description::create([
+            'description_name' => 'Screen Overwiew + Products overview',
+        ]);
+        Description::create([
+            'description_name' => 'Badge "Boutique Pro',
+        ]);
         
     }
 }

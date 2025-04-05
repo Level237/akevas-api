@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Database\Seeders\DescriptionSubscriptionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,7 +36,8 @@ class DatabaseSeeder extends Seeder
             ShopSeeder::class,
             ProductSeeder::class,
             SubscriptionSeeder::class,
-            DescriptionSeeder::class
+            DescriptionSeeder::class,
+            DescriptionSubscriptionSeeder::class
         ]);
     }
 }
