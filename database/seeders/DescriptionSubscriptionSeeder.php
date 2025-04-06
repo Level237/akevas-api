@@ -58,7 +58,7 @@ class DescriptionSubscriptionSeeder extends Seeder
 
             DB::table('description_subscription')->insert([
                 'description_id' => 11,
-                'subscription_id' => 3,
+                'subscription_id' => "=;Lv}zX{3yvH",
             ]);
             
             
