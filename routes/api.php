@@ -48,6 +48,7 @@ use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Delivery\OrderCompletedController;
 use App\Http\Controllers\Delivery\UpdateDeliveryController;
+use App\Http\Controllers\Seller\ListSubscriptionController;
 use App\Http\Controllers\User\MakeCommentProductController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
@@ -86,6 +87,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
+
 Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
 Route::get("/get/modal/shop",[GetShowModalShopController::class,'showRandom']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
@@ -116,7 +118,7 @@ Route::get("/home/shops", [ShopListController::class, "index"]);
 Route::get("ads/shops/{id}", [ShopListController::class, "adsShops"]);
 Route::get("all/shops", [ShopListController::class, "all"]);
 Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
-
+Route::get('/list/subscriptions',[ListSubscriptionController::class,'index']);
 Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
 Route::get("/similar/products/{id}",[SimilarProductController::class,"getSimilarProducts"]);
 Route::get("all/products", [ProductListController::class, "allProducts"]);
