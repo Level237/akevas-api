@@ -29,6 +29,7 @@ class ShopResource extends JsonResource
             "review_average"=>floatval($this->reviews->avg('rating')),
             "reviewCount"=>$this->reviews->count(),
             "status"=>$this->status,
+            "coins"=>$this->coins,
             "isSubscribe"=>$this->isSubscribe,
             "products_count"=>$this->products->count(),
             "products"=>ProductResource::collection($this->products),
