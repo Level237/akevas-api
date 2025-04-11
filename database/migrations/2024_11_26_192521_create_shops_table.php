@@ -33,7 +33,7 @@ return new class extends Migration
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();
-            $table->string('coins')->nullable();
+            $table->string('coins')->default(0);
             $table->string('product_type');
             $table->string('shop_banner')->nullable();
             $table->string('shop_profile');
