@@ -24,11 +24,11 @@ class InitPaymentController extends Controller
             
             
             $paymentMethod = $request->paymentMethod;
-            $urlCallback="http://localhost:5173/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name&address=$address";
+            $urlCallback=env("URL_FRONTEND")."/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name&address=$address";
                 
             }else{
                 
-                $urlCallback="http://localhost:5173/checkout/state?source=$source&quarter=$quarter&address=$address&quantity=$quantity";
+                $urlCallback=env("URL_FRONTEND")."/checkout/state?source=$source&quarter=$quarter&address=$address&quantity=$quantity";
             }
             
         $response=Http::acceptJson()->withBody(json_encode(
