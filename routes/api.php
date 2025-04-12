@@ -75,6 +75,7 @@ use App\Http\Controllers\Shops\ListReviewController as ShopReviewController;
 use App\Http\Controllers\Admin\Reviews\DeclineOrValidateShopReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
+use App\Http\Controllers\Coins\InitPaymentController as InitCoinsPaymentController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsController;
 /*
@@ -131,6 +132,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
 
+    Route::post("init/payment/coins", [InitCoinsPaymentController::class, "initPayment"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
