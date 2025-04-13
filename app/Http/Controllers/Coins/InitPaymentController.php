@@ -23,7 +23,7 @@ class InitPaymentController extends Controller
                 'name' => Auth::guard('api')->user()->firstName,
                 'currency' => 'XAF',
                 'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
-                'callback' => route('notchpay-callback'),
+                'callback' => route('callback-payment'),
                 'description' => $product->description,
             ]);
             

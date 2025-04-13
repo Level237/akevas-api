@@ -15,7 +15,7 @@ class CallbackPayment extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function callbackPayment(Request $request)
     {
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $verifyTransaction = Payment::verify($request->get('reference'));

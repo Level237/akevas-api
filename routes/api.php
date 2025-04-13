@@ -89,7 +89,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
-
+Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment'])->name('callback-payment');
 Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
 Route::get("/get/modal/shop",[GetShowModalShopController::class,'showRandom']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
