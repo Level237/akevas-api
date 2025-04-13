@@ -10,6 +10,7 @@ class InitPaymentController extends Controller
 {
     public function initPaymentCoin(Request $request){
 
+        
         try{
             $url = "https://api.notchpay.co/payments/initialize";
             $coins=$request->coins;
