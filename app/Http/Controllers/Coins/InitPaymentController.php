@@ -10,11 +10,22 @@ class InitPaymentController extends Controller
 {
     public function initPaymentCoin(Request $request){
 
-        
+        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
+
+            $payload=Payment::initialize([
+
+                'amount' => $request->coins,
+                'email' => Auth::guard('api')->user()->email,
+                'name' => Auth::guard('api')->user()->name,
+                'currency' => 'XAF',
+                'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
+                'callback' => route('notchpay-callback'),
+                'description' => $product->description,
+            ]);
             $url = "https://api.notchpay.co/payments/initialize";
             $coins=$request->coins;
-            $urlCallback="http://localhost:5173/checkout/state?coins=$coins";
+            $urlCallback="";
             $response=Http::acceptJson()->withBody(json_encode(
                 [
                     "email"=>"brams23@gmail.com",
@@ -24,7 +35,7 @@ class InitPaymentController extends Controller
                     "callback"=>$urlCallback,
                 ]
                 ),'application/json')->withHeaders([
-                    "Authorization"=>"pk_test.5DVUNSzBbBAts5Y0FxelUrNeeT1hvlY9kvwkWVL7Ck6hO5CCQkbXHrzUZ4cpWnCQlvxPSrlB5LztJwRdFTZQ2QNbGJQPTeEhFz3x5sxf3SK2V62jgX7RlHfZXdbhK"
+                    "Authorization"=>""
                 ])->post($url);
     
                 return json_decode($response);
