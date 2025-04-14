@@ -21,12 +21,11 @@ class CallbackPayment extends Controller
         
         
             
-        Log::info('Callback reçu', $request->all());
-        dd('callback atteint', $request->all());
+        
             $shop=Shop::where('user_id',"16")->first();
             $shop->coins+=10000;
             $shop->save();
-
+            return $shop;
             //return redirect(env('FRONT_URL').'/checkout/state?coins='.$request->amount);
         }
     

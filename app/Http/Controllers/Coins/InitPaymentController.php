@@ -18,7 +18,7 @@ class InitPaymentController extends Controller
 
             $url = "https://api.notchpay.co/payments/initialize";
 
-            $urlCallback="https://c996-129-0-76-158.ngrok-free.app/api/callback/payment";
+            $urlCallback="https://dev.akevas.com";
                 
            
             
