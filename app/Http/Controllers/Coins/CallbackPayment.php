@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Coins;
 
+use Log;
 use App\Models\Shop;
 use NotchPay\Payment;
 use NotchPay\NotchPay;
@@ -17,21 +18,16 @@ class CallbackPayment extends Controller
      */
     public function callbackPayment(Request $request)
     {
-        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         
-            PaymentBackend::create([
-                'payment_type'=>'coins',
-                'price'=>$request->amount,
-                'transaction_ref'=>$request->reference,
-                'payment_of'=>'coins',
-                'user_id'=>$request->user_id,
-            ]);
-
-            $shop=Shop::where('user_id',$request->user_id)->first();
-            $shop->coins+=$request->amount;
+        
+            
+        Log::info('Callback reçu', $request->all());
+        dd('callback atteint', $request->all());
+            $shop=Shop::where('user_id',"16")->first();
+            $shop->coins+=10000;
             $shop->save();
 
-            return redirect(env('FRONT_URL').'/checkout/state?coins='.$request->amount);
+            //return redirect(env('FRONT_URL').'/checkout/state?coins='.$request->amount);
         }
     
 }

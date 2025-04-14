@@ -16,20 +16,25 @@ class InitPaymentController extends Controller
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
 
-            $payload=Payment::initialize([
+            $url = "https://api.notchpay.co/payments/initialize";
 
-                'amount' => $request->coins,
-                'email' => Auth::guard('api')->user()->email,
-                'name' => Auth::guard('api')->user()->firstName,
-                'currency' => 'XAF',
-                'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
-                'user_id'=>Auth::guard('api')->user()->id,
-                'callback' => 'https://cbed-129-0-76-158.ngrok-free.app/api/callback/payment?coins='.$request->coins.'&user_id='.Auth::guard('api')->user()->id.'&amount='.$request->amount.'&reference='.$Auth::guard('api')->user()->id . '-' . uniqid(),
-            ]);
+            $urlCallback="https://c996-129-0-76-158.ngrok-free.app/api/callback/payment";
+                
+           
             
-            return response()->json([
-                'redirect_to' => $payload->authorization_url
-            ]);
+        $response=Http::acceptJson()->withBody(json_encode(
+            [
+                "email"=>Auth::guard('api')->user()->email,
+                "amount"=>$request->coins,
+                "currency"=>"XAF",
+                "reference"=>Auth::guard('api')->user()->id . '-' . uniqid(),
+                "callback"=>$urlCallback,
+            ]
+            ),'application/json')->withHeaders([
+                "Authorization"=>"pk_test.5DVUNSzBbBAts5Y0FxelUrNeeT1hvlY9kvwkWVL7Ck6hO5CCQkbXHrzUZ4cpWnCQlvxPSrlB5LztJwRdFTZQ2QNbGJQPTeEhFz3x5sxf3SK2V62jgX7RlHfZXdbhK"
+            ])->post($url);
+
+            return json_decode($response);
     
         }catch(Exception $e){
             return response()->json([
