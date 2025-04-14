@@ -31,7 +31,7 @@ class CallbackPayment extends Controller
                 'price'=>$request->get('amount'),
                 'transaction_ref'=>$verifyTransaction->transaction->reference,
                 'payment_of'=>'coins',
-                'user_id'=>Auth::guard('api')->user()->id,
+                'user_id'=>$request->get('user_id'),
             ]);
 
             $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
