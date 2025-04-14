@@ -24,11 +24,12 @@ class InitPaymentController extends Controller
                 'currency' => 'XAF',
                 'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
                 'callback' => route('callback-payment'),
-                'description' => $product->description,
             ]);
             
+            return response()->json([
+                'redirect_to' => $payload->authorization_url
+            ]);
     
-            return redirect($payload->authorization_url);
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",

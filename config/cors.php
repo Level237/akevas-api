@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['GET, POST, PUT, DELETE, OPTIONS'],
 
-    'allowed_origins' => ['http://localhost:5173',"https://delivery.akevas.com","https://seller.akevas.com","https://dev.akevas.com"],
+    'allowed_origins' => ['http://localhost:5173',"https://delivery.akevas.com","https://seller.akevas.com","https://dev.akevas.com","https://pay.notchpay.co"],
 
     'allowed_origins_patterns' => [],
 
