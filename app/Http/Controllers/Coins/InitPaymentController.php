@@ -31,7 +31,7 @@ class InitPaymentController extends Controller
                 "callback"=>$urlCallback,
             ]
             ),'application/json')->withHeaders([
-                "Authorization"=>"pk_test.5DVUNSzBbBAts5Y0FxelUrNeeT1hvlY9kvwkWVL7Ck6hO5CCQkbXHrzUZ4cpWnCQlvxPSrlB5LztJwRdFTZQ2QNbGJQPTeEhFz3x5sxf3SK2V62jgX7RlHfZXdbhK"
+                "Authorization"=>"pk.I0lJZM2oyHXyDdJusvjfgRjiIA5yPaiRxUivIExtPDyA7Buh4TBHObTW9HMfrdb7L5V9wzzNoJwMNDU9ZTUnn6sDB1rRPf1jgbBrQkeptdx305neBmOEYoHHmt9x1"
             ])->post($url);
 
             return json_decode($response);
