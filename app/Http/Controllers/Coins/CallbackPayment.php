@@ -25,7 +25,7 @@ class CallbackPayment extends Controller
             return response()->json(['status','failed']);
         }else if($verifyTransaction->transaction->status === 'pending'){
             return response()->json(['status','pending']);
-        }else if($verifyTransaction->transaction->status === 'success'){
+        }else if($verifyTransaction->transaction->status === 'completed'){
             PaymentBackend::create([
                 'payment_type'=>'coins',
                 'price'=>$request->get('amount'),

@@ -23,7 +23,7 @@ class InitPaymentController extends Controller
                 'name' => Auth::guard('api')->user()->firstName,
                 'currency' => 'XAF',
                 'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
-                'callback' => route('callback-payment'),
+                'callback' => 'http://127.0.0.1:8000/api/callback/payment',
             ]);
             
             return response()->json([
