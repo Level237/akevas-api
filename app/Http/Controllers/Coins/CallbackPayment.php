@@ -18,27 +18,20 @@ class CallbackPayment extends Controller
     public function callbackPayment(Request $request)
     {
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
-        $verifyTransaction = Payment::verify($request->get('reference'));
-        if($verifyTransaction->transaction->status === 'canceled'){
-            return response()->json(['status','canceled']);
-        }else if($verifyTransaction->transaction->status === 'failed'){
-            return response()->json(['status','failed']);
-        }else if($verifyTransaction->transaction->status === 'pending'){
-            return response()->json(['status','pending']);
-        }else if($verifyTransaction->transaction->status === 'completed'){
+        
             PaymentBackend::create([
                 'payment_type'=>'coins',
-                'price'=>$request->get('amount'),
-                'transaction_ref'=>$verifyTransaction->transaction->reference,
+                'price'=>$request->amount,
+                'transaction_ref'=>$request->reference,
                 'payment_of'=>'coins',
-                'user_id'=>$request->get('user_id'),
+                'user_id'=>$request->user_id,
             ]);
 
-            $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
-            $shop->coins+=$request->get('amount');
+            $shop=Shop::where('user_id',$request->user_id)->first();
+            $shop->coins+=$request->amount;
             $shop->save();
 
-            return redirect(env('FRONT_URL').'/checkout/state?coins='.$request->get('amount'));
+            return redirect(env('FRONT_URL').'/checkout/state?coins='.$request->amount);
         }
-    }
+    
 }
