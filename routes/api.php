@@ -90,7 +90,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
-
+Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment'])->name('callback-payment');
 Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
 Route::get("/get/modal/shop",[GetShowModalShopController::class,'showRandom']);
 Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
@@ -132,7 +132,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
-    Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment'])->name('callback-payment');
+    
     Route::post("init/payment/coins", [InitCoinsPaymentController::class, "initPaymentCoin"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);

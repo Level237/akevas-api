@@ -23,7 +23,7 @@ class InitPaymentController extends Controller
                 'name' => Auth::guard('api')->user()->firstName,
                 'currency' => 'XAF',
                 'reference' => Auth::guard('api')->user()->id . '-' . uniqid(),
-                'callback' => 'http://127.0.0.1:8000/api/callback/payment',
+                'callback' => 'https://cbed-129-0-76-158.ngrok-free.app/api/callback/payment',
             ]);
             
             return response()->json([
