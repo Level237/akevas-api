@@ -15,7 +15,12 @@ class InitPaymentController extends Controller
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
         $response=$this->initPayment($request,$reference);
         $responseCharge=$this->charge($response);
-        return $responseCharge;
+        return response()->json([
+            "status"=>"success",
+            "message"=>"Payment initiated",
+            "reference"=>$response,
+            "statusCharge"=>$responseCharge
+        ]);
     }
 
     private function initPayment(Request $request,$reference){
