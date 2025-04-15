@@ -12,12 +12,18 @@ use Illuminate\Support\Facades\Http;
 class InitPaymentController extends Controller
 {
     public function PaymentCoin(Request $request){
-
-        $response=$this->initPayment($request);
-        return response()->json($response);
+        $reference=Auth::guard('api')->user()->id . '-' . uniqid();
+        $response=$this->initPayment($request,$reference);
+        $responseCharge=$this->charge($reference);
+        return response()->json([
+            "status"=>"success",
+            "message"=>"Payment initiated",
+            "reference"=>$reference,
+            "responseCharge"=>$responseCharge
+        ]);
     }
 
-    private function initPayment(Request $request){
+    private function initPayment(Request $request,$reference){
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
 
@@ -32,7 +38,7 @@ class InitPaymentController extends Controller
                 "email"=>Auth::guard('api')->user()->email,
                 "amount"=>$request->coins,
                 "currency"=>"XAF",
-                "reference"=>Auth::guard('api')->user()->id . '-' . uniqid(),
+                "reference"=>$reference,
                 "callback"=>$urlCallback,
             ]
             ),'application/json')->withHeaders([
@@ -63,7 +69,7 @@ class InitPaymentController extends Controller
                     "Authorization"=>"pk.I0lJZM2oyHXyDdJusvjfgRjiIA5yPaiRxUivIExtPDyA7Buh4TBHObTW9HMfrdb7L5V9wzzNoJwMNDU9ZTUnn6sDB1rRPf1jgbBrQkeptdx305neBmOEYoHHmt9x1"
                 ])->post($url);
     
-                return response->transaction->reference;
+                return response->status;
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",
