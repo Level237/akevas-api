@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Coins;
 
 use App\Models\Shop;
 use App\Models\User;
-use NotchPay\Payment;
 use NotchPay\NotchPay;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Payment as PaymentBackend;
+use App\Models\Payment;
 
 class HandleWebhookController extends Controller
 {
@@ -24,12 +23,12 @@ class HandleWebhookController extends Controller
         if ($request->status === 'failed') {
             $userId = explode('-', $reference)[0];
             $user = User::find($userId);
-
+            
             if (!$user) return response()->json(['error' => 'User not found'], 404);
 
             // Vérifie si le paiement existe déjà
-            if (!PaymentBackend::where('transaction_ref', $transaction->reference)->exists()) {
-                PaymentBackend::create([
+            if (!Payment::where('transaction_ref', $transaction->reference)->exists()) {
+                Payment::create([
                     'payment_type' => 'coins',
                     'price' => $transaction->amount,
                     'transaction_ref' => $transaction->reference,

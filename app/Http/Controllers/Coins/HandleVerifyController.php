@@ -26,15 +26,19 @@ class HandleVerifyController extends Controller
     
         // S’il n’existe pas dans ta base, tu peux vérifier via NotchPay directement (optionnel)
         try {
-            NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
-            $transaction = NotchPayPayment::verify($ref)->transaction;
+            $url = "https://api.notchpay.co/payments/".$ref;
+                  
+        $response=Http::acceptJson()->withHeaders([
+                "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
+            ])->get($url);
+            $transaction=json_decode($response);
     
             if ($transaction->status === 'failed' || $transaction->status === 'cancelled') {
                 return response()->json(['status' => 'failed']);
             }
     
             if ($transaction->status === 'pending') {
-                return response()->json(['status' => 'pending']);
+                return response()->json(['status' => 'failed']);
             }
     
             // Si c'est success mais qu'on n'a pas encore crédité ?
