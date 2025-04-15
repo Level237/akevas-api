@@ -15,14 +15,14 @@ class HandleWebhookController extends Controller
     public function handleWebhook(Request $request)
 {
     NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
-
-    $reference = $request->input('reference');
+    $payload=$request->payload;
+    $reference = $payload->data->reference;
 
     try {
-        $transaction = Payment::verify($reference)->transaction;
+        
 
-        if ($transaction->status === 'success') {
-            $userId = explode('-', $transaction->reference)[0];
+        if ($request->status === 'failed') {
+            $userId = explode('-', $reference)[0];
             $user = User::find($userId);
 
             if (!$user) return response()->json(['error' => 'User not found'], 404);
