@@ -14,8 +14,8 @@ class InitPaymentController extends Controller
     public function PaymentCoin(Request $request){
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
         $response=$this->initPayment($request,$reference);
-        //$responseCharge=$this->charge($reference);
-        return $response;
+        $responseCharge=$this->charge($response);
+        return $responseCharge;
     }
 
     private function initPayment(Request $request,$reference){
@@ -61,10 +61,10 @@ class InitPaymentController extends Controller
                     ]
                     ],
                 ),'application/json')->withHeaders([
-                    "Authorization"=>"pk.I0lJZM2oyHXyDdJusvjfgRjiIA5yPaiRxUivIExtPDyA7Buh4TBHObTW9HMfrdb7L5V9wzzNoJwMNDU9ZTUnn6sDB1rRPf1jgbBrQkeptdx305neBmOEYoHHmt9x1"
+                    "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
                 ])->post($url);
-    
-                return response->status;
+                $responseData=json_decode($response);
+                return $responseData->status;
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",
