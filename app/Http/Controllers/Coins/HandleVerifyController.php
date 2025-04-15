@@ -6,6 +6,7 @@ use NotchPay\NotchPay;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use NotchPay\Payment as NotchPayPayment;
 
 class HandleVerifyController extends Controller
@@ -46,7 +47,7 @@ class HandleVerifyController extends Controller
                 return response()->json(['status' => 'processing']); // on attend encore le webhook
             }
     
-            return response()->json(['status' => 'unknown']);
+            return response()->json(['status' => $transaction]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
