@@ -32,21 +32,21 @@ class HandleVerifyController extends Controller
         $response=Http::acceptJson()->withHeaders([
                 "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
             ])->get($url);
-            $transaction=json_decode($response);
-    
-            if ($transaction->status === 'failed' || $transaction->status === 'cancelled') {
+            $responseData=json_decode($response);
+            $transaction=$responseData->transaction;
+            if ($transaction->status === 'failed' || $transaction->status === 'canceled') {
                 return response()->json(['status' => 'failed']);
             }
     
             if ($transaction->status === 'pending') {
-                return response()->json(['status' => 'failed']);
+                return response()->json(['status' => 'pending']);
             }
     
             // Si c'est success mais qu'on n'a pas encore crédité ?
             if ($transaction->status === 'success') {
                 return response()->json(['status' => 'processing']); // on attend encore le webhook
             }
-    
+            
             return response()->json(['status' => $transaction]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
