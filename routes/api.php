@@ -23,6 +23,7 @@ use App\Http\Controllers\User\ShowOrderController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
+use App\Http\Controllers\Coins\HandleVerifyController;
 use App\Http\Controllers\Product\ListReviewController;
 use App\Http\Controllers\Admin\Seller\SellerController;
 use App\Http\Controllers\Coins\HandleWebhookController;
@@ -91,6 +92,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 |
     */
 
+Route::get('/get/payment/status/{ref}',[HandleVerifyController::class,'getPaymentStatus']);
 Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
 Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment']);
 Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
