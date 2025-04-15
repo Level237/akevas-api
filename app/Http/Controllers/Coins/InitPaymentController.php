@@ -19,7 +19,7 @@ class InitPaymentController extends Controller
             "status"=>"success",
             "message"=>"Payment initiated",
             "reference"=>$reference,
-            "responseCharge"=>$responseCharge
+            "statusCharge"=>$responseCharge
         ]);
     }
 
