@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Coins;
 
+use NotchPay\NotchPay;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
