@@ -42,7 +42,7 @@ class DescriptionSeeder extends Seeder
         ]);
 
         Description::create([
-            'description_name' => '50 credits offerts',
+            'description_name' => '250 coins offerts',
         ]);
         Description::create([
             'description_name' => 'Modal overwiew',
