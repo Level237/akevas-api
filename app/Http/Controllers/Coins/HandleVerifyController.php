@@ -30,7 +30,7 @@ class HandleVerifyController extends Controller
             $url = "https://api.notchpay.co/payments/".$ref;
                   
         $response=Http::acceptJson()->withHeaders([
-                "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
+                "Authorization"=>env("NOTCHPAY_API_KEY")
             ])->get($url);
             $responseData=json_decode($response);
             $transaction=$responseData->transaction;

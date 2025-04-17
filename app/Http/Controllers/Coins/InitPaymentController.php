@@ -42,7 +42,7 @@ class InitPaymentController extends Controller
                 "callback"=>$urlCallback,
             ]
             ),'application/json')->withHeaders([
-                "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
+                "Authorization"=>env("NOTCHPAY_API_KEY")
             ])->post($url);
             $responseData=json_decode($response);
             return $responseData->transaction->reference;
@@ -66,7 +66,7 @@ class InitPaymentController extends Controller
                     ]
                     ],
                 ),'application/json')->withHeaders([
-                    "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
+                    "Authorization"=>env("NOTCHPAY_API_KEY")
                 ])->post($url);
                 $responseData=json_decode($response);
                 return $responseData->status;
