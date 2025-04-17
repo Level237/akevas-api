@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-
+use NotchPay\Payment;
+use NotchPay\NotchPay;
 class InitPaymentController extends Controller
 {
     public function initPayment(Request $request){
@@ -27,20 +28,16 @@ class InitPaymentController extends Controller
 
             $url = "https://api.notchpay.co/payments/initialize";
 
-           
-                
-           
-            
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>$request->amount,
+                "amount"=>"100",
                 "productId"=>$request->productId,
                 "quantity"=>$request->quantity,
                 "price"=>$request->price,
                 "quarter_delivery"=>$request->quarter_delivery,
                 "address"=>$request->address,
-                "shipping"=>$request->shipping,
+                "shippingData"=>$request->shipping,
                 "currency"=>"XAF",
                 "reference"=>$reference,
             ]
