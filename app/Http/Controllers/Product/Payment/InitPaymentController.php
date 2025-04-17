@@ -4,46 +4,69 @@ namespace App\Http\Controllers\Product\Payment;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class InitPaymentController extends Controller
 {
-    public function initPayment(Request $request){
+    public function PaymentCoin(Request $request){
+        $reference=Auth::guard('api')->user()->id . '-' . uniqid();
+        $response=$this->initPayment($request,$reference);
+        $responseCharge=$this->charge($response);
+        return response()->json([
+            "status"=>"success",
+            "message"=>"Payment initiated",
+            "reference"=>$response,
+            "statusCharge"=>$responseCharge
+        ]);
+    }
+
+    private function initPayment(Request $request,$reference){
+        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
+
             $url = "https://api.notchpay.co/payments/initialize";
-            $source=$request->s;
-            $address = urlencode($request->address);
-            $quarter = urlencode($request->quarter);
-            $quantity = $request->quantity;
-            if($source=="0"){
-            $total = $request->total;
-            $shipping = $request->shipping;
-            $productId = $request->productId;
-            $name = urlencode($request->name);
-            $price = $request->price;
-            
-            
-            $paymentMethod = $request->paymentMethod;
-            $urlCallback=env("URL_FRONTEND")."/checkout/state?method=$paymentMethod&source=$source&total=$total&shipping=$shipping&productId=$productId&quantity=$quantity&price=$price&quarter=$quarter&name=$name&address=$address";
+
+           
                 
-            }else{
-                
-                $urlCallback=env("URL_FRONTEND")."/checkout/state?source=$source&quarter=$quarter&address=$address&quantity=$quantity";
-            }
+           
             
         $response=Http::acceptJson()->withBody(json_encode(
             [
-                "email"=>"brams@gmail.com",
-                "amount"=>"100",
+                "email"=>Auth::guard('api')->user()->email,
+                "amount"=>$request->price,
                 "currency"=>"XAF",
-                "reference"=>"REFID".rand(123456, 999999),
-                "callback"=>$urlCallback,
+                "reference"=>$reference,
             ]
             ),'application/json')->withHeaders([
-                "Authorization"=>"pk_test.aucN1k448sPoYBdotSJJ6U5IDXDFDFAhUbNSdVguuwHAuhBIGVC0NHTQgEl30m3Xtq83aqpSvq9rFA1VPi7cRUiaKr0fAh64xFLxIqiof4y7tZ6TuJ9FM4cUHs5Av"
+                "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
             ])->post($url);
-
-            return json_decode($response);
+            $responseData=json_decode($response);
+            return $responseData->transaction->reference;
+    
+        }catch(Exception $e){
+            return response()->json([
+                "status"=>"error",
+                "message"=>$e->getMessage()
+            ],500);
+        }
+    }
+    private function charge($reference){
+        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
+        try{
+            $url = "https://api.notchpay.co/payments/".$reference;
+            $response=Http::acceptJson()->withBody(json_encode(
+                [
+                    "channel" => "cm.orange",
+                    "data" => [
+                        "phone" => "+237690394365"
+                    ]
+                    ],
+                ),'application/json')->withHeaders([
+                    "Authorization"=>"pk.GIliU6f6km4eymwifBDdyPPPdVFUbK8IDidMChFVGcxcKQrw36bi0H63gcRHLIVZeLh9MiFw20xhJgYrM7iWNC38s6dMcDXGaBJDLFVIr6pOWXgRiL4pv6xmSi6nf"
+                ])->post($url);
+                $responseData=json_decode($response);
+                return $responseData->status;
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",
