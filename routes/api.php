@@ -143,7 +143,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
     Route::apiResource("seller/products", ProductController::class);
-    Route::post("boost/shop",[BoostShopController::class,'boost']);
+    Route::post("/boost/shop",[BoostShopController::class,'boost']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
