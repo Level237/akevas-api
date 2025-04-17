@@ -20,6 +20,7 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
+use App\Http\Controllers\Admin\GiveCoinsController;
 use App\Http\Controllers\Seller\BoostShopController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
@@ -173,7 +174,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);
-    
+    Route::post("give/coins",[GiveCoinsController::class,'giveCoins']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
