@@ -9,9 +9,9 @@ use App\Http\Controllers\Controller;
 class GiveCoinsController extends Controller
 {
     public function giveCoins(Request $request){
-        $shop=Shop::find($request->shop_id);
+        $shop=Shop::find($request->shopId);
         $shop->coins=$shop->coins+$request->coins;
-
-        return response()->json(["message"=>"success"]);
+        $shop->save();
+        //return response()->json(["message"=>"success"]);
     }
 }
