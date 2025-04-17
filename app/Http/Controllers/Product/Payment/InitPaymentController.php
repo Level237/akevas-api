@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Http;
 
 class InitPaymentController extends Controller
 {
-    public function PaymentCoin(Request $request){
+    public function initPayment(Request $request){
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
-        $response=$this->initPayment($request,$reference);
+        $response=$this->initPaymentProcess($request,$reference);
         $responseCharge=$this->charge($response);
         return response()->json([
             "status"=>"success",
@@ -21,7 +21,7 @@ class InitPaymentController extends Controller
         ]);
     }
 
-    private function initPayment(Request $request,$reference){
+    private function initPaymentProcess(Request $request,$reference){
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
 
@@ -34,7 +34,13 @@ class InitPaymentController extends Controller
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>$request->price,
+                "amount"=>$request->amount,
+                "productId"=>$request->productId,
+                "quantity"=>$request->quantity,
+                "price"=>$request->price,
+                "quarter_delivery"=>$request->quarter_delivery,
+                "address"=>$request->address,
+                "shipping"=>$request->shipping,
                 "currency"=>"XAF",
                 "reference"=>$reference,
             ]
