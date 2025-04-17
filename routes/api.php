@@ -20,6 +20,7 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
+use App\Http\Controllers\Seller\BoostShopController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\ValidateShopController;
@@ -142,7 +143,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
     Route::apiResource("seller/products", ProductController::class);
-    
+    Route::post("boost/shop",[BoostShopController::class,'boost']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
@@ -152,6 +153,7 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
 
 Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
+    
     Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
 });
 
@@ -171,7 +173,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);
-   
+    
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);

@@ -36,6 +36,7 @@ class BoostShopController extends Controller
         }
         $hop->expire=null;
         $shop->isSubscribe=1;
+        $shop->coins=$shop->coins-$request->coins;
         $shop->save();
 
         $payment=new Payment;
