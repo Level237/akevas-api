@@ -182,6 +182,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/list/feedbacks',[ListFeedbackController::class,'index']);
     Route::get('/admin/list/shop/reviews',[ListShopReviewController::class,'index']);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
+    Route::post("add/shop",[CreateSellerController::class,'create']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
