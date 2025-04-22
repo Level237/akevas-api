@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Services\Verify;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
 
