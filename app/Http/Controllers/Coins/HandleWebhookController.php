@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Services\Verify\HandleVerifyPaymentNotchpay;
+use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
+
 
 class HandleWebhookController extends Controller
 {
