@@ -7,6 +7,8 @@ use App\Models\User;
 use NotchPay\NotchPay;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+
+use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -21,8 +23,8 @@ class HandleWebhookController extends Controller
     $amount=$payload['amount'];
     try {
         
-
-        if ($payload['status'] == 'failed') {
+        $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($reference);
+        if ($paymentStatus == 'failed') {
             $userId = explode('-', $merchant_reference)[0];
             $user = User::find($userId);
             
