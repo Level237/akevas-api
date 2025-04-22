@@ -16,28 +16,29 @@ class HandleWebhookController extends Controller
     NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
     $payload=$request->payload;
     $reference = $payload->data->reference;
-
+    $merchant_reference=$payload->data->merchant_reference;
+    $amount=$payload->data->amount;
     try {
         
 
         if ($request->status === 'failed') {
-            $userId = explode('-', $reference)[0];
+            $userId = explode('-', $merchant_reference)[0];
             $user = User::find($userId);
             
             if (!$user) return response()->json(['error' => 'User not found'], 404);
 
             // Vérifie si le paiement existe déjà
-            if (!Payment::where('transaction_ref', $transaction->reference)->exists()) {
+            if (!Payment::where('transaction_ref', $reference)->exists()) {
                 Payment::create([
                     'payment_type' => 'coins',
-                    'price' => $transaction->amount,
-                    'transaction_ref' => $transaction->reference,
+                    'price' => $amount,
+                    'transaction_ref' => $reference,
                     'payment_of' => 'coins',
                     'user_id' => $user->id,
                 ]);
 
                 $shop = Shop::where('user_id', $user->id)->first();
-                $shop->coins += $transaction->amount;
+                $shop->coins += $amount;
                 $shop->save();
             }
         }
