@@ -5,23 +5,24 @@ namespace App\Http\Controllers\Coins;
 use App\Models\Shop;
 use App\Models\User;
 use NotchPay\NotchPay;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class HandleWebhookController extends Controller
 {
     public function handleWebhook(Request $request)
 {
     NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
-    $payload=$request->payload;
-    $reference = $payload->data->reference;
-    $merchant_reference=$payload->data->merchant_reference;
-    $amount=$payload->data->amount;
+    $payload=$request->data;
+    $reference = $payload['reference'];
+    $merchant_reference=$payload['merchant_reference'];
+    $amount=$payload['amount'];
     try {
         
 
-        if ($request->status === 'failed') {
+        if ($payload['status'] == 'failed') {
             $userId = explode('-', $merchant_reference)[0];
             $user = User::find($userId);
             
