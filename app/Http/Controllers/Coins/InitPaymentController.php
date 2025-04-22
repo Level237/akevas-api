@@ -29,7 +29,7 @@ class InitPaymentController extends Controller
 
             $url = "https://api.notchpay.co/payments/initialize";
 
-            $urlCallback="http://localhost:5173/coins/confirmation";
+            $urlCallback="https://api-akevas.akevas.com/api/notchpay/coins/webhook";
                 
            
             

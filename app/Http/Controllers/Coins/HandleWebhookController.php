@@ -26,7 +26,7 @@ class HandleWebhookController extends Controller
     try {
         
         $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($reference);
-        if ($paymentStatus->status == 'failed') {
+        if (isset($paymentStatus->status) && $paymentStatus->status == 'failed') {
             $userId = explode('-', $merchant_reference)[0];
             $user = User::find($userId);
             

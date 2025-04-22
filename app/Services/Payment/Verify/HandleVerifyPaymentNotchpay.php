@@ -38,7 +38,7 @@ class HandleVerifyPaymentNotchpay{
                 return response()->json(['status' => 'processing']); // on attend encore le webhook
             }
             
-            //return response()->json(['status' => $transaction]);
+            return response()->json(['status' => "pending"]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
