@@ -14,7 +14,7 @@ class InitPaymentController extends Controller
     public function PaymentCoin(Request $request){
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
         $response=$this->initPayment($request,$reference);
-        $responseCharge=$this->charge($response);
+        $responseCharge=$this->charge($response,$request->phone,$request->paymentMethod);
         return response()->json([
             "status"=>"success",
             "message"=>"Payment initiated",
@@ -39,7 +39,9 @@ class InitPaymentController extends Controller
                 "amount"=>$request->coins,
                 "currency"=>"XAF",
                 "reference"=>$reference,
+                "phone"=>$request->phone,
                 "callback"=>$urlCallback,
+                
             ]
             ),'application/json')->withHeaders([
                 "Authorization"=>env("NOTCHPAY_API_KEY")
@@ -54,15 +56,15 @@ class InitPaymentController extends Controller
             ],500);
         }
     }
-    private function charge($reference){
+    private function charge($reference,$phone,$provider){
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
             $url = "https://api.notchpay.co/payments/".$reference;
             $response=Http::acceptJson()->withBody(json_encode(
                 [
-                    "channel" => "cm.orange",
+                    "channel" => $provider,
                     "data" => [
-                        "phone" => "+237690394365"
+                        "phone" => $phone
                     ]
                     ],
                 ),'application/json')->withHeaders([

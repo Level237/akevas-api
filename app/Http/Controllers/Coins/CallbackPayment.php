@@ -20,8 +20,6 @@ class CallbackPayment extends Controller
     {
         
         
-            
-        
             $shop=Shop::where('user_id',"16")->first();
             $shop->coins+=10000;
             $shop->save();
