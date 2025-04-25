@@ -11,7 +11,7 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {Schema::disableForeignKeyConstraints();
         Schema::create('attribute_value_groups', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Attribute::class)

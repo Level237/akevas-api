@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Attribute;
+use App\Models\AttributeValue;
 use Illuminate\Database\Seeder;
+use App\Models\AttributeValueGroup;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PointureSeeder extends Seeder
@@ -32,8 +34,8 @@ class PointureSeeder extends Seeder
         // Données de pointures par groupe
         $values = [
             'Bébé' => ['16', '17', '18'],
-            'Enfant' => ['28', '30', '32', '34'],
-            'Adulte' => ['38', '40', '42', '44'],
+            'Enfant' => ['28', '30', '32', '34',"35","36","37"],
+            'Adulte' => ['38','39', '40',"41", '42',"43", '44',"45"],
         ];
 
         foreach ($values as $groupLabel => $pointures) {

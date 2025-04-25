@@ -320,6 +320,8 @@ class ShopSeeder extends Seeder
                     'shop_name' => 'Mode Africaine',
                     'shop_description' => 'Vêtements traditionnels africains',
                     'town_id' =>1,
+                    'coins'=>10000,
+                    'shop_level'=>"2",
                     'quarter_id' =>1,
                     "shop_profile"=>"shop/profile/shop14.jpg",
                     'product_type' => "0",

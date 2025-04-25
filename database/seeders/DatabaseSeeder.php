@@ -32,12 +32,13 @@ class DatabaseSeeder extends Seeder
             DeliverySeeder::class,
             AttributeSeeder::class,
             AttributeValueSeeder::class,
+            PointureSeeder::class,
             CategorySeeder::class,
             ShopSeeder::class,
             ProductSeeder::class,
             SubscriptionSeeder::class,
             DescriptionSeeder::class,
-            DescriptionSubscriptionSeeder::class
+            DescriptionSubscriptionSeeder::class,
         ]);
     }
 }
