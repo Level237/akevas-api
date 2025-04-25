@@ -18,6 +18,13 @@ class AttributeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->attributes_name,
             'values' => $this->attributesValues,
+            'groups' => $this->attributeValueGroups->map(function ($group) {
+                return [
+                    'id' => $group->id,
+                    'label' => $group->label,
+                    'values' => $group->attributeValues,
+                ];
+            })
         ];
     }
 }
