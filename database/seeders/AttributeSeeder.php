@@ -24,9 +24,5 @@ class AttributeSeeder extends Seeder
         Attribute::create([
             'attributes_name' => "Poids"
         ]);
-
-        Attribute::create([
-            'attributes_name' => "Pointure"
-        ]);
     }
 }

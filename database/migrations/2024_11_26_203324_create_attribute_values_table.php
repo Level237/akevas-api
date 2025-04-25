@@ -25,6 +25,7 @@ return new class extends Migration
                 ->constrained('attribute_value_groups')
                 ->nullOnDelete();
             $table->string("value");
+            $table->string("hex_color")->nullable();
             $table->timestamps();
         });
     }
