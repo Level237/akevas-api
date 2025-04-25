@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Models\AttributeValue;
+use App\Models\AttributeValueGroup;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Attribute extends Model
 {
@@ -16,5 +17,10 @@ class Attribute extends Model
     {
 
         return $this->hasMany(AttributeValue::class);
+    }
+
+    public function attributeValueGroups(): HasMany
+    {
+        return $this->hasMany(AttributeValueGroup::class);
     }
 }
