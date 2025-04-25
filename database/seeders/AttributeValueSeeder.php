@@ -137,5 +137,11 @@ class AttributeValueSeeder extends Seeder
             'attribute_id' => 3,
             'value' => "10kg"
         ]);
+
+        AttributeValue::create([
+            'attribute_id' => 4,
+            'value' => "38"
+        ]);
+        
     }
 }

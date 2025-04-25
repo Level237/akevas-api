@@ -19,6 +19,11 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
+
+            $table->foreignId('attribute_value_group_id')
+                ->nullable()
+                ->constrained('attribute_value_groups')
+                ->nullOnDelete();
             $table->string("value");
             $table->timestamps();
         });
