@@ -16,6 +16,6 @@ class CatalogueController extends Controller
             return response()->json(['message' => 'Shop not found'], 404);
         }
         $products = Product::where('shop_id', $shop->id)->get();
-        return ProductResource::collection($products);
+        return response()->json(ProductResource::collection($products));
     }
 }
