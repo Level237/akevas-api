@@ -36,7 +36,7 @@ class InitPaymentController extends Controller
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>"10",
+                "amount"=>"100",
                 "currency"=>"XAF",
                 "reference"=>$reference,
                 "phone"=>$request->phone,
@@ -71,7 +71,7 @@ class InitPaymentController extends Controller
                     "Authorization"=>env("NOTCHPAY_API_KEY")
                 ])->post($url);
                 $responseData=json_decode($response);
-                return json_decode($response);
+                return $responseData->status;
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",
