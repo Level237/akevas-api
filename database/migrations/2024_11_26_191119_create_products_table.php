@@ -22,9 +22,9 @@ return new class extends Migration
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
             $table->string('product_url');
-            $table->string('product_price');
-            $table->string('product_quantity');
-            $table->string('product_profile');
+            $table->string('product_price')->nullable();
+            $table->string('product_quantity')->nullable();
+            $table->string('product_profile')->nullable();
             $table->boolean("status")->default(0);
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();

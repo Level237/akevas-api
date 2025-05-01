@@ -36,7 +36,7 @@ class InitPaymentController extends Controller
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>"100",
+                "amount"=>"10",
                 "currency"=>"XAF",
                 "reference"=>$reference,
                 "phone"=>$request->phone,
@@ -62,16 +62,16 @@ class InitPaymentController extends Controller
             $url = "https://api.notchpay.co/payments/".$reference;
             $response=Http::acceptJson()->withBody(json_encode(
                 [
-                    "channel" =>$provider,
+                    "channel" =>"cm.orange",
                     "data" => [
-                        "phone" => "+237".$phone
+                        "phone" => "+237690394365"
                     ]
                     ]
                 ),'application/json')->withHeaders([
                     "Authorization"=>env("NOTCHPAY_API_KEY")
                 ])->post($url);
                 $responseData=json_decode($response);
-                return $responseData->status;
+                return json_decode($response);
         }catch(Exception $e){
             return response()->json([
                 "status"=>"error",
