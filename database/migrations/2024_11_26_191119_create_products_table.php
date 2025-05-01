@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('product_gender');
             $table->string('whatsapp_number')->nullable();
             $table->string('product_residence')->nullable();
+            $table->boolean('type')->default(0);
             $table->timestamps();
         });
     }
