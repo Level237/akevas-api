@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Product;
 use App\Models\AttributeValue;
+use App\Models\VariationImage;
 use App\Models\VariationAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,6 +35,9 @@ class ProductVariation extends Model
     {
         return $this->hasMany(VariationAttribute::class);
     }
-
+    public function images(): HasMany
+    {
+        return $this->hasMany(VariationImage::class);
+    }
     
 }
