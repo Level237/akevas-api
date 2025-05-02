@@ -83,6 +83,7 @@ class ProductController extends Controller
                 $variations = json_decode($request->variations, true);
                 
                 foreach ($variations as $colorGroup) {
+                    $isColorOnly = true;
                     // Création de la variation principale (couleur)
                     $variation = $product->variations()->create([
                         'color_id' => $colorGroup['color']['id'],
@@ -110,7 +111,8 @@ class ProductController extends Controller
                                     'price' => $subVariation['size']['price']
                                 ]);
                             }
-                           
+                            $isColorOnly = false;
+                            break;
                         }
     
                         if (isset($subVariation['shoeSize'])) {
@@ -121,6 +123,17 @@ class ProductController extends Controller
                                     'price' => $subVariation['shoeSize']['price']
                                 ]);
                             }
+                            $isColorOnly = false;
+                            break;
+                        }
+
+                        $variationPrice = 0;
+                        if ($isColorOnly && isset($colorGroup['variations'][0]['price'])) {
+                            $variationPrice = $colorGroup['variations'][0]['price'];
+                            $product->variations()->create([
+                                'color_id' => $colorGroup['color']['id'],
+                                'price' => $variationPrice
+                            ]);
                         }
                     }
                 }
