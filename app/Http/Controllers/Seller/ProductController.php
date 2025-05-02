@@ -51,10 +51,10 @@ class ProductController extends Controller
             $product->product_url = (new GenerateUrlResource())->generateUrl($request->product_name);
             $product->product_description = $request->product_description;
             $product->shop_id = $shop->id;
-            $product->type = $request->type ?? 'simple'; // 'simple' ou 'variable'
+            $product->type = $request->type == 'simple' ? 0 : 1; // 'simple' ou 'variable'
             $product->product_gender = $request->product_gender;
             $product->whatsapp_number = $request->whatsapp_number;
-            $product->city = $request->product_residence;
+            $product->product_residence = $request->product_residence;
             $product->status = 1;
     
             // Gestion du produit simple
@@ -102,19 +102,25 @@ class ProductController extends Controller
                     // Gestion des sous-variations (tailles/pointures)
                     foreach ($colorGroup['variations'] as $subVariation) {
                         if (isset($subVariation['size'])) {
-                            $variation->attributes()->create([
-                                'attribute_value_id' => $subVariation['size']['id'],
-                                'quantity' => $subVariation['size']['quantity'],
-                                'price' => $subVariation['size']['price']
-                            ]);
+
+                            if (!$variation->attributes()->where('attribute_value_id', $subVariation['size']['id'])->exists()) {
+                                $variation->attributes()->create([
+                                    'attribute_value_id' => $subVariation['size']['id'],
+                                    'quantity' => $subVariation['size']['quantity'],
+                                    'price' => $subVariation['size']['price']
+                                ]);
+                            }
+                           
                         }
     
                         if (isset($subVariation['shoeSize'])) {
-                            $variation->attributes()->create([
-                                'attribute_value_id' => $subVariation['shoeSize']['id'],
-                                'quantity' => $subVariation['shoeSize']['quantity'],
-                                'price' => $subVariation['shoeSize']['price']
-                            ]);
+                            if (!$variation->attributes()->where('attribute_value_id', $subVariation['shoeSize']['id'])->exists()) {
+                                $variation->attributes()->create([
+                                    'attribute_value_id' => $subVariation['shoeSize']['id'],
+                                    'quantity' => $subVariation['shoeSize']['quantity'],
+                                    'price' => $subVariation['shoeSize']['price']
+                                ]);
+                            }
                         }
                     }
                 }
