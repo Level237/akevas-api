@@ -9,6 +9,7 @@ use App\Models\Review;
 use App\Models\Category;
 use App\Models\OrderDetail;
 use App\Models\AttributeValue;
+use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,5 +64,8 @@ class Product extends Model
     }
     public function productAttributesValues():HasMany{
         return $this->hasMany(ProductAttributesValue::class);
+    }
+    public function variations(){
+        return $this->hasMany(ProductVariation::class);
     }
 }

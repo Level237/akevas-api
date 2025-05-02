@@ -79,7 +79,7 @@ class ProductController extends Controller
             }
     
             // Gestion des variations pour produit variable
-            if ($product->type === 'variable' && $request->filled('variations')) {
+            if ($product->type == 1 && $request->filled('variations')) {
                 $variations = json_decode($request->variations, true);
                 
                 foreach ($variations as $colorGroup) {
@@ -87,7 +87,7 @@ class ProductController extends Controller
                     // Création de la variation principale (couleur)
                     $variation = $product->variations()->create([
                         'color_id' => $colorGroup['color']['id'],
-                        'price' => 0 // Le prix sera au niveau des attributs
+                        'price' => $colorGroup['variations'][0]['price'] // Le prix sera au niveau des attributs
                     ]);
     
                     // Gestion des images pour cette couleur
@@ -127,14 +127,7 @@ class ProductController extends Controller
                             break;
                         }
 
-                        $variationPrice = 0;
-                        if ($isColorOnly && isset($colorGroup['variations'][0]['price'])) {
-                            $variationPrice = $colorGroup['variations'][0]['price'];
-                            $product->variations()->create([
-                                'color_id' => $colorGroup['color']['id'],
-                                'price' => $variationPrice
-                            ]);
-                        }
+                        
                     }
                 }
             }
