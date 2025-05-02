@@ -58,14 +58,14 @@ class ProductController extends Controller
             $product->status = 1;
     
             // Gestion du produit simple
-            if ($product->type === 'simple') {
-                $product->price = $request->product_price;
-                $product->stock = $request->product_quantity;
+            if ($product->type ==0) {
+                $product->product_price = $request->product_price;
+                $product->product_quantity = $request->product_quantity;
             }
     
             // Gestion de l'image principale
             if ($request->hasFile('product_profile')) {
-                $product->featured_image = $request->file('product_profile')->store('product/profile', 'public');
+                $product->product_profile = $request->file('product_profile')->store('product/profile', 'public');
             }
     
             $product->save();
