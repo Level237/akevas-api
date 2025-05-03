@@ -102,7 +102,7 @@ class Product extends Model
                 return [
                     "id" => $attr->id,
                     "name" => $attr->value,
-                    "value" => $attr ?? null,
+                    "value" => AttributeValue::find(ProductVariation::find($attr->product_variation_id)->color_id)->value ?? null,
                     "quantity" => $attr->quantity ?? null,
                     "price" => $attr->price ?? null,
                 ];

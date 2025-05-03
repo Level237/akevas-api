@@ -106,8 +106,8 @@ class ProductController extends Controller
                     foreach ($colorGroup['variations'] as $subVariation) {
                         if (isset($subVariation['size'])) {
 
-                            if (!$variation->attributes()->where('attribute_value_id', $subVariation['size']['id'])->exists()) {
-                                $variation->attributes()->create([
+                            if (!$variation->attributesVariation()->where('attribute_value_id', $subVariation['size']['id'])->exists()) {
+                                $variation->attributesVariation()->create([
                                     'attribute_value_id' => $subVariation['size']['id'],
                                     'quantity' => $subVariation['size']['quantity'],
                                     'price' => $subVariation['size']['price']
@@ -117,8 +117,8 @@ class ProductController extends Controller
                         }
     
                         if (isset($subVariation['shoeSize'])) {
-                            if (!$variation->attributes()->where('attribute_value_id', $subVariation['shoeSize']['id'])->exists()) {
-                                $variation->attributes()->create([
+                            if (!$variation->attributesVariation()->where('attribute_value_id', $subVariation['shoeSize']['id'])->exists()) {
+                                $variation->attributesVariation()->create([
                                     'attribute_value_id' => $subVariation['shoeSize']['id'],
                                     'quantity' => $subVariation['shoeSize']['quantity'],
                                     'price' => $subVariation['shoeSize']['price']
