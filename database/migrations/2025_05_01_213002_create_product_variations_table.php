@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Product::class)->constrained()->onDelete('cascade');
             $table->foreignId('color_id')->constrained('attribute_values');
+            $table->string('quantity')->nullable();
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });

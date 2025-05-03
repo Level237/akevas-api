@@ -83,11 +83,13 @@ class ProductController extends Controller
                 $variations = json_decode($request->variations, true);
                 
                 foreach ($variations as $colorGroup) {
-                    $isColorOnly = true;
+                   
+                    $isColorOnly = $colorGroup['variations'][0]['isColorOnly'] ?? false;
                     // Création de la variation principale (couleur)
                     $variation = $product->variations()->create([
                         'color_id' => $colorGroup['color']['id'],
-                        'price' => $colorGroup['variations'][0]['price'] // Le prix sera au niveau des attributs
+                       'price' => $isColorOnly ? $colorGroup['variations'][0]['price'] : 0,
+                    'quantity' => $isColorOnly ? $colorGroup['variations'][0]['quantity'] : null,
                     ]);
     
                     // Gestion des images pour cette couleur
