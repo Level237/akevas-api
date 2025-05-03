@@ -98,11 +98,11 @@ class Product extends Model
             $base["price"] = $variation->price;
         } else {
             // Cas couleur + attributs (taille/pointure)
-            $base["attributes"] = collect($variation->attributesVariation)->map(function($attr) {
+            $base["attributes"] = $variation->attributesVariation->map(function($attr) {
                 return [
                     "id" => $attr->id,
-                    "name" => $attr->value,
-                    "value" => AttributeValue::find(ProductVariation::find($attr->product_variation_id)->color_id)->value ?? null,
+                    "name" => $attr->attributeValue->attribute->name ?? null,
+                    "value" => $attr->attributeValue->value ?? null,
                     "quantity" => $attr->quantity ?? null,
                     "price" => $attr->price ?? null,
                 ];
