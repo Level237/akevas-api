@@ -75,7 +75,7 @@ class Product extends Model
     // Récupère toutes les variations du produit
     return $this->variations->map(function($variation) {
         // Vérifie si c'est une variation couleur uniquement
-        $isColorOnly = collect($variation->attributes)->isEmpty() && $variation->quantity != null;
+        $isColorOnly = collect($variation->attributesVariation)->isEmpty() && $variation->quantity != null;
         // Images de la variation couleur
         $images = $variation->images->map(function($img) {
             return URL("/storage/" . $img->image_path);
@@ -92,19 +92,19 @@ class Product extends Model
             "isColorOnly" => $isColorOnly,
         ];
 
-        if (!$isColorOnly) {
+        if ($isColorOnly) {
             // Cas couleur uniquement
             $base["quantity"] = $variation->quantity;
             $base["price"] = $variation->price;
         } else {
             // Cas couleur + attributs (taille/pointure)
-            $base["attributes"] = collect($variation->attributes)->map(function($attr) {
+            $base["attributes"] = collect($variation->attributesVariation)->map(function($attr) {
                 return [
                     "id" => $attr->id,
-                    "name" => $attr->name,
-                    "value" => $attr->pivot->value ?? null,
-                    "quantity" => $attr->pivot->quantity ?? null,
-                    "price" => $attr->pivot->price ?? null,
+                    "name" => $attr->value,
+                    "value" => $attr ?? null,
+                    "quantity" => $attr->quantity ?? null,
+                    "price" => $attr->price ?? null,
                 ];
             });
         }

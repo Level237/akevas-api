@@ -31,7 +31,7 @@ class ProductVariation extends Model
         return $this->belongsTo(AttributeValue::class, 'color_id');
     }
 
-    public function attributes(): HasMany
+    public function attributesVariation(): HasMany
     {
         return $this->hasMany(VariationAttribute::class);
     }

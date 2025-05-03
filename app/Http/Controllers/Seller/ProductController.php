@@ -113,8 +113,7 @@ class ProductController extends Controller
                                     'price' => $subVariation['size']['price']
                                 ]);
                             }
-                            $isColorOnly = false;
-                            break;
+                           
                         }
     
                         if (isset($subVariation['shoeSize'])) {
@@ -125,8 +124,7 @@ class ProductController extends Controller
                                     'price' => $subVariation['shoeSize']['price']
                                 ]);
                             }
-                            $isColorOnly = false;
-                            break;
+                            
                         }
 
                         
