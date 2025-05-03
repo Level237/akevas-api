@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\OrderDetail;
 use App\Models\AttributeValue;
 use App\Models\ProductVariation;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,4 +69,47 @@ class Product extends Model
     public function variations(){
         return $this->hasMany(ProductVariation::class);
     }
+
+    public function getVariations()
+{
+    // Récupère toutes les variations du produit
+    return $this->variations->map(function($variation) {
+        // Vérifie si c'est une variation couleur uniquement
+        $isColorOnly = collect($variation->attributes)->isEmpty() && $variation->quantity != null;
+        // Images de la variation couleur
+        $images = $variation->images->map(function($img) {
+            return URL("/storage/" . $img->image_path);
+        });
+
+        $base = [
+            "id" => $variation->id,
+            "color" => [
+                "id" => $variation->color->id,
+                "name" => $variation->color->value,
+                "hex" => $variation->color->hex_color,
+            ],
+            "images" => $images,
+            "isColorOnly" => $isColorOnly,
+        ];
+
+        if (!$isColorOnly) {
+            // Cas couleur uniquement
+            $base["quantity"] = $variation->quantity;
+            $base["price"] = $variation->price;
+        } else {
+            // Cas couleur + attributs (taille/pointure)
+            $base["attributes"] = collect($variation->attributes)->map(function($attr) {
+                return [
+                    "id" => $attr->id,
+                    "name" => $attr->name,
+                    "value" => $attr->pivot->value ?? null,
+                    "quantity" => $attr->pivot->quantity ?? null,
+                    "price" => $attr->pivot->price ?? null,
+                ];
+            });
+        }
+
+        return $base;
+    });
+}
 }

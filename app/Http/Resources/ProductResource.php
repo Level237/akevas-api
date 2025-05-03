@@ -43,8 +43,8 @@ class ProductResource extends JsonResource
             "residence"=>Town::where('id',$this->product_residence)->select('town_name')->first()->town_name,
             "status" => $this->status,
             "isSubscribe" => $this->isSubscribe,
+            "variations" => $this->getVariations(),
             "expire" => $this->expire,
-            //"variants" => ProductAttributeResource::collection($this->attributes),
             "reviews" => ReviewResource::collection($this->reviews),
             "created_at" => $this->created_at,
             "subscribe_id" => $this->subscribe_id
