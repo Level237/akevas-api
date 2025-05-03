@@ -62,9 +62,9 @@ class InitPaymentController extends Controller
             $url = "https://api.notchpay.co/payments/".$reference;
             $response=Http::acceptJson()->withBody(json_encode(
                 [
-                    "channel" =>"cm.orange",
+                    "channel" =>$provider,
                     "data" => [
-                        "phone" => "+237690394365"
+                        "phone" => "+237".$phone
                     ]
                     ]
                 ),'application/json')->withHeaders([
