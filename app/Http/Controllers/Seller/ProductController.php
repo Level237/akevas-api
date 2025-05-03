@@ -89,7 +89,7 @@ class ProductController extends Controller
                     $variation = $product->variations()->create([
                         'color_id' => $colorGroup['color']['id'],
                        'price' => $isColorOnly ? $colorGroup['variations'][0]['price'] : 0,
-                    'quantity' => $isColorOnly ? $colorGroup['variations'][0]['quantity'] : null,
+                        'quantity' => $isColorOnly ? $colorGroup['variations'][0]['quantity'] : null,
                     ]);
     
                     // Gestion des images pour cette couleur

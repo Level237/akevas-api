@@ -15,7 +15,7 @@ class ProductVariation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'color_id', 'price'];
+    protected $fillable = ['product_id', 'color_id', 'price','quantity'];
 
     protected $casts = [
         'price' => 'decimal:2'
