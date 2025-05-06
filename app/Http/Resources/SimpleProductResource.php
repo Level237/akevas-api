@@ -23,6 +23,7 @@ class SimpleProductResource extends JsonResource
             "product_price" => $this->product_price,
             "review_average"=>floatval($this->reviews->avg('rating')),
             "product_url"=>$this->product_url,
+            "variations" => $this->getVariations(),
             "count_seller"=>OrderDetail::where("product_id",$this->id)->count(),
             "product_quantity" => $this->product_quantity,
         ];
