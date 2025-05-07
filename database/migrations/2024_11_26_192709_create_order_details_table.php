@@ -26,6 +26,7 @@ return new class extends Migration
             ->restrictOnUpdate();
             $table->string('order_product_quantity');
             $table->string("unit_price");
+            $table->boolean('has_variation')->default(false);
             $table->timestamps();
         });
     }
