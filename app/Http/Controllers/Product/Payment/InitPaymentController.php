@@ -11,15 +11,7 @@ use NotchPay\NotchPay;
 class InitPaymentController extends Controller
 {
     public function initPayment(Request $request){
-        $reference=Auth::guard('api')->user()->id . '-' . uniqid();
-        $response=$this->initPaymentProcess($request,$reference);
-        $responseCharge=$this->charge($response);
-        return response()->json([
-            "status"=>"success",
-            "message"=>"Payment initiated",
-            "reference"=>$response,
-            "statusCharge"=>$responseCharge
-        ]);
+        return $request;
     }
 
     private function initPaymentProcess(Request $request,$reference){
@@ -33,6 +25,10 @@ class InitPaymentController extends Controller
                 "email"=>Auth::guard('api')->user()->email,
                 "amount"=>"100",
                 "productId"=>$request->productId,
+                "phone"=>$request->phone,
+                "hasVariation"=>$request->hasVariation,
+                "productVariationId"=>$request->productVariationId,
+                "attributeVariationId"=>$request->attributeVariationId,
                 "quantity"=>$request->quantity,
                 "price"=>$request->price,
                 "quarter_delivery"=>$request->quarter_delivery,
@@ -60,9 +56,9 @@ class InitPaymentController extends Controller
             $url = "https://api.notchpay.co/payments/".$reference;
             $response=Http::acceptJson()->withBody(json_encode(
                 [
-                    "channel" => "cm.orange",
+                    "channel" => $request->methodChanel,
                     "data" => [
-                        "phone" => "+237690394365"
+                        "phone" => "+237".$request->phone,
                     ]
                     ],
                 ),'application/json')->withHeaders([
