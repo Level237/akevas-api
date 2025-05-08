@@ -6,6 +6,9 @@ use App\Models\User;
 use NotchPay\NotchPay;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use App\Models\OrderVariation;
+use App\Models\ProductVariation;
+use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
@@ -86,7 +89,20 @@ class HandleWebhookProductPaymentController extends Controller
            }
            if($order->save()){
             if($hasVariation==true){
+                $orderVariation=new OrderVariation;
+                if($attributeVariationId==null){
+                    
+                    $orderVariation->product_variation_id=$productVariationId;
+                    $this->reduceQuantityProductVariation($productVariationId,$quantity);
+                    
+                }else{
+                    $orderVariation->variation_attribute_id=$attributeVariationId;
+                    $this->reduceQuantityAttributeVariation($attributeVariationId,$quantity);
+                }
 
+                    $orderVariation->variation_quantity=$quantity;
+                    $orderVariation->variation_price=$amount;
+                    $orderVariation->save();
             }else{
                 $orderDetails=new OrderDetail;
                $orderDetails->order_id=$order->id;
@@ -137,4 +153,16 @@ class HandleWebhookProductPaymentController extends Controller
        $product->product_quantity-=$quantity;
        $product->save();
    }
+
+   private function reduceQuantityProductVariation($productVariationId,$quantity){
+        $productVariation=ProductVariation::find($productVariationId);
+        $productVariation->quantity-=$quantity;
+        $productVariation->save();
+   }
+
+   private function reduceQuantityAttributeVariation($attributeVariationId,$quantity){
+    $variationAttribute=VariationAttribute::find($attributeVariationId);
+    $variationAttribute->quantity-=$quantity;
+    $variationAttribute->save();
+}
 }
