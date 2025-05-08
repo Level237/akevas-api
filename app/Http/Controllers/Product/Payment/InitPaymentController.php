@@ -19,7 +19,10 @@ class InitPaymentController extends Controller
         try{
 
             $url = "https://api.notchpay.co/payments/initialize";
-
+            $productsPayments=null;
+            if(isset($request->productsPayments)){
+                $productsPayments=$request->productsPayments;
+            }
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
@@ -33,9 +36,10 @@ class InitPaymentController extends Controller
                 "price"=>$request->price,
                 "quarter_delivery"=>$request->quarter_delivery,
                 "address"=>$request->address,
-                "shippingData"=>$request->shipping,
+                "shipping"=>$request->shipping,
                 "currency"=>"XAF",
                 "reference"=>$reference,
+                "productsPayments"=>$productsPayments
             ]
             ),'application/json')->withHeaders([
                 "Authorization"=>env("NOTCHPAY_API_KEY")
