@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\OrderDetail;
 use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,10 +19,12 @@ return new class extends Migration
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();
-            $table->foreignIdFor(VariationAttribute::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+            $table->unsignedBigInteger('variation_attribute_id')->nullable();
+            $table->foreign('variation_attribute_id')->references('id')->on('variation_attributes')->onDelete('cascade');
+            
+            $table->unsignedBigInteger('product_variation_id')->nullable();
+            $table->foreign('product_variation_id')->references('id')->on('product_variations')->onDelete('cascade');
+            
             $table->string('variation_quantity');
             $table->string('variation_price');
             $table->timestamps();

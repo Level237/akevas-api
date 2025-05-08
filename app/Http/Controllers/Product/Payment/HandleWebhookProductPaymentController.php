@@ -56,7 +56,10 @@ class HandleWebhookProductPaymentController extends Controller
                         $productId,
                         $quantity,
                         $quarter_delivery,
-                        $address);
+                        $address,
+                        $productVariationId,
+                        $attributeVariationId
+                    );
                     }
                 }
             }
@@ -66,7 +69,7 @@ class HandleWebhookProductPaymentController extends Controller
     }
     }
 
-    private function createOrder($userId,$amount,$shipping,$productId,$quantity,$quarter_delivery,$address,$hasVariation){
+    private function createOrder($userId,$amount,$shipping,$productId,$quantity,$quarter_delivery,$address,$hasVariation,$productVariationId,$attributeVariationId){
 
         
         $order=new Order;
@@ -82,20 +85,20 @@ class HandleWebhookProductPaymentController extends Controller
                $order->address=$address;
            }
            if($order->save()){
-               $orderDetails=new OrderDetail;
+            if($hasVariation==true){
+
+            }else{
+                $orderDetails=new OrderDetail;
                $orderDetails->order_id=$order->id;
                $orderDetails->product_id=$productId;
                $orderDetails->order_product_quantity=$quantity;
                $orderDetails->unit_price=$amount/$quantity;
                if($orderDetails->save()){
-                if($hasVariation){
-
-                }else{
-                    $this->reduceQuantity($productId,$quantity);
-                }
-                   
+                   $this->reduceQuantity($productId,$quantity);
                    return $order;
                }
+            }
+               
            }
            return null;
    }
