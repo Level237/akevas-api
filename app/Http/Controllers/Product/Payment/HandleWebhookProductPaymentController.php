@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Product\Payment;
 use App\Models\User;
 use NotchPay\NotchPay;
 use App\Models\Payment;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Models\OrderVariation;
 use App\Models\ProductVariation;
@@ -134,16 +135,34 @@ class HandleWebhookProductPaymentController extends Controller
            }
            if($order->save()){
                foreach($productsPayments as $product){
-                   $orderDetails=new OrderDetail;
-                   $orderDetails->order_id=$order->id;
-                   $orderDetails->product_id=$product['product_id'];
-                   $orderDetails->order_product_quantity=$product['quantity'];
-                   $orderDetails->unit_price=$product['price'];
-                   if($orderDetails->save()){
-                       $this->reduceQuantity($product['product_id'],$product['quantity']);
-                   }
+                if($product['hasVariation']==true){
+                    $orderVariation=new OrderVariation;
+                    if($product['attributeVariationId']==null){
+                        $orderVariation->product_variation_id=$product['productVariationId'];
+                        $this->reduceQuantityProductVariation($product['productVariationId'],$product['quantity']);
+                        
+                    }else{
+                        $orderVariation->variation_attribute_id=$product['attributeVariationId'];
+                        $this->reduceQuantityAttributeVariation($product['attributeVariationId'],$product['quantity']);
+                    }
+
+                    $orderVariation->variation_quantity=$product['quantity'];
+                    $orderVariation->variation_price=$product['price'];
+                    $orderVariation->save();
+                }else{
+                    $orderDetails=new OrderDetail;
+                    $orderDetails->order_id=$order->id;
+                    $orderDetails->product_id=$product['product_id'];
+                    $orderDetails->order_product_quantity=$product['quantity'];
+                    $orderDetails->unit_price=$product['price'];
+                    if($orderDetails->save()){
+                        $this->reduceQuantity($product['product_id'],$product['quantity']);
+                        return $order;
+                    }
+                }
+                   
                }
-               return $order;
+              
            }
            return null;
    }
