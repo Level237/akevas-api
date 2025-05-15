@@ -11,7 +11,15 @@ use NotchPay\NotchPay;
 class InitPaymentController extends Controller
 {
     public function initPayment(Request $request){
-        return $request;
+        $reference=Auth::guard('api')->user()->id . '-' . uniqid();
+        $response=$this->initPaymentProcess($request,$reference);
+        $responseCharge=$this->charge($response);
+        return response()->json([
+            "status"=>"success",
+            "message"=>"Payment initiated",
+            "reference"=>$response,
+            "statusCharge"=>$responseCharge
+        ]);
     }
 
     private function initPaymentProcess(Request $request,$reference){
