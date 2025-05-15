@@ -49,24 +49,25 @@ class CategorySeeder extends Seeder
         $vetements = $parentCategories['Vêtements'];
         $sousCategoriesHommeVetements = [
             
-                ["name"=>'T-shirts et polos',"url"=>"t-shirts-et-polos-homme"],
-                ["name"=>'Chemises',"url"=>"chemises-homme"],
-                ["name"=>'Pantalons',"url"=>"pantalons-homme"],
-                ["name"=>'Costumes et smokings',"url"=>"costumes-et-smokings-homme"],
-                ["name"=>'Shorts',"url"=>"shorts-homme"],
-                ["name"=>'Sous-vêtements et Chaussettes',"url"=>"sous-vetement-et-chaussettes-homme"],
-                ["name"=>'Sweats & Hoodies',"url"=>"sweats-&-hoodies-homme"],
-                ["name"=>'Pyjamas',"url"=>"pyjamas-homme"],
-                ["name"=>'Vestes',"url"=>"vestes-homme"],
-                ["name"=>'Blousons',"url"=>"blousons-homme"],
-                ["name"=>'Manteaux',"url"=>"manteaux-homme"],
-                ["name"=>'Tenues traditionnelles',"url"=>"tenues-traditionnelles-homme"],
+                ["name"=>'T-shirts et polos',"url"=>"t-shirts-et-polos-homme","category_profile"=>"/categories/profile/T-shirts-et-polos.jpg"],
+                ["name"=>'Chemises',"url"=>"chemises-homme","category_profile"=>"/categories/profile/chemises.jpg"],
+                ["name"=>'Pantalons',"url"=>"pantalons-homme","category_profile"=>"/categories/profile/pantalons.jpg"],
+                ["name"=>'Costumes et smokings',"url"=>"costumes-et-smokings-homme","category_profile"=>"/categories/profile/costumes-et-smokings.jpg"],
+                ["name"=>'Shorts',"url"=>"shorts-homme","category_profile"=>"/categories/profile/shorts.jpg"],
+                ["name"=>'Sous-vêtements et Chaussettes',"url"=>"sous-vetement-et-chaussettes-homme","category_profile"=>"/categories/profile/shorts.jpg"],
+                ["name"=>'Sweats & Hoodies',"url"=>"sweats-&-hoodies-homme","category_profile"=>"/categories/profile/sweats-&-hoodies.jpg"],
+                ["name"=>'Pyjamas',"url"=>"pyjamas-homme","category_profile"=>null],
+                ["name"=>'Vestes',"url"=>"vestes-homme","category_profile"=>null],
+                ["name"=>'Blousons',"url"=>"blousons-homme","category_profile"=>null],
+                ["name"=>'Manteaux',"url"=>"manteaux-homme","category_profile"=>null],
+                ["name"=>'Tenues traditionnelles',"url"=>"tenues-traditionnelles-homme","category_profile"=>null],
         ];
 
         foreach ($sousCategoriesHommeVetements as $categoryData) {
             $category = Category::create([
                 'category_name' => $categoryData['name'],
                 'category_url' => $categoryData['url'],
+
                 'parent_id' =>$vetements->id
             ]);
             $category->genders()->attach($homme->id);

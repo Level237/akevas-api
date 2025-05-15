@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ProductListController extends Controller
 {
     public function index(){
-        return ProductResource::collection(Product::orderBy('created_at', 'desc')->inRandomOrder()->take(4)->get());
+        return ProductResource::collection(Product::orderBy('created_at', 'desc')->inRandomOrder()->take(5)->get());
     }
 
     public function adsProducts($id){
