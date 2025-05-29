@@ -13,7 +13,7 @@ class InitPaymentController extends Controller
     public function initPayment(Request $request){
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
         $response=$this->initPaymentProcess($request,$reference);
-        $responseCharge=$this->charge($response);
+        $responseCharge=$this->charge($request,$response);
         return response()->json([
             "status"=>"success",
             "message"=>"Payment initiated",
@@ -34,7 +34,7 @@ class InitPaymentController extends Controller
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>"100",
+                "amount"=>"10",
                 "productId"=>$request->productId,
                 "phone"=>$request->phone,
                 "hasVariation"=>$request->hasVariation,
@@ -44,7 +44,7 @@ class InitPaymentController extends Controller
                 "price"=>$request->price,
                 "quarter_delivery"=>$request->quarter_delivery,
                 "address"=>$request->address,
-                "shipping"=>$request->shipping,
+                "shippingData"=>$request->shipping,
                 "currency"=>"XAF",
                 "reference"=>$reference,
                 "productsPayments"=>$productsPayments
@@ -62,7 +62,7 @@ class InitPaymentController extends Controller
             ],500);
         }
     }
-    private function charge($reference){
+    private function charge($request,$reference){
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         try{
             $url = "https://api.notchpay.co/payments/".$reference;
@@ -70,7 +70,7 @@ class InitPaymentController extends Controller
                 [
                     "channel" => $request->methodChanel,
                     "data" => [
-                        "phone" => "+237".$request->phone,
+                        "phone" => "+237".$request->paymentPhone,
                     ]
                     ],
                 ),'application/json')->withHeaders([
