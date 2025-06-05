@@ -43,8 +43,8 @@ class HandleVerifyController extends Controller
             }
     
             // Si c'est success mais qu'on n'a pas encore crédité ?
-            if ($transaction->status === 'success') {
-                return response()->json(['status' => 'processing']); // on attend encore le webhook
+            if ($transaction->status === 'complete') {
+                return response()->json(['status' => 'success']); // on attend encore le webhook
             }
             
             return response()->json(['status' => $transaction]);

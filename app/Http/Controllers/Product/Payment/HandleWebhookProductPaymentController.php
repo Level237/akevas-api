@@ -25,7 +25,7 @@ class HandleWebhookProductPaymentController extends Controller
         $productVariationId=$payload['productVariationId'];
         $attributeVariationId=$payload['attributeVariationId'];
         $productsPayments=$payload['productsPayments'];
-        $shipping=$payload['shipping'];
+        $shipping=$payload['shippingData'];
         $quarter_delivery=$payload['quarter_delivery'];
         $address=$payload['address'];
         $amount=$payload['amount'];
