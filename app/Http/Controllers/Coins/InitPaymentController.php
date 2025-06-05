@@ -36,7 +36,7 @@ class InitPaymentController extends Controller
         $response=Http::acceptJson()->withBody(json_encode(
             [
                 "email"=>Auth::guard('api')->user()->email,
-                "amount"=>"100",
+                "amount"=>"10",
                 "currency"=>"XAF",
                 "reference"=>$reference,
                 "phone"=>$request->phone,

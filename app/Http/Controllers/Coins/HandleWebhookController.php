@@ -23,13 +23,17 @@ class HandleWebhookController extends Controller
     $reference = $payload['reference'];
     $merchant_reference=$payload['merchant_reference'];
     $amount=$payload['amount'];
+   
     try {
         
         $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($reference);
-        if (isset($paymentStatus->status) && $paymentStatus->status == 'failed') {
+        $responseStatus=$paymentStatus->getData(true)['status'];
+       
+        if (isset($responseStatus) && $responseStatus == 'failed') {
             $userId = explode('-', $merchant_reference)[0];
             $user = User::find($userId);
             
+              
             if (!$user) return response()->json(['error' => 'User not found'], 404);
 
             // Vérifie si le paiement existe déjà
@@ -41,10 +45,15 @@ class HandleWebhookController extends Controller
                     'payment_of' => 'coins',
                     'user_id' => $user->id,
                 ]);
-
+                
                 $shop = Shop::where('user_id', $user->id)->first();
                 $shop->coins += $amount;
                 $shop->save();
+                Log::info('Payment failed for user', [
+                                "user"=>$user,
+                                "type"=>$responseStatus,
+                                'amount' => $amount
+                            ]);
             }
         }
 
