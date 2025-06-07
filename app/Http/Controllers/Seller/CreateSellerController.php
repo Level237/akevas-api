@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Seller;
 
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\NewSellerRequest;
-use App\Services\Shop\generateShopNameService;
-use App\Models\Image;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Shop\generateShopNameService;
+use App\Services\Auth\CreateAccountSyncService;
 
 class CreateSellerController extends Controller
 {
@@ -57,9 +58,23 @@ class CreateSellerController extends Controller
             
             }
             if($shop->save()){
+
+                $urlShop=$this->getUrlSyncAccount();
+                $accountId=(new CreateAccountSyncService())->createSyncAccount(
+                $request->shop_name,
+                $urlShop,
+                $request->email,
+                $request->phone_number,
+                $shop->id,
+                );
+
+                $updateShopSyncAccount=$this->updateAccountSyncWithShop($shop->id,$accountId);
+
                 foreach($request->categories as $category){
                 $shop->categories()->attach($category);
             }
+
+            
             foreach($request->images as $image){
                 $i=new Image;
                 $i->image_path=$image->store('shop/images','public');
@@ -83,4 +98,13 @@ class CreateSellerController extends Controller
             
     }
 
+    private function updateAccountSyncWithShop($shopId,$accountId){
+        $shop=Shop::find($shopId);
+        $shop->accountId=$accountId;
+        $shop->save();
+    }
+
+    private function getUrlSyncAccount(){
+        return "https://main.akevas/shop/$shop->id";
+    }
 }

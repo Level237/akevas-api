@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class CreateAccountSyncService {
 
-    public function createSyncAccount($sellerName,$url,$category,$email,$phone,$sellerId){
+    public function createSyncAccount($sellerName,$url,$email,$phone,$sellerId){
 
         $response=Http::acceptJson()->withHeaders([ "Authorization"=>env("NOTCHPAY_API_KEY"),
         'Content-Type' => 'application/json',
@@ -16,7 +16,7 @@ class CreateAccountSyncService {
         'business_profile' => [
             'name' => $sellerName,
             'url' => $url,
-            'category' => $category,
+            'category' => "none",
         ],
         'email' => $email,
         'phone' => $phone,
