@@ -38,6 +38,7 @@ class ShopResource extends JsonResource
             "town"=>$this->town->town_name,
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
+            "visitTotal"=>$this->visits->count(),
             "categories"=>CategoryResource::collection($this->categories),
             "orders"=>OrderResource::collection($this->products->flatMap(function($product) {
                 return $product->orderDetails->map(function($orderDetail) {

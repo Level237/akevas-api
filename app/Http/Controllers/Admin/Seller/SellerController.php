@@ -7,7 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SellerResource;
-
+use App\Services\Shop\CreateVisitShopService;
+use Illuminate\Support\Facades\Log;
 class SellerController extends Controller
 {
     /**
@@ -29,10 +30,16 @@ class SellerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id,Request $request)
     {
         $shop=Shop::find($id);
         $user=$shop->user_id;
+        $visits=(new CreateVisitShopService())->visit($id,$request->ip(),$request->userAgent());
+        
+        Log::info('Payment failed for user', [
+            "user"=>$request->userAgent(),
+           
+        ]);
          return SellerResource::make(User::find($user));
     }
 

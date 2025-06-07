@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Quarter;
 use App\Models\Category;
 use App\Models\ShopType;
+use App\Models\ShopVisit;
 use App\Models\ShopReview;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -73,4 +74,9 @@ class Shop extends Model
     public function reviews():HasMany{
         return $this->hasMany(ShopReview::class);
     }
+
+    public function visits()
+{
+    return $this->hasMany(ShopVisit::class);
+}
 }
