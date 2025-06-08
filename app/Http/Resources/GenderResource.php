@@ -30,7 +30,7 @@ class GenderResource extends JsonResource
                 $query->where('gender_id', $this->id);
             })->where('parent_id', null)->get()),
             'products' => ProductResource::collection(Product::where('product_gender',$this->id)->orWhere('product_gender',4)->take(4)->get()),
-            'shops' => ShopResource::collection(Shop::where('shop_gender',$this->id)->orWhere('shop_gender',4)->take(7)->get()),
+            'shops' => ShopResource::collection(Shop::where('shop_gender',$this->id)->inRandomOrder()->orWhere('shop_gender',4)->where('state','=',"1")->take(7)->get()),
         ];
     }
 }

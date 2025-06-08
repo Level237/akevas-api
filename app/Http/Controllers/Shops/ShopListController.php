@@ -11,14 +11,14 @@ class ShopListController extends Controller
 {
     public function index(){
         return ShopResource::collection(
-            Shop::inRandomOrder()->take(7)->get());
+            Shop::inRandomOrder()->where('state',1)->take(7)->get());
     }
 
     public function all(){
-        return ShopResource::collection(Shop::orderBy('created_at', 'desc')->paginate(6));
+        return ShopResource::collection(Shop::where('state',1)->orderBy('created_at', 'desc')->paginate(6));
     }
 
     public function adsShops($id){
-        return ShopResource::collection(Shop::Where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
+        return ShopResource::collection(Shop::where('state',1)->where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
     }
 }
