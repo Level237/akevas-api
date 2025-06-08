@@ -21,6 +21,7 @@ class HandleWebhookController extends Controller
     NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
     $payload=$request->data;
     $reference = $payload['reference'];
+    $type=$payload['type'];
     $merchant_reference=$payload['merchant_reference'];
     $amount=$payload['amount'];
    
@@ -28,34 +29,37 @@ class HandleWebhookController extends Controller
         
         $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($reference);
         $responseStatus=$paymentStatus->getData(true)['status'];
-       
-        if (isset($responseStatus) && $responseStatus == 'complete') {
-            $userId = explode('-', $merchant_reference)[0];
-            $user = User::find($userId);
-            
-              
-            if (!$user) return response()->json(['error' => 'User not found'], 404);
-
-            // Vérifie si le paiement existe déjà
-            if (!Payment::where('transaction_ref', $reference)->exists()) {
-                Payment::create([
-                    'payment_type' => 'coins',
-                    'price' => $amount,
-                    'transaction_ref' => $reference,
-                    'payment_of' => 'coins',
-                    'user_id' => $user->id,
-                ]);
+        
+        if($type=="coins"){
+            if (isset($responseStatus) && $responseStatus == 'complete') {
+                $userId = explode('-', $merchant_reference)[0];
+                $user = User::find($userId);
                 
-                $shop = Shop::where('user_id', $user->id)->first();
-                $shop->coins += $amount;
-                $shop->save();
-                Log::info('Payment failed for user', [
-                                "user"=>$user,
-                                "type"=>$responseStatus,
-                                'amount' => $amount
-                            ]);
+                  
+                if (!$user) return response()->json(['error' => 'User not found'], 404);
+    
+                // Vérifie si le paiement existe déjà
+                if (!Payment::where('transaction_ref', $reference)->exists()) {
+                    Payment::create([
+                        'payment_type' => 'coins',
+                        'price' => $amount,
+                        'transaction_ref' => $reference,
+                        'payment_of' => 'coins',
+                        'user_id' => $user->id,
+                    ]);
+                    
+                    $shop = Shop::where('user_id', $user->id)->first();
+                    $shop->coins += $amount;
+                    $shop->save();
+                    Log::info('Payment failed for user', [
+                                    "user"=>$user,
+                                    "type"=>$responseStatus,
+                                    'amount' => $amount
+                                ]);
+                }
             }
         }
+       
 
         return response()->json(['message' => 'OK']);
     } catch (\Exception $e) {

@@ -40,6 +40,7 @@ class InitPaymentController extends Controller
                 "currency"=>"XAF",
                 "reference"=>$reference,
                 "phone"=>$request->phone,
+                "type"=>"coins",
                 "callback"=>$urlCallback,
                 
             ]
