@@ -20,6 +20,7 @@ class HandleWebhookProductPaymentController extends Controller
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $payload=$request->data;
         $reference = $payload['reference'];
+        $type=$payload['type'];
         $merchant_reference=$payload['merchant_reference'];
         $hasVariation=$payload['hasVariation'];
         $productVariationId=$payload['productVariationId'];
@@ -33,40 +34,45 @@ class HandleWebhookProductPaymentController extends Controller
 
         try{
             $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($reference);
-            if (isset($paymentStatus->status) && $paymentStatus->status == 'failed') {
-                $userId = explode('-', $merchant_reference)[0];
-                $user = User::find($userId);
-                if (!Payment::where('transaction_ref', $reference)->exists()) {
-                    if(isset($productsPayments)){
-                        $order=$this->multipleOrder(
-                        $userId,
-                        $amount,
-                        $shipping,
-                        $quarter_delivery,
-                        $address,
-                        $productsPayments,
-                        $hasVariation
-                    );
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'Payment successful',
-                            'order' => $order,
-                        ], 200);
-                    }else{
-                        $order=$this->createOrder(
-                        $userId,
-                        $amount,
-                        $shipping,
-                        $productId,
-                        $quantity,
-                        $quarter_delivery,
-                        $address,
-                        $productVariationId,
-                        $attributeVariationId
-                    );
+
+            if($type=="product"){
+                if (isset($paymentStatus->status) && $paymentStatus->status == 'complete') {
+                    $userId = explode('-', $merchant_reference)[0];
+                    $user = User::find($userId);
+                    if (!Payment::where('transaction_ref', $reference)->exists()) {
+                        if(isset($productsPayments)){
+                            $order=$this->multipleOrder(
+                            $userId,
+                            $amount,
+                            $shipping,
+                            $quarter_delivery,
+                            $address,
+                            $productsPayments,
+                            $hasVariation
+                        );
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'Payment successful',
+                                'order' => $order,
+                            ], 200);
+                        }else{
+                            $order=$this->createOrder(
+                            $userId,
+                            $amount,
+                            $shipping,
+                            $productId,
+                            $quantity,
+                            $quarter_delivery,
+                            $address,
+                            $productVariationId,
+                            $attributeVariationId
+                        );
+                        }
                     }
                 }
+
             }
+           
         }catch (\Exception $e) {
         Log::error('Webhook NotchPay failed', ['error' => $e->getMessage()]);
         return response()->json(['error' => 'server error'], 500);

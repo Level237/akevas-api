@@ -37,6 +37,7 @@ class InitPaymentController extends Controller
                 "amount"=>"10",
                 "productId"=>$request->productId,
                 "phone"=>$request->phone,
+                "type"=>"product",
                 "hasVariation"=>$request->hasVariation,
                 "productVariationId"=>$request->productVariationId,
                 "attributeVariationId"=>$request->attributeVariationId,
