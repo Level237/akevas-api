@@ -16,7 +16,7 @@ use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 class HandleWebhookProductPaymentController extends Controller
 {
-    public function handleVerify(Request $request){
+    public function handleWebhook(Request $request){
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $payload=$request->data;
         $reference = $payload['reference'];
