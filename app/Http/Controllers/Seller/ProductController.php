@@ -55,7 +55,7 @@ class ProductController extends Controller
             $product->product_gender = $request->product_gender;
             $product->whatsapp_number = $request->whatsapp_number;
             $product->product_residence = $request->product_residence;
-            $product->status = 1;
+            $product->status = 0;
     
             // Gestion du produit simple
             if ($product->type ==0) {

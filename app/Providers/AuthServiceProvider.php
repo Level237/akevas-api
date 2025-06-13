@@ -39,8 +39,8 @@ class AuthServiceProvider extends ServiceProvider
         Passport::personalAccessClient(
             config('passport.personal_access_client.secret')
         );
-        Passport::cookie('level_token');
+        
         Passport::enablePasswordGrant(); 
-         Log::info('Passport cookie name:', ['name' => config('passport.cookie.name')]);
+         
     }
 }
