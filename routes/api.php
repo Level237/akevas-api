@@ -57,6 +57,7 @@ use App\Http\Controllers\Delivery\UpdateDeliveryController;
 use App\Http\Controllers\Seller\ListSubscriptionController;
 use App\Http\Controllers\Seller\ShowSubscriptionController;
 use App\Http\Controllers\User\MakeCommentProductController;
+use App\Http\Controllers\Product\PublishedProductController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
@@ -80,11 +81,11 @@ use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Shops\ListReviewController as ShopReviewController;
 use App\Http\Controllers\Admin\Reviews\DeclineOrValidateShopReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
+use App\Http\Controllers\Product\Payment\HandleWebhookProductPaymentController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Coins\InitPaymentController as InitCoinsPaymentController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsController;
-use App\Http\Controllers\Product\Payment\HandleWebhookProductPaymentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -187,6 +188,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/list/shop/reviews',[ListShopReviewController::class,'index']);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::post("add/shop",[CreateSellerController::class,'create']);
+    Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
