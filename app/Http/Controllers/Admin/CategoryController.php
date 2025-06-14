@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CategoryResource;
 
 class CategoryController extends Controller
 {
@@ -15,6 +16,11 @@ class CategoryController extends Controller
     public function index()
     {
        $categories = Category::whereDoesntHave('parent')->get();
+        return response()->json(['categories'=>$categories],200);
+    }
+
+    public function all(){
+        $categories = CategoryResource::collection(Category::all());
         return response()->json(['categories'=>$categories],200);
     }
 
