@@ -21,6 +21,7 @@ class CategoryResource extends JsonResource
             "products_count"=>$this->products->count(),
             "category_profile"=>URL("/storage/".$this->category_profile),
             "category_url"=>$this->category_url,
+            "parent"=>$this->parent,
         ];
     }
 }

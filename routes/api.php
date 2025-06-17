@@ -189,7 +189,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::post("add/shop",[CreateSellerController::class,'create']);
     Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
-    Route::get('/admin/all/categories', [CategoryController::class, 'all']);
+    Route::get('/admin/all/categories', [CategoryController::class, 'all']);Route::get('/admin/all/categories', [CategoryController::class, 'all']);
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {

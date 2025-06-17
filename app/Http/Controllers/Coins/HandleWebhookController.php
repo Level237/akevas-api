@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Services\Payment\ValidatePaymentProductService;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 
@@ -23,7 +24,7 @@ class HandleWebhookController extends Controller
     $reference = $payload['reference'];
     $type=$payload['type'];
     $merchant_reference=$payload['merchant_reference'];
-    $amount=$payload['amount'];
+    
    
     try {
         
@@ -31,6 +32,7 @@ class HandleWebhookController extends Controller
         $responseStatus=$paymentStatus->getData(true)['status'];
         
         if($type=="coins"){
+            $amount=$payload['amount'];
             if (isset($responseStatus) && $responseStatus == 'complete') {
                 $userId = explode('-', $merchant_reference)[0];
                 $user = User::find($userId);
@@ -58,6 +60,32 @@ class HandleWebhookController extends Controller
                                 ]);
                 }
             }
+        }else if($type=="product"){
+            $hasVariation=$payload['hasVariation'];
+            $productVariationId=$payload['productVariationId'];
+            $attributeVariationId=$payload['attributeVariationId'];
+            $productsPayments=$payload['productsPayments'];
+            $shipping=$payload['shippingData'];
+            $quarter_delivery=$payload['quarter_delivery'];
+            $address=$payload['address'];
+            $amount=$payload['amount'];
+            $productId=$payload['productId'];
+
+            $validatePaymentProduct=(new ValidatePaymentProductService())->validatePaymentProduct(
+                $responseStatus,
+                $reference,
+                $merchant_reference,
+                $productsPayments,
+                $hasVariation,
+                $productVariationId,
+                $attributeVariationId,
+                $quantity,
+                $price,
+                $quarter_delivery,
+                $address,
+                $shipping,
+                $productId
+            );
         }
        
 
