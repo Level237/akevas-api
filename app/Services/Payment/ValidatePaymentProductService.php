@@ -8,41 +8,30 @@ use App\Models\Payment;
 use App\Models\OrderDetail;
 use App\Models\OrderVariation;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
-
+use Illuminate\Http\Request;
 class ValidatePaymentProductService
 {
 
     public function validatePaymentProduct(
-    $paymentStatus,
-    $reference,
-    $merchant_reference,
-    $productsPayments,
-    $hasVariation,
-    $productVariationId,
-    $attributeVariationId,
-    $quantity,
-    $price,
-    $quarter_delivery,
-    $address,
-    $shipping,
-    $productId
+    Request $request,
+    $userId
     )
     {
         
-        if (isset($paymentStatus) &&  $paymentStatus == 'complete') {
+        
 
-            $userId = explode('-', $merchant_reference)[0];
+            
             $user = User::find($userId);
-            if (!Payment::where('transaction_ref', $reference)->exists()) {
-                if(isset($productsPayments)){
+            if (!Payment::where('transaction_ref', $request->reference)->exists()) {
+                if(isset($request->productsPayments)){
                     $order=$this->multipleOrder(
                         $userId,
-                        $price,
-                        $shipping,
-                        $quarter_delivery,
-                        $address,
-                        $productsPayments,
-                        $hasVariation
+                        $request->price,
+                        $request->shipping,
+                        $request->quarter_delivery,
+                        $request->address,
+                        $request->productsPayments,
+                        $request->hasVariation
                     );
 
                     return response()->json([
@@ -51,19 +40,27 @@ class ValidatePaymentProductService
                         'order' => $order,
                     ], 200);
                 }else{
+
+                    if(!isset($request->productVariationId)){
+                        $request->productVariationId=null;
+                    }
+
+                    if(!isset($request->attributeVariationId)){
+                        $request->attributeVariationId=null;
+                    }
                     $order=$this->createOrder(
                     $userId,
-                    $price,
-                    $shipping,
-                    $productId,
-                    $quantity,
-                    $quarter_delivery,
-                    $address,
-                    $productVariationId,
-                    $attributeVariationId
+                    $request->price,
+                    $request->shipping,
+                    $request->productId,
+                    $request->quantity,
+                    $request->quarter_delivery,
+                    $request->address,
+                    $request->productVariationId,
+                    $request->attributeVariationId
                 );
             }
-        }
+        
     
     }
 }
