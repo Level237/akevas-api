@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class ValidatePaymentProductService
 {
 
-    public function validatePaymentProduct(
+    public function handle(
     Request $request,
     $userId
     )
@@ -23,6 +23,14 @@ class ValidatePaymentProductService
             
             $user = User::find($userId);
             if (!Payment::where('transaction_ref', $request->reference)->exists()) {
+
+                Payment::create([
+                    'payment_type' => 'product',
+                    'price' => $request->price,
+                    'transaction_ref' => $request->reference,
+                    'payment_of' => 'xaf',
+                    'user_id' => $user->id,
+                ]);
                 if(isset($request->productsPayments)){
                     $order=$this->multipleOrder(
                         $userId,

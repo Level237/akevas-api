@@ -2,15 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Models\Payment;
 use App\Models\Shop;
 use App\Models\User;
+use NotchPay\NotchPay;
+use App\Models\Payment;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 class PaymentProcessingJob implements ShouldQueue
 {
@@ -33,49 +35,27 @@ class PaymentProcessingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $reference = $this->request->reference ?? null;
-        $amount = $this->request->amount ?? null;
-        $merchant_reference = $this->request->merchant_reference ?? null;
-
+        
+        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $user = User::find($this->userId);
 
+        $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($this->request->reference);
+        $responseStatus=$paymentStatus->getData(true)['status'];
         if (!$user) {
             Log::error('PaymentProcessingJob: User not found', [
                 "user_id" => $this->userId,
-                "merchant_reference" => $merchant_reference,
+                "merchant_reference" => $this->request->reference,
             ]);
             return;
         }
 
-        if (!Payment::where('transaction_ref', $reference)->exists()) {
-            Payment::create([
-                'payment_type' => 'coins',
-                'price' => $amount,
-                'transaction_ref' => $reference,
-                'payment_of' => 'coins',
-                'user_id' => $user->id,
-            ]);
-
-            $shop = Shop::where('user_id', $user->id)->first();
-            if ($shop) {
-                $shop->coins += $amount;
-                $shop->save();
-                Log::info('PaymentProcessingJob: Coins added to shop', [
-                    "user_id" => $user->id,
-                    "shop_id" => $shop->id,
-                    "amount" => $amount,
-                    "reference" => $reference
-                ]);
-            } else {
-                Log::warning('PaymentProcessingJob: Shop not found for user', [
-                    "user_id" => $user->id,
-                    "reference" => $reference
-                ]);
-            }
-        } else {
-            Log::info('PaymentProcessingJob: Payment already processed', [
-                "reference" => $reference
-            ]);
+        if(isset($responseStatus) && $responseStatus === "processing"){
+            Self::dispatch($this->request,$this->userId)->delay(now()->addSeconds(5));
         }
+
+        if (isset($responseStatus) && $responseStatus == 'complete') {
+        
+        $processPaymentService=(new ValidatePaymentProductService())->handle($this->request,$this->userId);
+    }
     }
 }
