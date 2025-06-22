@@ -50,12 +50,12 @@ class PaymentProcessingJob implements ShouldQueue
         }
 
         if(isset($responseStatus) && $responseStatus === "processing"){
-            Self::dispatch($this->request,$this->userId)->delay(now()->addSeconds(5));
+            Self::dispatch($this->request,$this->userId)->delay(now()->addSeconds(15));
         }
 
         if (isset($responseStatus) && $responseStatus == 'complete') {
         
         $processPaymentService=(new ValidatePaymentProductService())->handle($this->request,$this->userId);
-    }
+        }
     }
 }
