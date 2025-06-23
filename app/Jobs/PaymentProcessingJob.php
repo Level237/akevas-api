@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\Payment\ValidatePaymentProductService;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 class PaymentProcessingJob implements ShouldQueue
@@ -50,12 +51,18 @@ class PaymentProcessingJob implements ShouldQueue
         }
 
         if(isset($responseStatus) && $responseStatus === "processing"){
+            Log::info('PaymentProcessingJob: Payment processing');
             Self::dispatch($this->request,$this->userId)->delay(now()->addSeconds(15));
         }
 
+        if(isset($responseStatus) && $responseStatus === "failed"){
+            Log::error('PaymentProcessingJob: Payment failed');
+            return;
+        }
+
         if (isset($responseStatus) && $responseStatus == 'complete') {
-        
-        $processPaymentService=(new ValidatePaymentProductService())->handle($this->request,$this->userId);
+            Log::info('PaymentProcessingJob: Payment complete');
+            $processPaymentService=(new ValidatePaymentProductService())->handle($this->request,$this->userId);
         }
     }
 }

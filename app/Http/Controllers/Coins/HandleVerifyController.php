@@ -37,6 +37,8 @@ class HandleVerifyController extends Controller
             if ($transaction->status === 'failed' || $transaction->status === 'canceled') {
                 return response()->json(['status' => 'failed']);
             }
+
+            
     
             if ($transaction->status === 'pending') {
                 return response()->json(['status' => 'pending']);
@@ -45,6 +47,8 @@ class HandleVerifyController extends Controller
             // Si c'est success mais qu'on n'a pas encore crédité ?
             if ($transaction->status === 'complete') {
                 return response()->json(['status' => 'success']); // on attend encore le webhook
+            }elseif($transaction->status === 'processing'){
+                return response()->json(['status' => 'processing']);
             }
             
             return response()->json(['status' => $transaction]);
