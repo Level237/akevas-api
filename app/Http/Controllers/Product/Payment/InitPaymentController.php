@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Product\Payment;
 
+use NotchPay\Payment;
+use NotchPay\NotchPay;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use NotchPay\Payment;
-use NotchPay\NotchPay;
+
 class InitPaymentController extends Controller
 {
     public function initPayment(Request $request){
         $reference=Auth::guard('api')->user()->id . '-' . uniqid();
         $response=$this->initPaymentProcess($request,$reference);
         $responseCharge=$this->charge($request,$response);
-      
+     
         return response()->json([
             "status"=>"success",
             "message"=>"Payment initiated",

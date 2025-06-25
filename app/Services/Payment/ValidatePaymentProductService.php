@@ -49,13 +49,7 @@ class ValidatePaymentProductService
                     ], 200);
                 }else{
 
-                    if(!isset($request->productVariationId)){
-                        $request->productVariationId=null; 
-                    }
-
-                    if(!isset($request->attributeVariationId)){
-                        $request->attributeVariationId=null;
-                    }
+                    
                     $order=$this->createOrder(
                     $userId,
                     $request->amount,
