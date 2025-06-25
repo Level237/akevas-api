@@ -24,9 +24,12 @@ class PaymentProcessingJob implements ShouldQueue
 
     /**
      * Create a new job instance.
+     *
+  
      */
     public function __construct($request, $userId)
     {
+        // On ne stocke que des données simples (array), pas d'objet Request ou Closure
         $this->request = $request;
         $this->userId = $userId;
     }
@@ -36,33 +39,41 @@ class PaymentProcessingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $user = User::find($this->userId);
 
-        $paymentStatus=(new HandleVerifyPaymentNotchpay())->verify($this->request->reference);
-        $responseStatus=$paymentStatus->getData(true)['status'];
+      
+
+        $paymentStatus = (new HandleVerifyPaymentNotchpay())->verify($this->request['reference']);
+        $responseStatus = $paymentStatus->getData(true)['status'] ?? null;
+        Log::info('PaymentProcessingJob: Payment processing for job', [
+            "app" => $responseStatus,
+        ]);
         if (!$user) {
             Log::error('PaymentProcessingJob: User not found', [
                 "user_id" => $this->userId,
-                "merchant_reference" => $this->request->reference,
+                "merchant_reference" => $this->request['reference'],
             ]);
             return;
         }
 
-        if(isset($responseStatus) && $responseStatus === "processing"){
-            Log::info('PaymentProcessingJob: Payment processing');
-            Self::dispatch($this->request,$this->userId)->delay(now()->addSeconds(15));
+        if (isset($responseStatus) && $responseStatus === "processing" || $responseStatus === "pending") {
+            Log::info('PaymentProcessingJob: Payment processing for job', [
+                "app" => $this->request,
+            ]);
+            // On redéclenche le job avec les mêmes données, pas d'objet Request
+            self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(30));
         }
 
-        if(isset($responseStatus) && $responseStatus === "failed"){
+        if (isset($responseStatus) && $responseStatus === "failed") {
             Log::error('PaymentProcessingJob: Payment failed');
             return;
         }
 
         if (isset($responseStatus) && $responseStatus == 'complete') {
             Log::info('PaymentProcessingJob: Payment complete');
-            $processPaymentService=(new ValidatePaymentProductService())->handle($this->request,$this->userId);
+            // On passe un objet Request reconstitué à la méthode handle
+            (new ValidatePaymentProductService())->handle($this->request, $this->userId);
         }
     }
 }

@@ -16,7 +16,7 @@ class PaymentProductProcessingController extends Controller
             'request' => $request->all(),
             'userId' => $userId
         ]);
-        //PaymentProcessingJob::dispatch($request,$userId);
+        PaymentProcessingJob::dispatch($request->all(),$userId);
 
         return response()->json([
             'message' => 'Payment processing job dispatched',
