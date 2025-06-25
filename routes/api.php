@@ -99,7 +99,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
     */
 
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
-Route::get('/get/payment/status/{ref}',[HandleVerifyController::class,'getPaymentStatus']);
+Route::post('/get/payment/status',[HandleVerifyController::class,'getPaymentStatus']);
 Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
 Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
 Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment']);

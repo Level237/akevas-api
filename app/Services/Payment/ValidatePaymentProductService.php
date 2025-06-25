@@ -26,7 +26,7 @@ class ValidatePaymentProductService
 
                 Payment::create([
                     'payment_type' => 'product',
-                    'price' => $request->price,
+                    'price' => $request->amount,
                     'transaction_ref' => $request->reference,
                     'payment_of' => 'xaf',
                     'user_id' => $user->id,
@@ -50,7 +50,7 @@ class ValidatePaymentProductService
                 }else{
 
                     if(!isset($request->productVariationId)){
-                        $request->productVariationId=null;
+                        $request->productVariationId=null; 
                     }
 
                     if(!isset($request->attributeVariationId)){
@@ -58,7 +58,7 @@ class ValidatePaymentProductService
                     }
                     $order=$this->createOrder(
                     $userId,
-                    $request->price,
+                    $request->amount,
                     $request->shipping,
                     $request->productId,
                     $request->quantity,
