@@ -25,7 +25,7 @@ class HandleVerifyPaymentNotchpay{
             ])->get($url);
             $responseData=json_decode($response);
             $transaction=$responseData->transaction;
-            if ($transaction->status === 'failed' || $transaction->status === 'canceled') {
+            if ($transaction->status === 'failed' || $transaction->status === 'canceled' || $transaction->status === "abandoned") {
                 return response()->json(['status' => 'failed']);
             }
     

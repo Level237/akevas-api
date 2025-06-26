@@ -62,7 +62,7 @@ class PaymentProcessingJob implements ShouldQueue
                 "app" => $this->request,
             ]);
             // On redéclenche le job avec les mêmes données, pas d'objet Request
-            self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(30));
+            self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(15));
         }
 
         if (isset($responseStatus) && $responseStatus === "failed") {
