@@ -5,10 +5,14 @@ namespace App\Services\Payment;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\OrderDetail;
-use App\Models\OrderVariation;
-use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 use Illuminate\Http\Request;
+use App\Models\OrderVariation;
+use App\Models\ProductVariation;
+use App\Models\VariationAttribute;
+use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
+
 class ValidatePaymentProductService
 {
 
@@ -28,7 +32,7 @@ class ValidatePaymentProductService
                     'payment_type' => 'product',
                     'price' => $request['amount'],
                     'transaction_ref' => $request['reference'],
-                    'payment_of' => 'xaf',
+                    'payment_of' => 'Paiement produit',
                     'user_id' => $user->id,
                 ]);
                 if(isset($request->productsPayments)){
@@ -58,6 +62,7 @@ class ValidatePaymentProductService
                     $request['quantity'],
                     $request['quarter_delivery'],
                     $request['address'],
+                    $request['hasVariation'],
                     $request['productVariationId'],
                     $request['attributeVariationId']
                 );
