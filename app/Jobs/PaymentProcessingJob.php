@@ -67,7 +67,6 @@ class PaymentProcessingJob implements ShouldQueue
 
         if (isset($responseStatus) && $responseStatus === "failed") {
             Log::error('PaymentProcessingJob: Payment failed');
-            (new ValidatePaymentProductService())->handle($this->request, $this->userId);
             return;
         }
 
