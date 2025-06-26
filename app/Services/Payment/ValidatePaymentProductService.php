@@ -13,7 +13,7 @@ class ValidatePaymentProductService
 {
 
     public function handle(
-    Request $request,
+    $request,
     $userId
     )
     {
@@ -22,24 +22,24 @@ class ValidatePaymentProductService
 
             
             $user = User::find($userId);
-            if (!Payment::where('transaction_ref', $request->reference)->exists()) {
+            if (!Payment::where('transaction_ref', $request['reference'])->exists()) {
 
                 Payment::create([
                     'payment_type' => 'product',
-                    'price' => $request->amount,
-                    'transaction_ref' => $request->reference,
+                    'price' => $request['amount'],
+                    'transaction_ref' => $request['reference'],
                     'payment_of' => 'xaf',
                     'user_id' => $user->id,
                 ]);
                 if(isset($request->productsPayments)){
                     $order=$this->multipleOrder(
                         $userId,
-                        $request->price,
-                        $request->shipping,
-                        $request->quarter_delivery,
-                        $request->address,
-                        $request->productsPayments,
-                        $request->hasVariation
+                        $request['price'],
+                        $request['shipping'],
+                        $request['quarter_delivery'],
+                        $request['address'],
+                        $request['productsPayments'],
+                        $request['hasVariation']
                     );
 
                     return response()->json([
@@ -52,14 +52,14 @@ class ValidatePaymentProductService
                     
                     $order=$this->createOrder(
                     $userId,
-                    $request->amount,
-                    $request->shipping,
-                    $request->productId,
-                    $request->quantity,
-                    $request->quarter_delivery,
-                    $request->address,
-                    $request->productVariationId,
-                    $request->attributeVariationId
+                    $request['amount'],
+                    $request['shipping'],
+                    $request['productId'],
+                    $request['quantity'],
+                    $request['quarter_delivery'],
+                    $request['address'],
+                    $request['productVariationId'],
+                    $request['attributeVariationId']
                 );
             }
         
