@@ -43,7 +43,8 @@ class ValidatePaymentProductService
                         $request['quarter_delivery'],
                         $request['address'],
                         $request['productsPayments'],
-                        $request['hasVariation']
+                        $request['hasVariation'],
+                        $reference
                     );
 
                     return response()->json([
@@ -64,7 +65,8 @@ class ValidatePaymentProductService
                     $request['address'],
                     $request['hasVariation'],
                     $request['productVariationId'],
-                    $request['attributeVariationId']
+                    $request['attributeVariationId'],
+                    $reference
                 );
             }
         
@@ -72,7 +74,7 @@ class ValidatePaymentProductService
     }
 }
 
-private function createOrder($userId,$amount,$shipping,$productId,$quantity,$quarter_delivery,$address,$hasVariation,$productVariationId,$attributeVariationId){
+private function createOrder($userId,$amount,$shipping,$productId,$quantity,$quarter_delivery,$address,$hasVariation,$productVariationId,$attributeVariationId,$reference){
 
         
     $order=new Order;
@@ -88,6 +90,8 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
            $order->address=$address;
        }
        if($order->save()){
+
+        $this->savePaymentAndOrder($reference,$order->id);
         if($hasVariation=="false"){
 
             $orderDetails=new OrderDetail;
@@ -121,7 +125,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
        return null;
 }
 
-private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$hasVariation){
+private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$hasVariation,$reference){
     $order=new Order;
     $order->user_id=$userId;
     $order->isPay=1;
@@ -135,6 +139,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
         $order->address=$address;
     }
     if($order->save()){
+        $this->savePaymentAndOrder($reference,$order->id);
         foreach($productsPayments as $product){
          if($product['hasVariation']=="true"){
              $orderVariation=new OrderVariation;
