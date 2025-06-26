@@ -88,7 +88,19 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
            $order->address=$address;
        }
        if($order->save()){
-        if($hasVariation==true){
+        if($hasVariation=="false"){
+
+            $orderDetails=new OrderDetail;
+           $orderDetails->order_id=$order->id;
+           $orderDetails->product_id=$productId;
+           $orderDetails->order_product_quantity=$quantity;
+           $orderDetails->unit_price=$amount/$quantity;
+           if($orderDetails->save()){
+               $this->reduceQuantity($productId,$quantity);
+               return $order;
+           }
+            
+        }else{
             $orderVariation=new OrderVariation;
             if($attributeVariationId==null){
                 
@@ -103,16 +115,6 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
                 $orderVariation->variation_quantity=$quantity;
                 $orderVariation->variation_price=$amount;
                 $orderVariation->save();
-        }else{
-            $orderDetails=new OrderDetail;
-           $orderDetails->order_id=$order->id;
-           $orderDetails->product_id=$productId;
-           $orderDetails->order_product_quantity=$quantity;
-           $orderDetails->unit_price=$amount/$quantity;
-           if($orderDetails->save()){
-               $this->reduceQuantity($productId,$quantity);
-               return $order;
-           }
         }
            
        }
