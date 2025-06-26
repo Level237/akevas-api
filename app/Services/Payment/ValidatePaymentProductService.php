@@ -136,7 +136,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
     }
     if($order->save()){
         foreach($productsPayments as $product){
-         if($product['hasVariation']==true){
+         if($product['hasVariation']=="true"){
              $orderVariation=new OrderVariation;
              if($product['attributeVariationId']==null){
                  $orderVariation->product_variation_id=$product['productVariationId'];
@@ -183,6 +183,14 @@ private function reduceQuantityAttributeVariation($attributeVariationId,$quantit
 $variationAttribute=VariationAttribute::find($attributeVariationId);
 $variationAttribute->quantity-=$quantity;
 $variationAttribute->save();
+}
+
+private function savePaymentAndOrder($ref,$order_id){
+
+    $payment=Payment::where('transaction_ref',$ref)->first();
+
+    $payment->order_id=$order_id;
+    $payment->save();
 }
 
 }
