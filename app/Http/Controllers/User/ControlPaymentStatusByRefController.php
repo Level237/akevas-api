@@ -7,6 +7,7 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
 
 class ControlPaymentStatusByRefController extends Controller
 {
@@ -15,7 +16,7 @@ class ControlPaymentStatusByRefController extends Controller
 
         if(isset($payment)){
             $order=Order::find($payment->order_id);
-            
+            response()->json(OrderResource::collection($order));
         }
     }
 }
