@@ -73,6 +73,7 @@ use App\Http\Controllers\Admin\Reviews\ListShopReviewController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
 use App\Http\Controllers\Product\Payment\SucessPaymentController;
+use App\Http\Controllers\User\ControlPaymentStatusByRefController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
@@ -208,6 +209,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
+    Route::post('/control/payment',[ControlPaymentStatusByRefController::class,'control']);
     Route::post('/payment/product', [PaymentProductProcessingController::class, 'handlePaymentProduct']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
