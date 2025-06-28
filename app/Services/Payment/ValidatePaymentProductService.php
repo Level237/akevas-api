@@ -44,7 +44,7 @@ class ValidatePaymentProductService
                         $request['address'],
                         $request['productsPayments'],
                         $request['hasVariation'],
-                        $reference
+                        $request['reference']
                     );
 
                     return response()->json([
@@ -66,7 +66,7 @@ class ValidatePaymentProductService
                     $request['hasVariation'],
                     $request['productVariationId'],
                     $request['attributeVariationId'],
-                    $reference
+                    $request['reference']
                 );
             }
         
