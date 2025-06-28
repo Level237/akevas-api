@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('order_variations', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(OrderDetail::class)
+            $table->foreignIdFor(Order::class)
             ->constrained()
             ->restrictOnDelete()
             ->restrictOnUpdate();

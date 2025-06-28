@@ -106,6 +106,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
             
         }else{
             $orderVariation=new OrderVariation;
+            $orderVariation->order_id=$order->id;
             if($attributeVariationId==null){
                 
                 $orderVariation->product_variation_id=$productVariationId;
