@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\OrderVariation;
 use App\Models\ProductVariation;
 use App\Models\VariationAttribute;
+use Illuminate\Support\Facades\Log;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 class ValidatePaymentProductService
@@ -180,7 +181,8 @@ private function reduceQuantity($productId,$quantity){
 }
 
 private function reduceQuantityProductVariation($productVariationId,$quantity){
-    $productVariation=ProductVariation::find($productVariationId);
+    $productVariation=ProductVariation::find($productVariationId); 
+    Log::info('reduce price product variation');
     $productVariation->quantity-=$quantity;
     $productVariation->save();
 }
