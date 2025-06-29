@@ -69,6 +69,7 @@ use App\Http\Controllers\Admin\Stat\ActiveSellerStatController;
 use App\Http\Controllers\CheckIfInputExistInDatabaseController;
 use App\Http\Controllers\Delivery\GetPreferenceOrderController;
 use App\Http\Controllers\Product\Payment\InitPaymentController;
+use App\Http\Controllers\User\ShowPaymentByReferenceController;
 use App\Http\Controllers\Admin\Reviews\ListShopReviewController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
@@ -216,8 +217,9 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
     Route::post('/make/comment/shop/{shop_id}',[MakeReviewShopController::class,'makeCommentShop']);
     Route::post('/success/payment', [SucessPaymentController::class, 'successPayment']);
+    
 });
-
+Route::get("/show/payment/{ref}",[ShowPaymentByReferenceController::class,"show"]);
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
     
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);

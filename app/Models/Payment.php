@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payment extends Model
 {
@@ -20,4 +22,14 @@ class Payment extends Model
         'subscription_id',
         'status'
     ];
+
+
+    public function order(){
+
+        return $this->belongsTo(Order::class);
+    }
+    public function user(){
+
+        return $this->belongsTo(User::class);
+    }
 }
