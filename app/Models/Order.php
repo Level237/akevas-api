@@ -20,6 +20,10 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+    public function orderVariations():HasMany{
+        return $this->hasMany(OrderVariation::class);
+    }
+
     public function processByDelivery():BelongsToMany{
         return $this->belongsToMany(User::class, 'delivery_order', 'order_id', 'user_id')->withPivot('isAccepted');
     }

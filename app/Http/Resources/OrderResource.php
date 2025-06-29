@@ -8,6 +8,7 @@ use App\Models\Quarter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\OrderDetailResource;
+use App\Http\Resources\OrderVariationResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends JsonResource
@@ -19,14 +20,26 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Vérifier si les orderDetails sont vides
+        $orderDetails = $this->orderDetails;
+        $orderVariations = $this->orderVariations;
+        
+        $items = $orderDetails->count() > 0 
+            ? OrderDetailResource::collection($orderDetails)
+            : OrderVariationResource::collection($orderVariations);
+        
+        $itemsCount = $orderDetails->count() > 0 
+            ? $orderDetails->count() 
+            : $orderVariations->count();
+
         return [
             'id'=>$this->id,
             'total_amount'=>$this->total,
             'status'=>$this->status,
             'created_at'=>$this->created_at,
            'quarter_delivery'=>$this->quarter_delivery,
-           'order_details'=>OrderDetailResource::collection($this->orderDetails)        ,
-            'itemsCount'=>$this->orderDetails->count(),
+           'order_details'=>$items,
+            'itemsCount'=>$itemsCount,
             'payment_method'=>$this->payment_method,
             'isPay'=>$this->isPay,
             'userName'=>$this->user->userName,
