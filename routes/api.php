@@ -25,6 +25,7 @@ use App\Http\Controllers\Seller\BoostShopController;
 use App\Http\Controllers\Seller\CatalogueController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
+use App\Http\Controllers\Admin\OrderDetailController;
 use App\Http\Controllers\Admin\ValidateShopController;
 use App\Http\Controllers\Coins\HandleVerifyController;
 use App\Http\Controllers\Product\ListReviewController;
@@ -192,6 +193,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
     Route::post("add/shop",[CreateSellerController::class,'create']);
     Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
+    Route::get('/admin/order/{id}',[OrderDetailController::class,'detail']);
     Route::get('/admin/all/categories', [CategoryController::class, 'all']);Route::get('/admin/all/categories', [CategoryController::class, 'all']);
 });
 
