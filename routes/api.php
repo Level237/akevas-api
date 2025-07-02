@@ -51,6 +51,7 @@ use App\Http\Controllers\Shops\GetShowModalShopController;
 use App\Http\Controllers\Admin\Customer\CustomerController;
 use App\Http\Controllers\Admin\Delivery\DeliveryController;
 use App\Http\Controllers\Auth\CheckTokenValidityController;
+use App\Http\Controllers\Category\CategoryFilterController;
 use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Delivery\OrderCompletedController;
@@ -87,6 +88,7 @@ use App\Http\Controllers\Admin\Reviews\DeclineOrValidateShopReviewController;
 use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Product\Payment\HandleWebhookProductPaymentController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
+use App\Http\Controllers\Admin\RecentOrderController as AdminRecentOrderController;
 use App\Http\Controllers\Coins\InitPaymentController as InitCoinsPaymentController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsController;
@@ -196,6 +198,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::post("add/shop",[CreateSellerController::class,'create']);
     Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
     Route::get('/admin/order/{id}',[OrderDetailController::class,'detail']);
+    Route::get('/admin/recent/orders',[AdminRecentOrderController::class,'recentOrder']);
     Route::get('/admin/all/categories', [CategoryController::class, 'all']);Route::get('/admin/all/categories', [CategoryController::class, 'all']);
 });
 

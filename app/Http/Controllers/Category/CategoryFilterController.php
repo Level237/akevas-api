@@ -13,7 +13,7 @@ class CategoryFilterController extends Controller
         $array=trim($arrayId,"[]");
         $items = explode(',', $array);
         
-        return ProductResource::collection(Product::with('categories')->whereHas('categories',function($query) use ($categoryUrl){
+        return ProductResource::collection(Product::with('categories')->whereHas('categories',function($query) use ($items){
             $query->whereIn('categories.id',$items);
         })->orderBy('created_at', 'desc')->paginate(6));
     }
