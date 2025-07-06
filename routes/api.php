@@ -63,6 +63,7 @@ use App\Http\Controllers\Product\PublishedProductController;
 use App\Http\Controllers\Admin\Customer\ListOrdersController;
 use App\Http\Controllers\Admin\Product\ListProductController;
 use App\Http\Controllers\Admin\Seller\RecentSellerController;
+use App\Http\Controllers\Coins\ValidatePaymentCoinController;
 use App\Http\Controllers\Delivery\TakeOrderProcessController;
 use App\Http\Controllers\Product\ProductByCategoryController;
 use App\Http\Controllers\Admin\Feedback\ListFeedbackController;
@@ -152,6 +153,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
     
+    Route::post('validate/payment/coins',[ValidatePaymentCoinController::class,'handle']);
     Route::post("init/payment/coins", [InitCoinsPaymentController::class, "PaymentCoin"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
