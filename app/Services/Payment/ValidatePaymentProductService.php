@@ -39,7 +39,7 @@ class ValidatePaymentProductService
                 if(isset($request['productsPayments'])){
                     $order=$this->multipleOrder(
                         $userId,
-                        $request['price'],
+                        $request['amount'],
                         $request['shipping'],
                         $request['quarter_delivery'],
                         $request['address'],
