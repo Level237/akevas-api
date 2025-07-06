@@ -59,7 +59,7 @@ class PaymentProcessingJob implements ShouldQueue
 
         if (isset($responseStatus) && $responseStatus === "processing" || $responseStatus === "pending") {
             Log::info('PaymentProcessingJob: Payment processing for job', [
-                "appssss" => $this->request,
+                "app" => $this->request,
             ]);
             // On redéclenche le job avec les mêmes données, pas d'objet Request
             self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(15));
@@ -67,7 +67,7 @@ class PaymentProcessingJob implements ShouldQueue
 
         if (isset($responseStatus) && $responseStatus === "failed") {
             Log::error('PaymentProcessingJob: Payment failed');
-            (new ValidatePaymentProductService())->handle($this->request, $this->userId);
+            
             return;
         }
 
