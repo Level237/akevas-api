@@ -165,11 +165,11 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
              if($orderDetails->save()){
                  $this->reduceQuantity($product['product_id'],$product['quantity']);
                  Log::info('Order create success');
-                 return $order;
+                
              }
          }
         }
-       
+       return $order;
     }
     return null;
 }
