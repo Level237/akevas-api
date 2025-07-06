@@ -36,7 +36,7 @@ class ValidatePaymentProductService
                     'payment_of' => 'Paiement produit',
                     'user_id' => $user->id,
                 ]);
-                if(isset($request->productsPayments)){
+                if(isset($request['productsPayments'])){
                     $order=$this->multipleOrder(
                         $userId,
                         $request['price'],
@@ -165,6 +165,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
              $orderDetails->unit_price=$product['price'];
              if($orderDetails->save()){
                  $this->reduceQuantity($product['product_id'],$product['quantity']);
+                 Log::info('Order create success');
                  return $order;
              }
          }
