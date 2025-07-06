@@ -144,6 +144,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
         foreach($productsPayments as $product){
          if($product['hasVariation']=="true"){
              $orderVariation=new OrderVariation;
+             $orderVariation->order_id=$order->id;
              if($product['attributeVariationId']==null){
                  $orderVariation->product_variation_id=$product['productVariationId'];
                  $this->reduceQuantityProductVariation($product['productVariationId'],$product['quantity']);
@@ -155,6 +156,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
 
              $orderVariation->variation_quantity=$product['quantity'];
              $orderVariation->variation_price=$product['price'];
+             Log::info('Order variation create success');
              $orderVariation->save();
          }else{
              $orderDetails=new OrderDetail;
