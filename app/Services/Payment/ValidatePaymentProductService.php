@@ -44,7 +44,6 @@ class ValidatePaymentProductService
                         $request['quarter_delivery'],
                         $request['address'],
                         $request['productsPayments'],
-                        $request['hasVariation'],
                         $request['reference']
                     );
 
@@ -127,7 +126,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
        return null;
 }
 
-private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$hasVariation,$reference){
+private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$reference){
     $order=new Order;
     $order->user_id=$userId;
     $order->isPay=1;
