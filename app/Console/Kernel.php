@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
     {
         //$schedule->job(new JobCheckSubscriptionProduct)->hourly();
         // $schedule->command('inspire')->hourly();
-        $schedule->command('log:clear')->everyTwoMinutes();
+        //$schedule->command('log:clear')->everyTwoMinutes();
         $schedule->command('queue:work --stop-when-empty')->everyMinute();
     }
 
