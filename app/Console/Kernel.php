@@ -13,8 +13,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new JobCheckSubscriptionProduct)->hourly();
+        //$schedule->job(new JobCheckSubscriptionProduct)->hourly();
         // $schedule->command('inspire')->hourly();
+        $schedule->command('queue:work --stop-when-empty')->everyMinute();
     }
 
     /**
