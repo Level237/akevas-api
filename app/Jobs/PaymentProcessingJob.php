@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\Payment\Coolpay\VerifyPayinService;
 use App\Services\Payment\ValidatePaymentProductService;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
@@ -44,7 +45,7 @@ class PaymentProcessingJob implements ShouldQueue
 
       
 
-        $paymentStatus = (new HandleVerifyPaymentNotchpay())->verify($this->request['reference']);
+        $paymentStatus = (new VerifyPayinService())->verify($this->request['reference']);
         $responseStatus = $paymentStatus->getData(true)['status'] ?? null;
         Log::info('PaymentProcessingJob: Payment processing for job', [
             "app" => $responseStatus,
@@ -57,7 +58,7 @@ class PaymentProcessingJob implements ShouldQueue
             return;
         }
 
-        if (isset($responseStatus) && $responseStatus === "processing" || $responseStatus === "pending") {
+        if (isset($responseStatus) && $responseStatus === "PENDING") {
             Log::info('PaymentProcessingJob: Payment processing for job', [
                 "app" => $this->request,
             ]);
@@ -65,13 +66,13 @@ class PaymentProcessingJob implements ShouldQueue
             self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(15));
         }
 
-        if (isset($responseStatus) && $responseStatus === "failed") {
+        if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
             Log::error('PaymentProcessingJob: Payment failed');
             
             return;
         }
 
-        if (isset($responseStatus) && $responseStatus == 'complete') {
+        if (isset($responseStatus) && $responseStatus == 'SUCCESS') {
             Log::info('PaymentProcessingJob: Payment complete');
             // On passe un objet Request reconstitué à la méthode handle
             (new ValidatePaymentProductService())->handle($this->request, $this->userId);
