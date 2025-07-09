@@ -209,11 +209,12 @@ Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
+   
 });
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
-    //Route::post("init/payment/buy/product", [BuyProductProcessController::class, "initPayment"]);
+    Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
     Route::post("payment/pending/buy/product", [BuyProductProcessController::class, "paymentPending"]);
     Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
