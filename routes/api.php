@@ -80,6 +80,7 @@ use App\Http\Controllers\Payment\Coolpay\Product\PayinController;
 use App\Http\Controllers\Product\Payment\SucessPaymentController;
 use App\Http\Controllers\User\ControlPaymentStatusByRefController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
+use App\Http\Controllers\Payment\Coolpay\Product\CheckPayinController;
 use App\Http\Controllers\Payment\Coolpay\Shop\SubscribeShopController;
 use App\Http\Controllers\Admin\Delivery\ConfirmStatusDeliveryController;
 use App\Http\Controllers\Admin\Reviews\DeclineOrValidateReviewController;
@@ -108,7 +109,14 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 
 Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
+
+//Status for notchpay
 Route::post('/get/payment/status',[HandleVerifyController::class,'getPaymentStatus']);
+
+//Status for coolpay
+Route::post('/status/payin',[CheckPayinController::class,'checkStatus']);
+
+
 Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
 Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
 Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment']);
