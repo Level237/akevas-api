@@ -76,6 +76,7 @@ use App\Http\Controllers\User\ShowPaymentByReferenceController;
 use App\Http\Controllers\Admin\Reviews\ListShopReviewController;
 use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
+use App\Http\Controllers\Payment\Coolpay\Product\PayinController;
 use App\Http\Controllers\Product\Payment\SucessPaymentController;
 use App\Http\Controllers\User\ControlPaymentStatusByRefController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
@@ -212,6 +213,7 @@ Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function
    
 });
 
+
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
     Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
@@ -228,6 +230,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/make/comment/shop/{shop_id}',[MakeReviewShopController::class,'makeCommentShop']);
     Route::post('/success/payment', [SucessPaymentController::class, 'successPayment']);
     Route::get("/show/payment/{ref}",[ShowPaymentByReferenceController::class,"show"]);
+    Route::post('/payin',[PayinController::class,'payin']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {

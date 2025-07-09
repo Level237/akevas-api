@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class PayinController extends Controller
 {
-    public function payinCoolpay(Request $request){
+    public function payin(Request $request){
         $url = "https://my-coolpay.com/api/".env("PUBLIC_KEY_COOLPAY")."/payin";
 
         $response=Http::acceptJson()->withBody(
-            json_decode(
+            json_encode(
                 [
                     "customer_phone_number"=>$request->phone,
                     "transaction_amount"=>$request->amount,
@@ -23,7 +23,7 @@ class PayinController extends Controller
                 $responseData=json_decode($response);
 
                 return response()->json([
-                    "status"=>"success",
+                    "status"=>$responseData->status,
                     "message"=>"Payment initiated",
                     "reference"=>$responseData->transaction_ref,
                     "statusCharge"=>$responseData->action
