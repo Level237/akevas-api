@@ -1,0 +1,9 @@
+{
+    "exclude": [
+      ".git*",
+      "node_modules/**",
+      ".github/**",
+      "storage/logs/**",
+      "vendor/**"
+    ]
+  }
