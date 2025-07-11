@@ -1,8 +1,17 @@
 {
     "exclude": [
       ".git*",
+      ".github/**",
       "node_modules/**",
-      "storage/logs/**",
-      "vendor/**"
-    ]
+      "vendor/**",
+      "storage/**",
+      ".env",
+      "README.md",
+      "composer.lock",
+      "package-lock.json",
+      ".ftp-deploy-sync.json"
+    ],
+    "delete": false,
+    "dry-run": false
   }
+  
