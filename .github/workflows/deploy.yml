@@ -31,8 +31,8 @@ jobs:
       - name: 📤 Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-           username: akevasftp@akevas.com
+          server: ftp.viens-yamo.com
+          username: akevasftp@akevas.com
           password: jMylEA6+(oHD
           local-dir: ./
           server-dir: /api/
