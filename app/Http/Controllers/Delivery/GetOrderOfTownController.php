@@ -13,9 +13,17 @@ class GetOrderOfTownController extends Controller
 {
     public function getOrdersByTown()
     {
+      try{
         $user=Auth::guard('api')->user();
         $ordArray=$this->getOrderOfQuarter($user->residence);
         return response()->json(OrderResource::collection($ordArray));
+      }catch(\Exception $e){
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong',
+            'errors' => $e->getMessage()
+          ], 500);
+    }
     }
 
     public function getOrderInQuarter($residence_id){
