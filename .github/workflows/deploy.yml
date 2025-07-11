@@ -34,5 +34,19 @@ jobs:
           server: ftp.viens-yamo.com
           username: akevasftp@akevas.com
           password: jMylEA6+(oHD
+          exclude:exclude: .git*
+            - .git*/**
+            - node_modules/**
+            - vendor/**/*
+            - .github/**
+            - package-lock.json
+            - .gitignore
+            - storage/**
+            - webpack.config.js
+            - README.md
+            - .babelrc
+            - package.json
+            - package-lock.json
+            - postcss.config.js
           local-dir: ./
           server-dir: /api/
