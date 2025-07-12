@@ -1,4 +1,4 @@
-name: 🚀 Deploy Laravel to CPanel
+name: 🚀 Deploy Api Akevas to CPanel
 
 on:
   push:
