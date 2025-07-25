@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Models\Shop;
+use App\Models\Image;
 use App\Models\FeedBack;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -65,5 +67,27 @@ class UpdateSellerController extends Controller
                 'errors' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function updateCategories(Request $request){
+        $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
+        $shop->categories()->syncWithoutDetaching($request->categories);
+        return response()->json(['message'=>'Categories updated successfully']);
+    }
+
+    public function updateGalerieImages(Request $request){
+        $shop=Shop::where('user_id',Auth::guard('api')->user()->id)->first();
+        Log::info("level",["od"=>$shop]);
+        foreach($request->images as $image){
+            $i=new Image;
+            $i->image_path=$image->store('shop/images','public');
+            if($i->save()){
+                $shop->images()->attach($i);
+                Log::info("level",["od"=>$i]);
+                
+            }
+            
+        }
+        return response()->json(['message'=>"Galeries update"]);
     }
 }
