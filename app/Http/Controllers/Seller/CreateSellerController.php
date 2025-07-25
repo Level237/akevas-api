@@ -6,6 +6,7 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Models\Image;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\NewSellerRequest;
@@ -58,23 +59,26 @@ class CreateSellerController extends Controller
             
             }
             if($shop->save()){
+                Log::info('PaymentProcessingJob: Payment complete',[
+                    'cat'=>$request->categories
+                ]);
+                //$urlShop=$this->getUrlSyncAccount();
+                //$accountId=(new CreateAccountSyncService())->createSyncAccount(
+                //$request->shop_name,
+                //$urlShop,
+                //$request->email,
+                //$request->phone_number,
+                //$shop->id,
+                //);
 
-                $urlShop=$this->getUrlSyncAccount();
-                $accountId=(new CreateAccountSyncService())->createSyncAccount(
-                $request->shop_name,
-                $urlShop,
-                $request->email,
-                $request->phone_number,
-                $shop->id,
-                );
+                //$updateShopSyncAccount=$this->updateAccountSyncWithShop($shop->id,$accountId);
 
-                $updateShopSyncAccount=$this->updateAccountSyncWithShop($shop->id,$accountId);
-
-                foreach($request->categories as $category){
-                $shop->categories()->attach($category);
-            }
-
+                
+                $shop->categories()->attach($request->categories);
             
+                Log::info('PaymentProcessingJob: Payment complete',[
+                    'cat'=>$request->categories
+                ]);
             foreach($request->images as $image){
                 $i=new Image;
                 $i->image_path=$image->store('shop/images','public');
@@ -89,10 +93,13 @@ class CreateSellerController extends Controller
 
         
        }catch(\Exception $e){
+        Log::info('PaymentProcessingJob: Payment complete',[
+            'errpr'=>$e->getMessage()
+        ]);
         return response()->json([
             'success' => false,
             'message' => 'Something went wrong',
-            'errors' => $e
+            'errors' => $e->getMessage()
           ], 500);
     }
             
