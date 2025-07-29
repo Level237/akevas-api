@@ -22,17 +22,18 @@ class PaymentProcessingJob implements ShouldQueue
 
     public $request;
     public $userId;
-
+    public $reference;
     /**
      * Create a new job instance.
      *
   
      */
-    public function __construct($request, $userId)
+    public function __construct($request, $userId, $reference)
     {
         // On ne stocke que des données simples (array), pas d'objet Request ou Closure
         $this->request = $request;
         $this->userId = $userId;
+        $this->reference = $reference;
     }
 
     /**
@@ -45,7 +46,7 @@ class PaymentProcessingJob implements ShouldQueue
 
       
 
-        $paymentStatus = (new VerifyPayinService())->verify($this->request['reference']);
+        $paymentStatus = (new VerifyPayinService())->verify($this->reference);
         $responseStatus = $paymentStatus->getData(true)['status'] ?? null;
         Log::info('PaymentProcessingJob: Payment processing for job', [
             "app" => $responseStatus,
@@ -53,7 +54,7 @@ class PaymentProcessingJob implements ShouldQueue
         if (!$user) {
             Log::error('PaymentProcessingJob: User not found', [
                 "user_id" => $this->userId,
-                "merchant_reference" => $this->request['reference'],
+                "merchant_reference" => $this->reference,
             ]);
             return;
         }
@@ -61,9 +62,10 @@ class PaymentProcessingJob implements ShouldQueue
         if (isset($responseStatus) && $responseStatus === "PENDING") {
             Log::info('PaymentProcessingJob: Payment processing for job', [
                 "app" => $this->request,
+                "reference" => $this->reference,
             ]);
             // On redéclenche le job avec les mêmes données, pas d'objet Request
-            self::dispatch($this->request, $this->userId)->delay(now()->addSeconds(15));
+            self::dispatch($this->request, $this->userId, $this->reference)->delay(now()->addSeconds(15));
         }
 
         if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
@@ -75,7 +77,7 @@ class PaymentProcessingJob implements ShouldQueue
         if (isset($responseStatus) && $responseStatus == 'SUCCESS') {
             Log::info('PaymentProcessingJob: Payment complete');
             // On passe un objet Request reconstitué à la méthode handle
-            (new ValidatePaymentProductService())->handle($this->request, $this->userId);
+            (new ValidatePaymentProductService())->handle($this->request, $this->userId, $this->reference);
         }
     }
 }

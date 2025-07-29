@@ -19,7 +19,8 @@ class ValidatePaymentProductService
 
     public function handle(
     $request,
-    $userId
+    $userId,
+    $reference
     )
     {
         
@@ -27,12 +28,12 @@ class ValidatePaymentProductService
 
             
             $user = User::find($userId);
-            if (!Payment::where('transaction_ref', $request['reference'])->exists()) {
+                if (!Payment::where('transaction_ref', $reference)->exists()) {
 
                 Payment::create([
                     'payment_type' => 'product',
                     'price' => $request['amount'],
-                    'transaction_ref' => $request['reference'],
+                    'transaction_ref' => $reference,
                     'payment_of' => 'Paiement produit',
                     'user_id' => $user->id,
                 ]);
@@ -44,7 +45,7 @@ class ValidatePaymentProductService
                         $request['quarter_delivery'],
                         $request['address'],
                         $request['productsPayments'],
-                        $request['reference']
+                        $reference
                     );
 
                     return response()->json([
@@ -66,7 +67,7 @@ class ValidatePaymentProductService
                     $request['hasVariation'],
                     $request['productVariationId'],
                     $request['attributeVariationId'],
-                    $request['reference']
+                    $reference
                 );
             }
         

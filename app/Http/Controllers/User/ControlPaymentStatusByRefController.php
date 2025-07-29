@@ -16,7 +16,8 @@ class ControlPaymentStatusByRefController extends Controller
         $payment=Payment::where('transaction_ref',$request->reference)->where('user_id',Auth::guard('api')->user()->id)->first();
         Log::info("lld",[
             "le"=>Auth::guard('api')->user()->id,
-            
+            "reference"=>$request->reference,
+            "payment"=>$payment
         ]);
         if(isset($payment)){
             return response()->json(['status'=>200]);
