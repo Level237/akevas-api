@@ -35,6 +35,7 @@ class ProductResource extends JsonResource
             "count_seller"=>OrderDetail::where("product_id",$this->id)->count(),
             "reviewCount"=>$this->reviews->count(),
             "product_url" => $this->product_url,
+            "whatsapp_number"=>$this->whatsapp_number,
             "product_images" => ImageResource::collection($this->images),
             "product_profile" => URL("/storage/" . $this->product_profile),
             "product_price" => $this->product_price,

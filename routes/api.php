@@ -109,7 +109,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 
 Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
-
+Route::get('/filter/categories/{arraySubCategoryId}',[CategoryFilterController::class,'getCategoryBySubCategory']);
 //Status for notchpay
 Route::post('/get/payment/status',[HandleVerifyController::class,'getPaymentStatus']);
 
