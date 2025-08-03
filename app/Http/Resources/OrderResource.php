@@ -6,6 +6,7 @@ use App\Models\Town;
 use App\Models\User;
 use App\Models\Quarter;
 use Illuminate\Http\Request;
+use App\Models\OrderVariation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\OrderDetailResource;
 use App\Http\Resources\OrderVariationResource;
@@ -26,15 +27,14 @@ class OrderResource extends JsonResource
         
         $items = $orderDetails->count() > 0 
             ? OrderDetailResource::collection($orderDetails)
-            : OrderVariationResource::collection($orderVariations);
+            : null;
         
-        $itemsCount = $orderDetails->count() > 0 
-            ? $orderDetails->count() 
-            : $orderVariations->count();
+        $itemsCount = $orderDetails->count() + $orderVariations->count();
 
         return [
             'id'=>$this->id,
             'total_amount'=>$this->total,
+            'orderVariations'=>$orderVariations->count() > 0 ? OrderVariationResource::collection(OrderVariation::where("order_id",$this->id)->get()) : null,
             'status'=>$this->status,
             'created_at'=>$this->created_at,
            'quarter_delivery'=>$this->quarter_delivery,
