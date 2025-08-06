@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Delivery;
 
-use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class OrderCompletedController extends Controller
 {
@@ -17,9 +18,11 @@ class OrderCompletedController extends Controller
 
     public function cancelOrder($order_id){
         $order=Order::find($order_id);
+        $delivery=User::find(Auth::guard('api')->user()->id);
         $order->status="0";
         $order->isTake=0;
         $order->save();
+        $delivery->processOrders()->detach($order_id);
         return response()->json(["message"=>"Order cancelled"]);
     }
 }
