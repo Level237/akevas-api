@@ -14,4 +14,12 @@ class OrderCompletedController extends Controller
         $order->save();
         return response()->json(["message"=>"Order completed"]);
     }
+
+    public function cancelOrder($order_id){
+        $order=Order::find($order_id);
+        $order->status="0";
+        $order->isTake=0;
+        $order->save();
+        return response()->json(["message"=>"Order cancelled"]);
+    }
 }
