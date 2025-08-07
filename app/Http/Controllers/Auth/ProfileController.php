@@ -15,4 +15,13 @@ class ProfileController extends Controller
         
          return response()->json($user);
     }
+
+    public function updateUser(Request $request){
+        $user=Auth::guard('api')->user();
+        $user->userName=$request->userName;
+        $user->phone_number=$request->phone_number;
+        $user->email=$request->email;
+        $user->save();
+        return response()->json($user);
+    }
 }

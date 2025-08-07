@@ -231,6 +231,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post("payment/pending/buy/product", [BuyProductProcessController::class, "paymentPending"]);
     Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
+    Route::post('/update/user', [ProfileController::class, 'updateUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/control/payment',[ControlPaymentStatusByRefController::class,'control']);
     Route::post('/payment/product', [PaymentProductProcessingController::class, 'handlePaymentProduct']);
