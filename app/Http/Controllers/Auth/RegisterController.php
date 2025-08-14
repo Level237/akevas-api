@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
+use App\Mail\NewAccountCreateEmail;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Services\Auth\RegisterService;
 use App\Repositories\GetClientRepository;
 use App\Services\Auth\GenerateTokenUserService;
@@ -26,6 +29,9 @@ class RegisterController extends Controller
             }
             $data = request()->only('phone_number','password','userName','email','residence');
             $registerUser=(new RegisterService())->register($data);
+            
+            Mail::to('temerbtp@yahoo.com')->send(new NewAccountCreateEmail($data));
+           
             $client=(new GetClientRepository())->getClient();
             $tokenUser=(new GenerateTokenUserService())->generate($client,$registerUser,$data['password'],$request);
             return $tokenUser;
