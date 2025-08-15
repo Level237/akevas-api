@@ -38,6 +38,7 @@ use App\Http\Controllers\User\MakeReviewShopController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
+use App\Http\Controllers\Seller\OrderListController;
 use App\Http\Controllers\Shops\GetProfileShopController;
 use App\Http\Controllers\Admin\Stat\ActiveStatController;
 use App\Http\Controllers\Admin\ValidateProductController;
@@ -171,6 +172,11 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('update/categories',[UpdateSellerController::class,'updateCategories']);
     Route::post('update/images',[UpdateSellerController::class,'updateGalerieImages']);
     Route::post("/boost/shop",[BoostShopController::class,'boost']);
+    
+    // Routes pour la gestion des commandes du vendeur
+    Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
+    Route::get('/seller/orders/shop/{shopId}', [OrderListController::class, 'listOrdersByShop']);
+    Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {

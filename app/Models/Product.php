@@ -70,6 +70,10 @@ class Product extends Model
         return $this->hasMany(ProductVariation::class);
     }
 
+    public function orderVariations(){
+        return $this->hasManyThrough(OrderVariation::class, ProductVariation::class);
+    }
+
     public function getVariations()
 {
     // Récupère toutes les variations du produit

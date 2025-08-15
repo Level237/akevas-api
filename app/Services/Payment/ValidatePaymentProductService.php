@@ -187,12 +187,22 @@ private function reduceQuantityProductVariation($productVariationId,$quantity){
     $productVariation=ProductVariation::find($productVariationId); 
     Log::info('reduce price product variation');
     $productVariation->quantity-=$quantity;
+    Log::info('reduce price attribute variation',[
+    'productVariationId'=>$productVariationId,
+    'quantity'=>$quantity,
+    'productVariation'=>$productVariation,
+]);
     $productVariation->save();
 }
 
 private function reduceQuantityAttributeVariation($attributeVariationId,$quantity){
 $variationAttribute=VariationAttribute::find($attributeVariationId);
 $variationAttribute->quantity-=$quantity;
+Log::info('reduce price attribute variation',[
+    'attributeVariationId'=>$attributeVariationId,
+    'quantity'=>$quantity,
+    'variationAttribute'=>$variationAttribute,
+]);
 $variationAttribute->save();
 }
 

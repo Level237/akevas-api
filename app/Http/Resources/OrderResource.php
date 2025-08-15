@@ -42,6 +42,7 @@ class OrderResource extends JsonResource
             'itemsCount'=>$itemsCount,
             'payment_method'=>$this->payment_method,
             'isPay'=>$this->isPay,
+            "address"=>$this->address ?? null,
             'userName'=>$this->user->userName,
             'userPhone'=>$this->user->phone_number,
             'email'=>$this->user->email,
