@@ -33,7 +33,8 @@ class Shop extends Model
     protected $keyType = 'string';
     public $incrementing = false;
  protected $primaryKey = 'id';
-    public function seller():BelongsTo{
+ 
+    public function user():BelongsTo{
         return $this->belongsTo(User::class);
     }
 
