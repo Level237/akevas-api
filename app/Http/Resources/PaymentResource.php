@@ -20,7 +20,7 @@ class PaymentResource extends JsonResource
             "user"=>$this->user->userName,
             "transaction_ref"=>$this->transaction_ref,
             "payment_of"=>$this->payment_of,
-            "order"=>OrderResource::make($this->order)
+            "order"=>OrderResource::collection($this->order)
         ];
     }
 }

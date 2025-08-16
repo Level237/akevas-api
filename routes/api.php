@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Jobs\SendNewOrderNotificationJob;
 use App\Http\Controllers\Admin\TownController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\User\ShowOrderController;
 use App\Http\Controllers\Admin\GiveCoinsController;
 use App\Http\Controllers\Seller\BoostShopController;
 use App\Http\Controllers\Seller\CatalogueController;
+use App\Http\Controllers\Seller\OrderListController;
 use App\Http\Controllers\SendNotificationController;
 use App\Http\Controllers\User\RecentOrderController;
 use App\Http\Controllers\Admin\OrderDetailController;
@@ -38,7 +41,6 @@ use App\Http\Controllers\User\MakeReviewShopController;
 use App\Http\Controllers\Admin\ValidateSellerController;
 use App\Http\Controllers\Gender\CurrentGenderController;
 use App\Http\Controllers\Seller\CurrentSellerController;
-use App\Http\Controllers\Seller\OrderListController;
 use App\Http\Controllers\Shops\GetProfileShopController;
 use App\Http\Controllers\Admin\Stat\ActiveStatController;
 use App\Http\Controllers\Admin\ValidateProductController;
@@ -106,6 +108,8 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 | be assigned to the "api" middleware group. Make something great!
 |
     */
+
+
 
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 

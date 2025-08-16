@@ -12,6 +12,7 @@ use App\Models\OrderVariation;
 use App\Models\ProductVariation;
 use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendNewOrderNotificationJob;
 use App\Services\Payment\Verify\HandleVerifyPaymentNotchpay;
 
 class ValidatePaymentProductService
@@ -92,12 +93,15 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
        }
        if($order->save()){
 
+        SendNewOrderNotificationJob::dispach($order->id,$productId)->delay(now()->addMinutes(1));
+
         $this->savePaymentAndOrder($reference,$order->id);
         if($hasVariation=="false"){
 
             $orderDetails=new OrderDetail;
            $orderDetails->order_id=$order->id;
            $orderDetails->product_id=$productId;
+           
            $orderDetails->order_product_quantity=$quantity;
            $orderDetails->unit_price=$amount/$quantity;
            if($orderDetails->save()){
@@ -108,6 +112,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
         }else{
             $orderVariation=new OrderVariation;
             $orderVariation->order_id=$order->id;
+            
             if($attributeVariationId==null){
                 
                 $orderVariation->product_variation_id=$productVariationId;
@@ -124,25 +129,28 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
         }
            
        }
+
        return null;
 }
 
 private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$reference){
-    $order=new Order;
-    $order->user_id=$userId;
-    $order->isPay=1;
-    $order->total=$amount;
-    $order->fee_of_shipping=$shipping;
-    $order->payment_method="0";
-    if(isset($quarter_delivery)){
-        $order->quarter_delivery=$quarter_delivery;
-    }
-    if(isset($address)){
-        $order->address=$address;
-    }
-    if($order->save()){
-        $this->savePaymentAndOrder($reference,$order->id);
+
         foreach($productsPayments as $product){
+            $order=new Order;
+            $order->user_id=$userId;
+            $order->isPay=1;
+            $order->total=$amount;
+            $order->fee_of_shipping=$shipping;
+            $order->payment_method="0";
+            if(isset($quarter_delivery)){
+                $order->quarter_delivery=$quarter_delivery;
+            }
+            if(isset($address)){
+                $order->address=$address;
+            }
+            $order->save();
+            SendNewOrderNotificationJob::dispach($order->id,$product['product_id'])->delay(now()->addMinutes(1));
+            $this->savePaymentAndOrder($reference,$order->id);
          if($product['hasVariation']=="true"){
              $orderVariation=new OrderVariation;
              $orderVariation->order_id=$order->id;
@@ -171,7 +179,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
                 
              }
          }
-        }
+        
        return $order;
     }
     return null;
