@@ -2,8 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Shop;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\ShopResource;
 use App\Http\Resources\ImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +22,7 @@ class ProductVariationResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'shop'=>ShopResource::make(Shop::find(Product::find($this->product_id)->shop_id)),
             'product_name'=>$this->product->product_name,
             'color' => [
                 'id' => $this->color->id,
