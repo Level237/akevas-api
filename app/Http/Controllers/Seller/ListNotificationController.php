@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class ListNotificationController extends Controller
 {
     public function list(){
-        $users=Auth::guard("api")->user();
+        $user=Auth::guard("api")->user();
 
         $allNotifications=$user->notifications;
 
@@ -17,7 +17,7 @@ class ListNotificationController extends Controller
     }
 
     public function recentNotification(){
-        $users=Auth::guard("api")->user();
+        $user=Auth::guard("api")->user();
 
         $allNotifications=$user->notifications()
                             ->orderBy('created_at', 'desc')
