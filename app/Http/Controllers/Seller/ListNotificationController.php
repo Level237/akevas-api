@@ -15,4 +15,15 @@ class ListNotificationController extends Controller
 
         return $allNotifications;
     }
+
+    public function recentNotification(){
+        $users=Auth::guard("api")->user();
+
+        $allNotifications=$user->notifications()
+                            ->orderBy('created_at', 'desc')
+                            ->take(3)
+                            ->get();
+
+        return $allNotifications;
+    }
 }

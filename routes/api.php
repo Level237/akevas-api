@@ -184,6 +184,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
 
     Route::get('/seller/notifications',[ListNotificationController::class,'list']);
+    Route::get("/seller/recents/notifications",[ListNotificationController::class,'recentNotification']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
