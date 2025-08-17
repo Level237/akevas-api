@@ -182,7 +182,8 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
     Route::get('/seller/orders/shop/{shopId}', [OrderListController::class, 'listOrdersByShop']);
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
-
+    Route::get('/seller/order/{id}',[OrderListController::class,'getOrderById']);
+    
     Route::get('/seller/notifications',[ListNotificationController::class,'list']);
     Route::get("/seller/recents/notifications",[ListNotificationController::class,'recentNotification']);
     Route::get("/seller/get/notification/{id}",[ListNotificationController::class,'getNotification']);

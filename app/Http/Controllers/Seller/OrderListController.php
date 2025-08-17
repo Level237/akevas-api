@@ -178,4 +178,57 @@ class OrderListController extends Controller
             ]
         ]);
     }
+
+    /**
+ * Obtenir une commande spécifique par son ID
+ */
+public function getOrderById($orderId)
+{
+    $user = Auth::guard('api')->user();
+    
+    // Récupérer toutes les boutiques du vendeur
+    $shops = Shop::where('user_id', $user->id)->pluck('id');
+    
+    // Récupérer la commande avec tous les détails
+    $order = Order::where('id', $orderId)
+        ->where(function($query) use ($shops) {
+            // Vérifier si la commande contient des produits de ses boutiques
+            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shops) {
+                $orderDetailQuery->whereHas('product', function($productQuery) use ($shops) {
+                    $productQuery->whereIn('shop_id', $shops);
+                });
+            })
+            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shops) {
+                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shops) {
+                    $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
+                        $productQuery->whereIn('shop_id', $shops);
+                    });
+                })
+                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
+                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
+                        $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
+                            $productQuery->whereIn('shop_id', $shops);
+                        });
+                    });
+                });
+            });
+        })
+        ->with([
+            'orderDetails.product.shop',
+            'orderVariations.productVariation.product.shop',
+            'orderVariations.variationAttribute.variation.product.shop',
+            'user',
+            'payment'
+        ])
+        ->first();
+    
+    if (!$order) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Commande non trouvée ou non autorisée'
+        ], 404);
+    }
+    
+    return response()->json(OrderResource::make($order));
+}
 }

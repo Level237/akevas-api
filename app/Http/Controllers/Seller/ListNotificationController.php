@@ -32,7 +32,7 @@ class ListNotificationController extends Controller
         $notification = $user->notifications()->where('id', $notificationId)->first();
 
          if ($notification && is_null($notification->read_at)) {
-            $notification->markAsRead(); // C'est la méthode de Laravel qui met à jour read_at
+            $notification->markAsRead();
             
             return $notification;
         }
