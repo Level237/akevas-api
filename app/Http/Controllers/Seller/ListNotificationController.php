@@ -26,4 +26,17 @@ class ListNotificationController extends Controller
 
         return $allNotifications;
     }
+
+    public function getNotification($id){
+        $user=Auth::guard("api")->user();
+        $notification = $user->notifications()->where('id', $notificationId)->first();
+
+         if ($notification && is_null($notification->read_at)) {
+            $notification->markAsRead(); // C'est la méthode de Laravel qui met à jour read_at
+            
+            return response()->json(['message' => 'Notification marquée comme lue.']);
+        }
+
+        return $notification;
+    }
 }
