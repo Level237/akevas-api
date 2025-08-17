@@ -59,6 +59,7 @@ use App\Http\Controllers\Delivery\CreateDeliveryController;
 use App\Http\Controllers\Delivery\GetOrderOfTownController;
 use App\Http\Controllers\Delivery\OrderCompletedController;
 use App\Http\Controllers\Delivery\UpdateDeliveryController;
+use App\Http\Controllers\Seller\ListNotificationController;
 use App\Http\Controllers\Seller\ListSubscriptionController;
 use App\Http\Controllers\Seller\ShowSubscriptionController;
 use App\Http\Controllers\User\MakeCommentProductController;
@@ -181,6 +182,8 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
     Route::get('/seller/orders/shop/{shopId}', [OrderListController::class, 'listOrdersByShop']);
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
+
+    Route::get('/seller/notifications',[ListNotificationController::class,'list']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
