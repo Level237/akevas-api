@@ -93,7 +93,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
        }
        if($order->save()){
 
-        SendNewOrderNotificationJob::dispach($order->id,$productId)->delay(now()->addMinutes(1));
+        SendNewOrderNotificationJob::dispatch($order->id,$productId)->delay(now()->addMinutes(1));
 
         $this->savePaymentAndOrder($reference,$order->id);
         if($hasVariation=="false"){
@@ -149,7 +149,7 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
                 $order->address=$address;
             }
             $order->save();
-            SendNewOrderNotificationJob::dispach($order->id,$product['product_id'])->delay(now()->addMinutes(1));
+            SendNewOrderNotificationJob::dispatch($order->id,$product['product_id'])->delay(now()->addMinutes(1));
             $this->savePaymentAndOrder($reference,$order->id);
          if($product['hasVariation']=="true"){
              $orderVariation=new OrderVariation;

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Seller;
 
-use App\Models\Payment;
 use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\OrderVariation;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\PaymentResource;
+use App\Http\Resources\OrderResource;
 
 class OrderListController extends Controller
 {
@@ -22,33 +23,37 @@ class OrderListController extends Controller
         // Récupérer toutes les boutiques du vendeur
         $shops = Shop::where('user_id', $user->id)->pluck('id');
         
-        // Récupérer toutes les commandes liées aux produits de ces boutiques
-        $payments = Payment::whereHas('order', function($query) use ($shops) {
-            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shops) {
-                $orderDetailQuery->whereHas('product', function($productQuery) use ($shops) {
+        // Récupérer les commandes de produits non variés (orderDetails)
+        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shops) {
+            $query->whereHas('product', function($productQuery) use ($shops) {
+                $productQuery->whereIn('shop_id', $shops);
+            });
+        })
+        ->with(['orderDetails.product.shop', 'user'])
+        ->get();
+
+        // Récupérer les commandes de produits variés (orderVariations)
+        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shops) {
+            $query->whereHas('productVariation', function($productVariationQuery) use ($shops) {
+                $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
                     $productQuery->whereIn('shop_id', $shops);
                 });
             })
-            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shops) {
-                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shops) {
+            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
+                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
                     $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
                         $productQuery->whereIn('shop_id', $shops);
-                    });
-                })
-                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                        $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                            $productQuery->whereIn('shop_id', $shops);
-                        });
                     });
                 });
             });
         })
-        ->with(['order.orderDetails.product.shop', 'order.orderVariations.productVariation.product.shop', 'order.orderVariations.variationAttribute.variation.product.shop', 'user'])
-        ->orderBy('created_at', 'desc')
+        ->with(['orderVariations.productVariation.product.shop', 'orderVariations.variationAttribute.variation.product.shop', 'user'])
         ->get();
 
-        return response()->json(PaymentResource::collection($payments));
+        // Combiner et dédupliquer les commandes
+        $allOrders = $ordersFromDetails->merge($ordersFromVariations)->unique('id')->sortByDesc('created_at');
+
+        return response()->json(OrderResource::collection($allOrders));
     }
 
     /**
@@ -70,33 +75,37 @@ class OrderListController extends Controller
             ], 404);
         }
 
-        // Récupérer les commandes de cette boutique spécifique
-        $payments = Payment::whereHas('order', function($query) use ($shopId) {
-            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shopId) {
-                $orderDetailQuery->whereHas('product', function($productQuery) use ($shopId) {
+        // Récupérer les commandes de produits non variés pour cette boutique
+        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shopId) {
+            $query->whereHas('product', function($productQuery) use ($shopId) {
+                $productQuery->where('shop_id', $shopId);
+            });
+        })
+        ->with(['orderDetails.product.shop', 'user'])
+        ->get();
+
+        // Récupérer les commandes de produits variés pour cette boutique
+        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shopId) {
+            $query->whereHas('productVariation', function($productVariationQuery) use ($shopId) {
+                $productVariationQuery->whereHas('product', function($productQuery) use ($shopId) {
                     $productQuery->where('shop_id', $shopId);
                 });
             })
-            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shopId) {
-                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shopId) {
+            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shopId) {
+                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shopId) {
                     $productVariationQuery->whereHas('product', function($productQuery) use ($shopId) {
                         $productQuery->where('shop_id', $shopId);
-                    });
-                })
-                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shopId) {
-                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shopId) {
-                        $productVariationQuery->whereHas('product', function($productQuery) use ($shopId) {
-                            $productQuery->where('shop_id', $shopId);
-                        });
                     });
                 });
             });
         })
-        ->with(['order.orderDetails.product.shop', 'order.orderVariations.productVariation.product.shop', 'order.orderVariations.variationAttribute.variation.product.shop', 'user'])
-        ->orderBy('created_at', 'desc')
+        ->with(['orderVariations.productVariation.product.shop', 'orderVariations.variationAttribute.variation.product.shop', 'user'])
         ->get();
 
-        return response()->json(PaymentResource::collection($payments));
+        // Combiner et dédupliquer les commandes
+        $allOrders = $ordersFromDetails->merge($ordersFromVariations)->unique('id')->sortByDesc('created_at');
+
+        return response()->json(OrderResource::collection($allOrders));
     }
 
     /**
@@ -109,51 +118,55 @@ class OrderListController extends Controller
         // Récupérer toutes les boutiques du vendeur
         $shops = Shop::where('user_id', $user->id)->pluck('id');
         
-        // Compter les commandes
-        $totalOrders = Payment::whereHas('order', function($query) use ($shops) {
-            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shops) {
-                $orderDetailQuery->whereHas('product', function($productQuery) use ($shops) {
+        // Compter les commandes de produits non variés
+        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shops) {
+            $query->whereHas('product', function($productQuery) use ($shops) {
+                $productQuery->whereIn('shop_id', $shops);
+            });
+        })->get();
+
+        // Compter les commandes de produits variés
+        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shops) {
+            $query->whereHas('productVariation', function($productVariationQuery) use ($shops) {
+                $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
                     $productQuery->whereIn('shop_id', $shops);
                 });
             })
-            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shops) {
-                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shops) {
+            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
+                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
                     $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
                         $productQuery->whereIn('shop_id', $shops);
                     });
-                })
-                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                        $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                            $productQuery->whereIn('shop_id', $shops);
-                        });
-                    });
                 });
             });
-        })->count();
+        })->get();
+
+        // Combiner et dédupliquer pour le total
+        $totalOrders = $ordersFromDetails->merge($ordersFromVariations)->unique('id')->count();
 
         // Calculer le total des revenus
-        $totalRevenue = Payment::whereHas('order', function($query) use ($shops) {
-            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shops) {
-                $orderDetailQuery->whereHas('product', function($productQuery) use ($shops) {
-                    $productQuery->whereIn('shop_id', $shops);
-                });
-            })
-            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shops) {
-                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shops) {
-                    $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                        $productQuery->whereIn('shop_id', $shops);
-                    });
-                })
-                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                        $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                            $productQuery->whereIn('shop_id', $shops);
-                        });
-                    });
-                });
-            });
-        })->sum('price');
+        $totalRevenue = 0;
+
+        // Revenus des produits non variés
+        foreach ($ordersFromDetails as $order) {
+            foreach ($order->orderDetails as $orderDetail) {
+                if (in_array($orderDetail->product->shop_id, $shops->toArray())) {
+                    $totalRevenue += $orderDetail->unit_price * $orderDetail->order_product_quantity;
+                }
+            }
+        }
+
+        // Revenus des produits variés
+        foreach ($ordersFromVariations as $order) {
+            foreach ($order->orderVariations as $orderVariation) {
+                if ($orderVariation->productVariation && in_array($orderVariation->productVariation->product->shop_id, $shops->toArray())) {
+                    $totalRevenue += $orderVariation->variation_price;
+                }
+                if ($orderVariation->variationAttribute && in_array($orderVariation->variationAttribute->variation->product->shop_id, $shops->toArray())) {
+                    $totalRevenue += $orderVariation->variation_price;
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,
