@@ -20,6 +20,7 @@ class SellerResource extends JsonResource
             "id"=>$this->id,
             "firstName"=>$this->firstName,
             'email'=>$this->email,
+            "notifications_is_count"=>$this->notifications()->where('read_at',null)->count(),
             "lastName"=>$this->lastName,
             "birthDate"=>$this->birthDate,
             "nationality"=>$this->nationality,
