@@ -47,10 +47,16 @@ class ProductController extends Controller
             
             if($request->is_wholesale){
                 $product->is_wholesale=1;
-                $product->wholesale_prices()->create([
-                    'min_quantity' => $request->min_quantity,
-                    'wholesale_price' => $request->wholesale_price
-                ]);
+               if ($request->has('wholesale_prices')) {
+
+                foreach ($request->wholesale_prices as $wholesale) {
+
+                $product->wholesalePrices()->create([
+                'min_quantity' => $wholesale['min_quantity'],
+                'wholesale_price' => $wholesale['wholesale_price']
+            ]);
+        }
+    }
             }
             // Création du produit
             $product = new Product;
