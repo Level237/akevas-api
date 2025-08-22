@@ -23,6 +23,7 @@ return new class extends Migration
                 ->restrictOnUpdate();
             $table->string('product_url');
             $table->string('product_price')->nullable();
+            $table->boolean('is_wholesale')->default(0);
             $table->string('product_quantity')->nullable();
             $table->string('product_profile')->nullable();
             $table->boolean("status")->default(0);

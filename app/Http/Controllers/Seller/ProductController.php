@@ -44,7 +44,14 @@ class ProductController extends Controller
                 $shop->shop_level = "3";
                 $shop->save();
             }
-    
+            
+            if($request->is_wholesale){
+                $product->is_wholesale=1;
+                $product->wholesale_prices()->create([
+                    'min_quantity' => $request->min_quantity,
+                    'wholesale_price' => $request->wholesale_price
+                ]);
+            }
             // Création du produit
             $product = new Product;
             $product->product_name = $request->product_name;

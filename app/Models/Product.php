@@ -9,6 +9,7 @@ use App\Models\Review;
 use App\Models\Category;
 use App\Models\OrderDetail;
 use App\Models\AttributeValue;
+use App\Models\WholeSalePrice;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class Product extends Model
         'product_url',
         'product_price',
         'product_quantity',
+        'is_wholesale',
     ];
     protected $keyType = 'string';
     public $incrementing = false;
@@ -116,4 +118,9 @@ class Product extends Model
         return $base;
     });
 }
+
+    public function wholesalePrices(): HasMany
+    {
+        return $this->hasMany(WholeSalePrice::class);
+    }
 }
