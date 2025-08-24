@@ -10,13 +10,13 @@ use Illuminate\Http\Request;
 class ProductListController extends Controller
 {
     public function index(){
-        return ProductResource::collection(Product::orderBy('created_at', 'desc')->inRandomOrder()->take(5)->get());
+        return ProductResource::collection(Product::orderBy('created_at', 'desc')->where('status',1)->inRandomOrder()->take(5)->get());
     }
 
     public function adsProducts($id){
         return ProductResource::collection(Product::Where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
     }
     public function allProducts(){
-        return ProductResource::collection(Product::orderBy('created_at', 'desc')->paginate(6));
+        return ProductResource::collection(Product::orderBy('created_at', 'desc')->where('status',1)->paginate(6));
     }
 }

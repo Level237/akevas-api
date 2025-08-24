@@ -7,7 +7,9 @@ use App\Models\Shop;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\WholeSalePrice;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
@@ -31,8 +33,7 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        try {
+    {try {
             DB::beginTransaction();
     
             // Récupération du shop
@@ -45,19 +46,7 @@ class ProductController extends Controller
                 $shop->save();
             }
             
-            if($request->is_wholesale){
-                $product->is_wholesale=1;
-               if ($request->has('wholesale_prices')) {
-
-                foreach ($request->wholesale_prices as $wholesale) {
-
-                $product->wholesalePrices()->create([
-                'min_quantity' => $wholesale['min_quantity'],
-                'wholesale_price' => $wholesale['wholesale_price']
-            ]);
-        }
-    }
-            }
+            
             // Création du produit
             $product = new Product;
             $product->product_name = $request->product_name;
@@ -80,9 +69,27 @@ class ProductController extends Controller
             if ($request->hasFile('product_profile')) {
                 $product->product_profile = $request->file('product_profile')->store('product/profile', 'public');
             }
-    
+
+            
+
+          
             $product->save();
     
+            
+            if($request->is_wholesale=="1"){
+                $product->is_wholesale=true;
+                $product->save();
+               if ($request->has('wholesale_prices')) {
+
+                 foreach(json_decode($request->wholesale_prices) as $wholeSalePrice){
+                    $newWholeSalePrice=new WholeSalePrice;
+                    $newWholeSalePrice->min_quantity=$wholeSalePrice->min_quantity;
+                    $newWholeSalePrice->wholesale_price=$wholeSalePrice->wholesale_price;
+                    $newWholeSalePrice->product_id=$product->id;
+                    $newWholeSalePrice->save();
+            }
+    }
+            }
             // Gestion des images du produit simple
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
@@ -161,6 +168,8 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
+            Log::info('Order variation create success',[
+                    'level'=> $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',

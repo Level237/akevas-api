@@ -39,6 +39,7 @@ class ProductResource extends JsonResource
             "product_images" => ImageResource::collection($this->images),
             "product_profile" => URL("/storage/" . $this->product_profile),
             "product_price" => $this->product_price,
+            "isWholeSale"=>$this->is_wholesale,
             "product_quantity" => $this->product_quantity,
             "product_categories" => CategoryResource::collection($this->categories),
             "residence"=>Town::where('id',$this->product_residence)->select('town_name')->first()->town_name,
