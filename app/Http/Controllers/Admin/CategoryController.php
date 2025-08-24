@@ -35,7 +35,8 @@ class CategoryController extends Controller
             $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
             
             if($request->category_profile){
-                $category->category_profile = $request->category_profile;
+                $file=$request->file('category_profile');
+                $category->category_profile = $file->store('categories/profile', 'public');
             }
             
             if($request->parent_id){
