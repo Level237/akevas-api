@@ -6,11 +6,13 @@ use App\Models\Town;
 use App\Models\Product;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
+use App\Models\WholeSalePrice;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ImageResource;
 use App\Http\Resources\ReviewResource;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\SimpleProductResource;
+use App\Http\Resources\WholeSalePriceResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -36,6 +38,7 @@ class ProductResource extends JsonResource
             "reviewCount"=>$this->reviews->count(),
             "product_url" => $this->product_url,
             "whatsapp_number"=>$this->whatsapp_number,
+            "productWholeSales"=>WholeSalePriceResource::collection($this->wholesalePrices),
             "product_images" => ImageResource::collection($this->images),
             "product_profile" => URL("/storage/" . $this->product_profile),
             "product_price" => $this->product_price,
