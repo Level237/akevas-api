@@ -22,7 +22,10 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_name'=>'required'
+            'category_name' => 'required|string|max:255',
+            'category_profile' => 'nullable|string|max:500',
+            'parent_id' => 'nullable|exists:categories,id',
+            'gender_id' => 'nullable|exists:genders,id'
         ];
     }
 }

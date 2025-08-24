@@ -229,6 +229,8 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::get('/admin/order/{id}',[OrderDetailController::class,'detail']);
     Route::get('/admin/recent/orders',[AdminRecentOrderController::class,'recentOrder']);
     Route::get('/admin/all/categories', [CategoryController::class, 'all']);Route::get('/admin/all/categories', [CategoryController::class, 'all']);
+    Route::post('/admin/add/category', [CategoryController::class, 'store']);
+
 });
 
 Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {

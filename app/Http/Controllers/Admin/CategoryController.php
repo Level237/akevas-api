@@ -27,22 +27,40 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CategoryRequest $request)
+    public function store(Request $request)
     {
         try{
-            $category=new Category;
-            $category->category_name=$request->category_name;
-            if($request->parent_id){
-                $category->parent_id=$request->parent_id;
+            $category = new Category;
+            $category->category_name = $request->category_name;
+            $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
+            
+            if($request->category_profile){
+                $category->category_profile = $request->category_profile;
             }
+            
+            if($request->parent_id){
+                $category->parent_id = $request->parent_id;
+            }
+            
             $category->save();
-            return response()->json(['message'=>"Category created successfully"],200);
-        }catch(\Exception $e){
+            
+            // Attacher les genres si fournis
+            if($request->gender_id){
+                $category->genders()->attach($request->gender_id);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Category created successfully",
+                'data' => $category->load('genders')
+            ], 200);
+            
+        } catch(\Exception $e){
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
-                'errors' => $e
-              ], 500);
+                'errors' => $e->getMessage()
+            ], 500);
         }
     }
 
