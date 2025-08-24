@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\WholeSalePrice;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\GenerateProductUrlJob;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -50,7 +51,7 @@ class ProductController extends Controller
             // Création du produit
             $product = new Product;
             $product->product_name = $request->product_name;
-            $product->product_url = (new GenerateUrlResource())->generateUrl($request->product_name);
+            
             $product->product_description = $request->product_description;
             $product->shop_id = $shop->id;
             $product->type = $request->type == 'simple' ? 0 : 1; // 'simple' ou 'variable'
@@ -74,7 +75,9 @@ class ProductController extends Controller
 
           
             $product->save();
-    
+            
+            GenerateProductUrlJob::dispatch($product->id);
+            
             
             if($request->is_wholesale=="1"){
                 $product->is_wholesale=true;
