@@ -162,6 +162,7 @@ Route::get("product/detail/{product_url}", [DetailProductController::class, "ind
 Route::get("/similar/products/{id}",[SimilarProductController::class,"getSimilarProducts"]);
 Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
+Route::get("/all/genders", [CurrentGenderController::class, "all"]);
 
 Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->group(function () {
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);

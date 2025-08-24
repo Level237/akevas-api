@@ -16,4 +16,9 @@ class CurrentGenderController extends Controller
         }
         return new GenderResource($gender);
     }
+
+    public function all(){
+        $genders = Gender::all();
+        return $genders;
+    }
 }
