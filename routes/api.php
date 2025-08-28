@@ -214,6 +214,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::post('/delivery/confirm/{id}', [ConfirmStatusDeliveryController::class, 'confirmStatusDelivery']);
     Route::apiResource('sellers', SellerController::class);
     Route::apiResource('categories', CategoryController::class);
+    Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);

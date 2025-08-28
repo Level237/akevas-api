@@ -83,9 +83,105 @@ class CategoryController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * 
+     * This method safely deletes a category by checking dependencies first.
+     * For cascade deletion, use forceDestroy method instead.
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $category = Category::findOrFail($id);
+            
+            // Vérifier s'il y a des sous-catégories
+            if($category->children()->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete category with subcategories. Please delete subcategories first.'
+                ], 400);
+            }
+            
+            // Vérifier s'il y a des produits associés
+            if($category->products()->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete category with associated products. Please remove products first.'
+                ], 400);
+            }
+            
+            // Supprimer les relations avec les genres
+            $category->genders()->detach();
+            
+            // Supprimer la catégorie
+            $category->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Category deleted successfully'
+            ], 200);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found'
+            ], 404);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Force delete a category and all its subcategories (cascade deletion).
+     * Use with caution as this will delete all related data.
+     */
+    public function forceDestroy(string $id)
+    {
+        try {
+            $category = Category::findOrFail($id);
+            
+            // Supprimer récursivement toutes les sous-catégories
+            $this->deleteCategoryRecursively($category);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Category and all subcategories deleted successfully'
+            ], 200);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found'
+            ], 404);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper method to recursively delete categories and their relationships
+     */
+    private function deleteCategoryRecursively(Category $category)
+    {
+        // Supprimer d'abord les sous-catégories
+        foreach ($category->children as $child) {
+            $this->deleteCategoryRecursively($child);
+        }
+        
+        // Supprimer les relations
+        $category->genders()->detach();
+        $category->products()->detach();
+        $category->shops()->detach();
+        
+        // Supprimer la catégorie
+        $category->delete();
     }
 }
