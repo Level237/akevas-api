@@ -28,6 +28,7 @@ class Product extends Model
         'product_price',
         'product_quantity',
         'is_wholesale',
+        'is_only_wholesale'
     ];
     protected $keyType = 'string';
     public $incrementing = false;
