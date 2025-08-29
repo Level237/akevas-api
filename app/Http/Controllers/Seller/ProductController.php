@@ -81,6 +81,9 @@ class ProductController extends Controller
             
             if($request->is_wholesale=="1"){
                 $product->is_wholesale=true;
+                if($request->is_only_wholesale=="1"){
+                    $product->is_only_wholesale=true;
+                }
                 $product->save();
                if ($request->has('wholesale_prices')) {
 
