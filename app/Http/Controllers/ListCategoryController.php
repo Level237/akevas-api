@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gender;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\CategoryResource;
 
@@ -99,6 +100,17 @@ public function getCategoriesByGender($parentCategoryId) {
     }
     
     return response()->json($categoriesByGender);
+}
+
+public function getCategoriesWithAttributes(){
+
+    $categoriesWithAttributes=DB::table('categories')
+    ->join('category_atributes','categories.id','=','category_atributes.category_id')
+    ->join('attributes','category_atributes.attribute_id','attributes.id')
+    ->select('categories.id as category_id','categories.category_name as category_name','attributes.id as attribute_id','attributes.attributes_name as attribute_name')
+    ->get();
+
+    return $categoriesWithAttributes;
 }
 
 }

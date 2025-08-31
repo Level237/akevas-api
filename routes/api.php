@@ -111,7 +111,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
     */
 
 
-   
+Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 
 Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
