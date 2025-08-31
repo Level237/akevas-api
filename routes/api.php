@@ -164,6 +164,9 @@ Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
 Route::get("/all/genders", [CurrentGenderController::class, "all"]);
 
+Route::get('/attributes/value/by/group/{id}',[ListCategoryController::class,"getAttributeValueByAttributeId"]);
+Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
+
 Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->group(function () {
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
@@ -179,7 +182,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('update/images',[UpdateSellerController::class,'updateGalerieImages']);
     Route::post("/boost/shop",[BoostShopController::class,'boost']);
     
-    Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
+    
     
     // Routes pour la gestion des commandes du vendeur
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);

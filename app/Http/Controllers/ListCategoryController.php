@@ -113,4 +113,40 @@ public function getCategoriesWithAttributes(){
     return $categoriesWithAttributes;
 }
 
+public function getAttributeValueByAttributeId($attributeId){
+
+   $categoryAttributeLink = DB::table('category_atributes')
+        ->where('attribute_id', $attributeId)
+        ->first();
+
+    if (!$categoryAttributeLink) {
+        return response()->json(['error' => 'No link found between this category and attribute.'], 404);
+    }
+    
+    // On trouve tous les groupes de valeurs liés à cette combinaison de catégorie et d'attribut.
+    $groups = DB::table('category_atribute_group_links')
+        ->where('category_attribute_id', $categoryAttributeLink->id)
+        ->join('attribute_value_groups', 'category_atribute_group_links.attribute_value_group_id', '=', 'attribute_value_groups.id')
+        ->select('attribute_value_groups.id', 'attribute_value_groups.label')
+        ->get();
+
+    $result = [];
+    
+    // Pour chaque groupe trouvé, on récupère les valeurs correspondantes.
+    foreach ($groups as $group) {
+        $values = DB::table('attribute_values')
+            ->where('attribute_value_group_id', $group->id)
+            ->where('attribute_id',$attributeId)
+            ->select('id as value_id', 'value', 'hex_color')
+            ->get();
+        
+        $result[] = [
+            'group_id' => $group->id,
+            'group_label' => $group->label,
+            'values' => $values,
+        ];
+    }
+    
+    return response()->json($result);
+}
 }
