@@ -111,7 +111,7 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
     */
 
 
-Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
+
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 
 Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
@@ -178,6 +178,8 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post('update/categories',[UpdateSellerController::class,'updateCategories']);
     Route::post('update/images',[UpdateSellerController::class,'updateGalerieImages']);
     Route::post("/boost/shop",[BoostShopController::class,'boost']);
+    
+    Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
     
     // Routes pour la gestion des commandes du vendeur
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
