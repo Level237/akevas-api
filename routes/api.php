@@ -183,8 +183,8 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post("/boost/shop",[BoostShopController::class,'boost']);
 
     Route::post('/put/in/trash/{id}',[ProductController::class,'putInTrash']);
-    Route::get('/seller/products/trash',[ProductController::class,'productListOfTrash']);
-    
+    Route::get('/trash/products',[ProductController::class,'productListOfTrash']);
+    Route::post("/restore/product/{id}",[ProductController::class,'restoreProduct']);
     // Routes pour la gestion des commandes du vendeur
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
     Route::get('/seller/orders/shop/{shopId}', [OrderListController::class, 'listOrdersByShop']);

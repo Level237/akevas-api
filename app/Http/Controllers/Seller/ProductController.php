@@ -228,8 +228,15 @@ class ProductController extends Controller
     public function putInTrash($id){
         $product=Product::find($id);
         $product->is_trashed=1;
-        $product->status=0;
+        
         $product->save();
         return response()->json(['message' => 'Product put in trash successfully']);
+    }
+
+    public function restoreProduct($id){
+        $product=Product::find($id);
+        $product->is_trashed=0;
+        $product->save();
+        return response()->json(['message' => 'Product restore successfully']);
     }
 }
