@@ -25,7 +25,18 @@ class ProductController extends Controller
     public function index()
     {
         $shop = Shop::where('user_id', Auth::guard('api')->user()->id)->first();
-        $products = Product::where('shop_id', $shop->id)->orderBy('created_at', 'desc')->get();
+        $products = Product::where('shop_id', $shop->id)->orderBy('created_at', 'desc')
+        ->where("is_trashed",0)
+        ->get();
+
+        return ProductResource::collection($products);
+    }
+
+    public function productListOfTrash(){
+        $shop = Shop::where('user_id', Auth::guard('api')->user()->id)->first();
+        $products = Product::where('shop_id', $shop->id)->orderBy('created_at', 'desc')
+        ->where("is_trashed",1)
+        ->get();
 
         return ProductResource::collection($products);
     }
@@ -120,12 +131,18 @@ class ProductController extends Controller
     
                     // Gestion des images pour cette couleur
                     $colorImageKey = "color_" . $colorGroup['color']['id'] . "_image_";
+                    
                     $imageIndex = 0;
+                    Log::info("img:",[
+                        'request'=>$request->hasFile($colorImageKey . $imageIndex)
+                    ]);
                     while ($request->hasFile($colorImageKey . $imageIndex)) {
+                        
                         $imagePath = $request->file($colorImageKey . $imageIndex)
                             ->store('product/variations', 'public');
                         $variation->images()->create(['image_path' => $imagePath]);
                         $imageIndex++;
+                        Log::info("Ended imageIndex: ".$imageIndex);
                     }
     
                     // Gestion des sous-variations (tailles/pointures)
@@ -206,5 +223,13 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function putInTrash($id){
+        $product=Product::find($id);
+        $product->is_trashed=1;
+        $product->status=0;
+        $product->save();
+        return response()->json(['message' => 'Product put in trash successfully']);
     }
 }
