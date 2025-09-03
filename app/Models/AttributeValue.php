@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Product;
 use App\Models\Attribute;
+use App\Models\AttributeValueGroup;
 use App\Models\ProductAttributesValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,5 +28,9 @@ class AttributeValue extends Model
 
     public function productAttributesValues():HasMany{
         return $this->hasMany(ProductAttributesValue::class);
+    }
+
+    public function attributeValueGroup(){
+        return $this->belongsTo(AttributeValueGroup::class);
     }
 }

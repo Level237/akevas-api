@@ -111,6 +111,8 @@ class Product extends Model
                     "id" => $attr->id,
                     "name" => $attr->attributeValue->attribute->name ?? null,
                     "value" => $attr->attributeValue->value ?? null,
+                    "group"=>$attr->attributeValue->attributeValueGroup->label ?? null,
+                    "label"=>$attr->attributeValue->label ?? null,
                     "quantity" => $attr->quantity ?? null,
                     "price" => $attr->price ?? null,
                 ];
