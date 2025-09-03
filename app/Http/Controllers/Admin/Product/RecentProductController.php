@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class RecentProductController extends Controller
 {
     public function index(){
-        $products = Product::orderBy('created_at', 'desc')->take(6)->get();
+        $products = Product::orderBy('created_at', 'desc')->where('is_trashed',0)->take(6)->get();
 
         return ProductResource::collection($products);
 
