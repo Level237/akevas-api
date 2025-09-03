@@ -137,7 +137,7 @@ public function getAttributeValueByAttributeId($attributeId){
         $values = DB::table('attribute_values')
             ->where('attribute_value_group_id', $group->id)
             ->where('attribute_id',$attributeId)
-            ->select('id', 'value')
+            ->select('id', 'value','label')
             ->get();
         
         $result[] = [

@@ -26,6 +26,7 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->string("value");
             $table->string("hex_color")->nullable();
+            $table->string("label")->nullable();
             $table->timestamps();
         });
     }
