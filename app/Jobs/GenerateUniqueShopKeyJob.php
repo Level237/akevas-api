@@ -30,7 +30,7 @@ class GenerateUniqueShopKeyJob implements ShouldQueue
     public function handle(): void
     {
         $shop=Shop::find($this->shopId);
-        $shop->shop_key=(new GenerateUniqueShopNameService)->generateUniqueShopName($shop->shop_name);
+        $shop->shop_key=(new GenerateUniqueShopNameService())->generateUniqueShopName($shop->shop_name);
         $shop->save();
     }
 }
