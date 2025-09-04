@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Jobs\GenerateUniqueShopKeyJob;
 use App\Http\Requests\NewSellerRequest;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Shop\generateShopNameService;
 use App\Services\Auth\CreateAccountSyncService;
 
 class CreateSellerController extends Controller
@@ -47,7 +47,6 @@ class CreateSellerController extends Controller
         if( $seller->save()){
             $shop=new Shop;
             $shop->shop_name=$request->shop_name;
-            $shop->shop_key=(new generateShopNameService)->generateUniqueShopName($request->shop_name);
             $shop->shop_description=$request->shop_description;
             $shop->user_id=$seller->id;
             $shop->town_id=intval($request->town_id);
@@ -62,6 +61,7 @@ class CreateSellerController extends Controller
                 Log::info('PaymentProcessingJob: Payment complete',[
                     'cat'=>$request->categories
                 ]);
+                GenerateUniqueShopKeyJob::dispatch($shop->id);
                 //$urlShop=$this->getUrlSyncAccount();
                 //$accountId=(new CreateAccountSyncService())->createSyncAccount(
                 //$request->shop_name,
