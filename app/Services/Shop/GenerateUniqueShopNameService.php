@@ -4,7 +4,7 @@ namespace App\Services\Shop;
 
 use App\Models\Shop;
 
-function generateUniqueShopName(string $shopName) {
+function GenerateUniqueShopNameService(string $shopName) {
         $shopKey = '';
         do {
             // Nettoyer et préparer le préfixe à partir du nom de la boutique

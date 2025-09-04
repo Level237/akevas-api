@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Services\Shop\generateShopNameService;
+use App\Services\Shop\GenerateUniqueShopNameService;
 
 class GenerateUniqueShopKeyJob implements ShouldQueue
 {
@@ -30,7 +30,7 @@ class GenerateUniqueShopKeyJob implements ShouldQueue
     public function handle(): void
     {
         $shop=Shop::find($this->shopId);
-        $shop->shop_key=(new generateShopNameService)->generateUniqueShopName($shop->shop_name);
+        $shop->shop_key=(new GenerateUniqueShopNameService)->generateUniqueShopName($shop->shop_name);
         $shop->save();
     }
 }
