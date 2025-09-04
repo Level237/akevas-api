@@ -191,9 +191,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
     Route::get('/seller/order/{id}',[OrderListController::class,'getOrderById']);
     
-    Route::get('/seller/notifications',[ListNotificationController::class,'list']);
-    Route::get("/seller/recents/notifications",[ListNotificationController::class,'recentNotification']);
-    Route::get("/seller/get/notification/{id}",[ListNotificationController::class,'getNotification']);
+   
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
@@ -204,6 +202,9 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
 Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
     
+     Route::get('/seller/notifications',[ListNotificationController::class,'list']);
+    Route::get("/seller/recents/notifications",[ListNotificationController::class,'recentNotification']);
+    Route::get("/seller/get/notification/{id}",[ListNotificationController::class,'getNotification']);
     Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
 });
 
