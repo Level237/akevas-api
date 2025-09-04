@@ -61,7 +61,7 @@ class CreateSellerController extends Controller
                 Log::info('PaymentProcessingJob: Payment complete',[
                     'cat'=>$request->categories
                 ]);
-                GenerateUniqueShopKeyJob::dispatch($shop->id);
+                GenerateUniqueShopKeyJob::dispatch($shop->id)->delay(now()->addMinutes(1));
                 //$urlShop=$this->getUrlSyncAccount();
                 //$accountId=(new CreateAccountSyncService())->createSyncAccount(
                 //$request->shop_name,
