@@ -8,7 +8,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Services\Shop\GenerateUniqueShopNameService;
 
 class GenerateUniqueShopKeyJob implements ShouldQueue
 {
@@ -30,7 +29,23 @@ class GenerateUniqueShopKeyJob implements ShouldQueue
     public function handle(): void
     {
         $shop=Shop::find($this->shopId);
-        $shop->shop_key=(new GenerateUniqueShopNameService())->generateUniqueShopName($shop->shop_name);
+
+        $shopKey = '';
+        do {
+            // Nettoyer et préparer le préfixe à partir du nom de la boutique
+            $prefix = strtolower($shop->shop_name); // Conversion en minuscules
+            $prefix = preg_replace('/[^a-z0-9]/', '', $prefix); // Supprime les caractères spéciaux
+            $prefix = substr($prefix, 0, 4); // Prend les 4 premiers caractères
+            $prefix .= '-'; // Ajoute le tiret
+            
+            // Générer une chaîne aléatoire de 5 caractères
+            $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            $randomString = substr(str_shuffle($characters), 0, 5);
+            
+            // Combiner le préfixe avec la chaîne aléatoire
+            $shopKey = $prefix . $randomString;
+        } while (Shop::where('shop_key', $shopKey)->exists());
+        $shop->shop_key=$shopKey;
         $shop->save();
     }
 }
