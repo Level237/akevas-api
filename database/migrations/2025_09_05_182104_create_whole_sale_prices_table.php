@@ -1,9 +1,8 @@
 <?php
 
-use App\Models\Product;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -14,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('whole_sale_prices', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+
+            $table->string('priceable_id');
+            $table->string('priceable_type');
+
             $table->string('min_quantity');
             $table->string("wholesale_price");
+
             $table->timestamps();
+
+            $table->index(['priceable_id', 'priceable_type']);
         });
     }
 

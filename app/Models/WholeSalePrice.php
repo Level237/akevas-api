@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
-use App\Models\Product;
+use App\Models\WholeSalePrice;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class WholeSalePrice extends Model
 {
     use HasFactory;
 
-     public function product(): BelongsTo
+     protected $fillable = [
+        'min_quantity',
+        'wholesale_price',
+        'priceable_id',
+        'priceable_type',
+    ];
+
+      public function priceable()
     {
-        return $this->belongsTo(Product::class);
+        return $this->morphTo();
     }
 }

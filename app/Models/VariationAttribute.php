@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\AttributeValue;
+use App\Models\WholeSalePrice;
 use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,5 +33,10 @@ class VariationAttribute extends Model
     public function attributeValue(): BelongsTo
     {
         return $this->belongsTo(AttributeValue::class);
+    }
+
+     public function wholesalePrices()
+    {
+        return $this->morphMany(WholeSalePrice::class, 'priceable');
     }
 }

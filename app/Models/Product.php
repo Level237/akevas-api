@@ -123,8 +123,8 @@ class Product extends Model
     });
 }
 
-    public function wholesalePrices(): HasMany
+    public function wholesalePrices()
     {
-        return $this->hasMany(WholeSalePrice::class);
+        return $this->morphMany(WholeSalePrice::class, 'priceable');
     }
 }

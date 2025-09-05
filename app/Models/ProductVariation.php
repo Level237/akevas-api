@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Product;
 use App\Models\AttributeValue;
 use App\Models\VariationImage;
+use App\Models\WholeSalePrice;
 use App\Models\VariationAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -38,6 +39,11 @@ class ProductVariation extends Model
     public function images(): HasMany
     {
         return $this->hasMany(VariationImage::class);
+    }
+
+    public function wholesalePrices()
+    {
+        return $this->morphMany(WholeSalePrice::class, 'priceable');
     }
     
 }
