@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index(['priceable_id', 'priceable_type']);
+            
         });
     }
 
