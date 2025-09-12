@@ -106,10 +106,14 @@ use App\Http\Resources\ProductResource;
                     if ($wholesalePricesData) {
                         foreach ($wholesalePricesData as $wpData) {
                             // Lie les prix de gros au produit directement via la relation polymorphique
-                            $product->wholesalePrices()->create([
-                                'min_quantity' => $wpData['min_quantity'],
-                                'wholesale_price' => $wpData['wholesale_price'],
-                            ]);
+
+                            if($wpData['wholesale_price'] != "0"){
+                                $product->wholesalePrices()->create([
+                                    'min_quantity' => $wpData['min_quantity'],
+                                    'wholesale_price' => $wpData['wholesale_price'],
+                                ]);
+                            }
+                           
                             Log::info('Product global wholesale price saved', ['product_id' => $product->id, 'min_quantity' => $wpData['min_quantity']]);
                         }
                     }

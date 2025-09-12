@@ -11,8 +11,10 @@ use App\Models\OrderDetail;
 use App\Models\AttributeValue;
 use App\Models\WholeSalePrice;
 use App\Models\ProductVariation;
+use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Resources\WholeSalePriceResource;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -114,6 +116,7 @@ class Product extends Model
                     "group"=>$attr->attributeValue->attributeValueGroup->label ?? null,
                     "label"=>$attr->attributeValue->label ?? null,
                     "quantity" => $attr->quantity ?? null,
+                    
                     "price" => $attr->price ?? null,
                 ];
             });
