@@ -62,6 +62,17 @@ class ProductListController extends Controller
         });
     }
 
+    if ($request->has('category_id')) {
+        $categoryIds = $request->input('category_id');
+        // S'assurer que $categoryIds est un tableau pour éviter des erreurs
+        if (!is_array($categoryIds)) {
+            $categoryIds = [$categoryIds];
+        }
+        
+        $query->whereHas('categories', function (Builder $categoryQuery) use ($categoryIds) {
+            $categoryQuery->whereIn('id', $categoryIds);
+        });
+    }
 
         $products = $query->paginate(6);
 
