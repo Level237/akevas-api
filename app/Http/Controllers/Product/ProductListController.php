@@ -21,34 +21,46 @@ class ProductListController extends Controller
         $query = Product::inRandomOrder()
         ->where('status', 1)
         ->where('is_trashed', 0);
-        if ($request->has('min_price') || $request->has('max_price')) {
-            $query->where(function (Builder $subQuery) use ($request) {
-                
-                // Logique pour les produits simples
-                $subQuery->where(function ($simpleProductQuery) use ($request) {
-                    if ($request->has('min_price')) {
-                        $minPrice = floatval($request->input('min_price'));
-                        $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($request->has('max_price')) {
-                        $maxPrice = floatval($request->input('max_price'));
-                        $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
-    
-                // Logique pour les produits variés
-                $subQuery->orWhereHas('variations', function (Builder $variationQuery) use ($request) {
-                    if ($request->has('min_price')) {
-                        $minPrice = floatval($request->input('min_price'));
-                        $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($request->has('max_price')) {
-                        $maxPrice = floatval($request->input('max_price'));
-                        $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
+
+        
+       // Appliquer le filtre de prix si des paramètres sont présents
+       if ($request->has('min_price') || $request->has('max_price')) {
+        $minPrice = $request->input('min_price') ? floatval($request->input('min_price')) : null;
+        $maxPrice = $request->input('max_price') ? floatval($request->input('max_price')) : null;
+
+        $query->where(function (Builder $subQuery) use ($minPrice, $maxPrice) {
+
+            // Filtre pour les produits simples (prix dans la table 'products')
+            $subQuery->where(function ($simpleProductQuery) use ($minPrice, $maxPrice) {
+                if ($minPrice !== null) {
+                    $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                }
+                if ($maxPrice !== null) {
+                    $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
+                }
             });
-        }
+
+            // Filtre pour les produits variés (couleur uniquement, prix dans la table 'product_variations')
+            $subQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minPrice, $maxPrice) {
+                if ($minPrice !== null) {
+                    $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                }
+                if ($maxPrice !== null) {
+                    $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
+                }
+            });
+            
+            // Filtre pour les produits variés (couleur + attributs, prix dans 'variation_attributes')
+            $subQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minPrice, $maxPrice) {
+                if ($minPrice !== null) {
+                    $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                }
+                if ($maxPrice !== null) {
+                    $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
+                }
+            });
+        });
+    }
 
 
         $products = $query->paginate(6);
