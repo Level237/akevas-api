@@ -106,6 +106,8 @@ class Product extends Model
             // Cas couleur uniquement
             $base["quantity"] = $variation->quantity;
             $base["price"] = $variation->price;
+            // Paliers de prix de gros définis au niveau de la variation couleur
+            
         } else {
             // Cas couleur + attributs (taille/pointure)
             $base["attributes"] = $variation->attributesVariation->map(function($attr) {
@@ -116,8 +118,17 @@ class Product extends Model
                     "group"=>$attr->attributeValue->attributeValueGroup->label ?? null,
                     "label"=>$attr->attributeValue->label ?? null,
                     "quantity" => $attr->quantity ?? null,
-                    
                     "price" => $attr->price ?? null,
+                    // Paliers de prix de gros définis au niveau de l'attribut de variation
+                    "wholesale_prices" => $attr->wholesalePrices
+                        ->sortBy("min_quantity")
+                        ->values()
+                        ->map(function($wp) {
+                            return [
+                                "min_quantity" => $wp->min_quantity,
+                                "wholesale_price" => $wp->wholesale_price,
+                            ];
+                        }),
                 ];
             });
         }
