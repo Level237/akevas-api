@@ -71,6 +71,17 @@ class ProductListController extends Controller
         });
     }
 
+    if ($request->has('colors')) {
+        $colorsString = $request->input('colors');
+        $colorNames = explode(',', $colorsString);
+
+        $query->whereHas('variations', function (Builder $variationQuery) use ($colorNames) {
+            $variationQuery->whereHas('color', function (Builder $colorQuery) use ($colorNames) {
+                $colorQuery->whereIn('value', $colorNames);
+            });
+        });
+    }
+
         $products = $query->paginate(6);
 
         return ProductResource::collection($products);
