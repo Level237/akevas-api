@@ -103,6 +103,11 @@ class ProductListController extends Controller
         }
     }
 
+    if ($request->has('gender')) {
+        $genderId = $request->input('gender');
+        $query->where('product_gender', $genderId);
+    }
+
         $products = $query->paginate(6);
 
         return ProductResource::collection($products);
