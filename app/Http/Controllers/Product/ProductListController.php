@@ -108,7 +108,7 @@ class ProductListController extends Controller
         $query->where('product_gender', $genderId);
     }
 
-    if ($request->has('seller_mode') && $request->input('seller_mode')) {
+    if ($request->has('seller_mode') && $request->input('seller_mode')==true) {
         $query->where('is_wholesale',1);
        
     }
