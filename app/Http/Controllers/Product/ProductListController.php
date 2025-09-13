@@ -82,6 +82,27 @@ class ProductListController extends Controller
         });
     }
 
+    if ($request->has('attributes')) {
+        $attributesToFilter = $request->input('attributes');
+
+        // Check if the input is a string and handle it as a single attribute
+        if (!is_array($attributesToFilter) && is_string($attributesToFilter)) {
+            // Assuming a single attribute ID is passed, e.g., ?attributes=5
+            $attributesToFilter = [$attributesToFilter => []];
+        }
+
+        foreach ($attributesToFilter as $attributeId => $valueIdsString) {
+            $valueIds = explode(',', $valueIdsString);
+            
+            $query->whereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($attributeId, $valueIds) {
+                $attributeQuery->whereHas('attributeValue', function (Builder $attributeValueQuery) use ($attributeId, $valueIds) {
+                    $attributeValueQuery
+                                        ->whereIn('id', $valueIds);
+                });
+            });
+        }
+    }
+
         $products = $query->paginate(6);
 
         return ProductResource::collection($products);
