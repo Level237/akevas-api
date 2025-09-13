@@ -7,6 +7,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class ProductListController extends Controller
 {
@@ -116,26 +117,29 @@ class ProductListController extends Controller
             
             $minBulkPrice = floatval($minBulkPrice);
             $maxBulkPrice = floatval($maxBulkPrice);
-            
+            Log::info('Bulk price range', ['minBulkPrice' => gettype($minBulkPrice), 'maxBulkPrice' => $maxBulkPrice]);
             // On regroupe toutes les conditions de prix de gros
             $query->where(function(Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
                 
                 // Cas 1: Prix de gros pour les produits simples (sans variations)
                 $bulkPriceQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                    $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                    $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                    $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                 });
                 
                 // Cas 2: Prix de gros pour les produits variés (couleur uniquement)
                 $bulkPriceQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minBulkPrice, $maxBulkPrice) {
                     $variationQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                        $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                     });
                 });
 
                 // Cas 3: Prix de gros pour les produits variés (couleur + attribut)
                 $bulkPriceQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minBulkPrice, $maxBulkPrice) {
                     $attributeQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                        $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                     });
                 });
             });
