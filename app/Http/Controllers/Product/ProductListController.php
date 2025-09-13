@@ -110,6 +110,36 @@ class ProductListController extends Controller
 
     if ($request->has('seller_mode') && $request->input('seller_mode')==true) {
         $query->where('is_wholesale',1);
+
+        if ($request->has('bulk_price_range')) {
+            list($minBulkPrice, $maxBulkPrice) = explode('-', $request->input('bulk_price_range'));
+            
+            $minBulkPrice = floatval($minBulkPrice);
+            $maxBulkPrice = floatval($maxBulkPrice);
+            
+            // On regroupe toutes les conditions de prix de gros
+            $query->where(function(Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
+                
+                // Cas 1: Prix de gros pour les produits simples (sans variations)
+                $bulkPriceQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
+                    $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                });
+                
+                // Cas 2: Prix de gros pour les produits variés (couleur uniquement)
+                $bulkPriceQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minBulkPrice, $maxBulkPrice) {
+                    $variationQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
+                        $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                    });
+                });
+
+                // Cas 3: Prix de gros pour les produits variés (couleur + attribut)
+                $bulkPriceQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minBulkPrice, $maxBulkPrice) {
+                    $attributeQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
+                        $wholesaleQuery->whereBetween('wholesale_price', [$minBulkPrice, $maxBulkPrice]);
+                    });
+                });
+            });
+        }
        
     }
 
