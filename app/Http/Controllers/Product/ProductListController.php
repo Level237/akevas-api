@@ -108,6 +108,11 @@ class ProductListController extends Controller
         $query->where('product_gender', $genderId);
     }
 
+    if ($request->has('seller_mode') && $request->input('seller_mode')) {
+        $query->where('is_wholesale',1);
+       
+    }
+
         $products = $query->paginate(6);
 
         return ProductResource::collection($products);
