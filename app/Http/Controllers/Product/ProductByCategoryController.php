@@ -14,7 +14,8 @@ class ProductByCategoryController extends Controller
     public function index($categoryUrl,Request $request){
         $query=Product::with('categories')->whereHas('categories',function($query) use ($categoryUrl){
             $query->where('categories.category_url',$categoryUrl);
-        });
+        })->where('status', 1)
+        ->where('is_trashed', 0);
 
 
         if ($request->has('min_price') || $request->has('max_price')) {
