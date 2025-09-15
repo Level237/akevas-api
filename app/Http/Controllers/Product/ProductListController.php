@@ -117,7 +117,6 @@ class ProductListController extends Controller
             
             $minBulkPrice = floatval($minBulkPrice);
             $maxBulkPrice = floatval($maxBulkPrice);
-            Log::info('Bulk price range', ['minBulkPrice' => gettype($minBulkPrice), 'maxBulkPrice' => $maxBulkPrice]);
             // On regroupe toutes les conditions de prix de gros
             $query->where(function(Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
                 
