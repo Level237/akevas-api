@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ProductByCategoryController extends Controller
 {
-    public function index($categoryUrl){
+    public function index($categoryUrl,Request $request){
         $query=Product::with('categories')->whereHas('categories',function($query) use ($categoryUrl){
             $query->where('categories.category_url',$categoryUrl);
         });
