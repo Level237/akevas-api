@@ -42,6 +42,7 @@ class ShopResource extends JsonResource
             "categories"=>CategoryResource::collection($this->categories),
            "phone"=>$this->user->phone_number,
             "orders_count"=>null,
+            "product_type"=>$this->product_type,
             "total_earnings"=>$this->products->flatMap(function($product) {
                 return $product->orderDetails->map(function($orderDetail) {
                     return $orderDetail->unit_price * $orderDetail->order_product_quantity;
