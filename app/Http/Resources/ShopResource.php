@@ -35,6 +35,7 @@ class ShopResource extends JsonResource
             "products"=>ProductResource::collection($this->products),
             "expire"=>$this->expire,
             "subscribe_id"=>$this->subscribe_id,
+            "gender"=>$this->shop_gender,
             "town"=>$this->town->town_name,
             "quarter"=>$this->quarter->quarter_name,
             "isPublished"=>$this->isPublished,
