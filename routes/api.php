@@ -121,7 +121,7 @@ Route::post('/get/payment/status',[HandleVerifyController::class,'getPaymentStat
 
 //Status for coolpay
 Route::post('/status/payin',[CheckPayinController::class,'checkStatus']);
-
+Route::post('/status/payin/coins',[InitCoinsPaymentController::class,'checkStatusCoins']);
 
 Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
 Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
