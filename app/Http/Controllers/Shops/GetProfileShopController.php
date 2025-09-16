@@ -11,6 +11,10 @@ class GetProfileShopController extends Controller
 {
     public function getProfile(){
         return response()->json(ShopProfileResource::collection(
-            Shop::inRandomOrder()->take(6)->get()));
+            Shop::where('state', 1)
+                ->inRandomOrder()
+                ->take(6)
+                ->get()
+        ));
     }
 }
