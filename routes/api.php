@@ -173,7 +173,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
     
     Route::post('validate/payment/coins',[ValidatePaymentCoinController::class,'handle']);
-    Route::post("init/payment/coins", [InitCoinsPaymentController::class, "PaymentCoin"]);
+    Route::post("init/payment/coins", [InitCoinsPaymentController::class, "payin"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);

@@ -8,76 +8,48 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use App\Jobs\PaymentProcessingCoinsJob;
 
 class InitPaymentController extends Controller
 {
-    public function PaymentCoin(Request $request){
-        $reference=Auth::guard('api')->user()->id . '-' . uniqid();
-        $response=$this->initPayment($request,$reference);
-        $responseCharge=$this->charge($response,$request->phone,$request->paymentMethod);
-        return response()->json([
-            "status"=>"success",
-            "message"=>"Payment initiated",
-            "reference"=>$response,
-            "statusCharge"=>$responseCharge
-        ]);
-    }
-
-    private function initPayment(Request $request,$reference){
-        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
+    public function payin(Request $request){
         try{
+            $userId=Auth::guard('api')->user()->id;
+            $url = "https://my-coolpay.com/api/".env("PUBLIC_KEY_COOLPAY_COINS")."/payin";
 
-            $url = "https://api.notchpay.co/payments/initialize";
-
-            $urlCallback="https://api-akevas.akevas.com/api/notchpay/coins/webhook";
-                
-           
-            
-        $response=Http::acceptJson()->withBody(json_encode(
-            [
-                "email"=>Auth::guard('api')->user()->email,
-                "amount"=>"10",
-                "currency"=>"XAF",
-                "reference"=>$reference,
-                "phone"=>$request->phone,
-                "type"=>"coins",
-                "callback"=>$urlCallback,
-                
-            ]
-            ),'application/json')->withHeaders([
-                "Authorization"=>env("NOTCHPAY_API_KEY")
-            ])->post($url);
-            $responseData=json_decode($response);
-            return $responseData->transaction->reference;
-    
-        }catch(Exception $e){
-            return response()->json([
-                "status"=>"error",
-                "message"=>$e->getMessage()
-            ],500);
-        }
-    }
-    private function charge($reference,$phone,$provider){
-        NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
-        try{
-            $url = "https://api.notchpay.co/payments/".$reference;
-            $response=Http::acceptJson()->withBody(json_encode(
+        $response=Http::acceptJson()->withBody(
+            json_encode(
                 [
-                    "channel" =>$provider,
-                    "data" => [
-                        "phone" => "+237".$phone
-                    ]
-                    ]
-                ),'application/json')->withHeaders([
-                    "Authorization"=>env("NOTCHPAY_API_KEY")
-                ])->post($url);
+                    "customer_phone_number"=>$request->paymentPhone,
+                    "transaction_amount"=>$request->payinAmount,
+                ]
+            )
+                )->post($url);
+
                 $responseData=json_decode($response);
-                return $responseData->status;
-        }catch(Exception $e){
-            return response()->json([
-                "status"=>"error",
-                "message"=>$e->getMessage()
-            ],500);
+
+                if(isset($responseData->message ) && $responseData->message == "Le solde du compte du payeur est insuffisant."){
+                    return response()->json([
+                        "status"=>"low",
+                        "message"=>"Le solde du compte du payeur est insuffisant.",
+                    ]);
+                }else{
+                   
+                    
+                    PaymentProcessingCoinsJob::dispatch($request->payinAmount,$userId,$responseData->transaction_ref);
+
+                    return response()->json([
+                        "status"=>$responseData->status,
+                        "message"=>"Payment initiated",
+                        "reference"=>$responseData->transaction_ref,
+                        "statusCharge"=>$responseData->action
+                    ]);
+                }
+               
+        }catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
+
+    public function checkStatusCoins()
 }

@@ -21,4 +21,5 @@ class CheckPayinController extends Controller
         ]);
         return response()->json(['status' => $responseData->transaction_status]);
     }
+    
 }

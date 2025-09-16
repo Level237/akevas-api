@@ -4,6 +4,7 @@ namespace App\Services\Payment;
 
 use App\Models\Shop;
 use App\Models\Payment;
+use App\Services\Payment\Coolpay\VerifyPayinService;
 
 class ValidatePaymentCoinService
 {
@@ -22,10 +23,12 @@ class ValidatePaymentCoinService
                     'payment_of' => 'coins',
                     'user_id' => $userId,
                 ]);
-
-                $shop = Shop::where('user_id', $userId)->first();
-                $shop->coins += $amount;
-                $shop->save();
+               
+                    $shop = Shop::where('user_id', $userId)->first();
+                    $shop->coins += $amount;
+                    $shop->save();
+                
+                
             }
         }
 }
