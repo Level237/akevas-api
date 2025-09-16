@@ -24,6 +24,7 @@ class SellerResource extends JsonResource
             "lastName"=>$this->lastName,
             "birthDate"=>$this->birthDate,
             "nationality"=>$this->nationality,
+            "isWholesaler"=>$this->isWholesaler,
             "role_id"=>$this->role_id,
             "phone_number"=>$this->phone_number,
             "isWholesaler"=>$this->isWholesaler,
