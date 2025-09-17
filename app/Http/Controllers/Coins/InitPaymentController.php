@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Coins;
 use NotchPay\Payment;
 use NotchPay\NotchPay;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -34,6 +35,8 @@ class InitPaymentController extends Controller
                         "message"=>"Le solde du compte du payeur est insuffisant.",
                     ]);
                 }else{
+
+                    
                    
                     
                     PaymentProcessingCoinsJob::dispatch($request->payinAmount,$userId,$responseData->transaction_ref);

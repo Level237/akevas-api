@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,11 +23,13 @@ class PaymentProcessingCoinsJob implements ShouldQueue
 
     public $amount;
     public $reference;
+    public $userId;
 
-    public function __construct($amount,$reference)
+    public function __construct($amount,$userId,$reference)
     {
         $this->amount=$amount;
-        $this->reference=$this->reference;
+        $this->reference=$reference;
+        $this->userId=$userId;
     }
 
     /**
@@ -33,14 +37,27 @@ class PaymentProcessingCoinsJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $userId=Auth::guard('api')->user()->id;
+        
+        Log::info("martin",[
+            'ref'=>$this->reference
+        ]);
+        $url = "https://my-coolpay.com/api/".env("PUBLIC_KEY_COOLPAY_COINS")."/checkStatus/".$this->reference;
 
-        $paymentStatus = (new VerifyPayinService())->verify($reference);
-            $responseStatus = $paymentStatus->getData(true)['status'] ?? null;
+        $response=Http::get($url);
+        $responseData=json_decode($response);
+       
+            $responseStatus = $responseData->transaction_status;
+            Log::info('PaymentProcessingCoinsJob: Payment processing for job', [
+                "amount" => $responseStatus,
+            ]);
             if (isset($responseStatus) && $responseStatus === "PENDING") {
                     
+                Log::info('PaymentProcessingCoinsJob: Payment processing for job', [
+                    "amount" => $this->amount,
+                    "reference" => $this->reference
+                ]);
                 // On redéclenche le job avec les mêmes données, pas d'objet Request
-                Self::dispatch($amount, $reference)->delay(now()->addSeconds(15));
+                Self::dispatch($this->amount, $this->reference)->delay(now()->addSeconds(15));
             }
             if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
             
@@ -49,7 +66,7 @@ class PaymentProcessingCoinsJob implements ShouldQueue
             }
 
             if (isset($responseStatus) && $responseStatus == 'SUCCESS') {
-                (new ValidatePaymentCoinService())->handle($this->reference,$this->amount,$userId);
+                (new ValidatePaymentCoinService())->handle($this->reference,$this->amount,$this->$userId);
             }
         
     }

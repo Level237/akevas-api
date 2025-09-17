@@ -4,7 +4,7 @@ namespace App\Services\Payment;
 
 use App\Models\Shop;
 use App\Models\Payment;
-use App\Services\Payment\Coolpay\VerifyPayinService;
+
 
 class ValidatePaymentCoinService
 {
