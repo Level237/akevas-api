@@ -119,4 +119,33 @@ class ShopController extends Controller
         return $totalEarnings;
     
     }
+
+    public function countShopSales($shopId): int
+    {
+        $shop = Shop::findOrFail($shopId);
+
+        // Étape 1: Récupérer les IDs des produits de la boutique
+        $productIds = $shop->products()->pluck('id');
+
+        // Étape 2: Récupérer les IDs de commandes de produits simples
+        $simpleOrderIds = DB::table('order_details')
+            ->whereIn('product_id', $productIds)
+            ->pluck('order_id');
+
+        // Étape 3: Récupérer les IDs de commandes de produits variés
+        $productVariationIds = ProductVariation::whereIn('product_id', $productIds)->pluck('id');
+
+        $variedOrderIds = DB::table('order_variations')
+            ->whereIn('product_variation_id', $productVariationIds)
+            ->pluck('order_id');
+
+        // Étape 4: Combiner les IDs de commandes et enlever les doublons
+        $allOrderIds = $simpleOrderIds->merge($variedOrderIds)->unique();
+
+        // Étape 5: Compter le nombre de commandes finalisées
+        $salesCount = Order::whereIn('id', $allOrderIds)
+            ->count();
+        
+        return $salesCount;
+    }
 }

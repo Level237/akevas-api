@@ -164,7 +164,7 @@ Route::get("/similar/products/{id}",[SimilarProductController::class,"getSimilar
 Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
 Route::get("/all/genders", [CurrentGenderController::class, "all"]);
-Route::get("/get/earnings/{shopId}",[ShopController::class,"getShopEarnings"]);
+Route::get("/get/sales/{shopId}",[ShopController::class,"countShopSales"]);
 Route::get('/attributes/value/by/group/{id}',[ListCategoryController::class,"getAttributeValueByAttributeId"]);
 Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
 
