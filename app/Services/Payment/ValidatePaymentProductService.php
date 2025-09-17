@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Models\OrderVariation;
+use App\Jobs\GetShopEarningsJob;
 use App\Models\ProductVariation;
 use App\Models\VariationAttribute;
 use Illuminate\Support\Facades\Log;
@@ -94,7 +95,7 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
        if($order->save()){
 
         SendNewOrderNotificationJob::dispatch($order->id,$productId)->delay(now()->addMinutes(1));
-
+        GetShopEarningsJob::dispatch($productId)->delay(now()->addMinutes(1));
         $this->savePaymentAndOrder($reference,$order->id);
         if($hasVariation=="false"){
 
