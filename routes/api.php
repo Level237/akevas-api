@@ -61,6 +61,7 @@ use App\Http\Controllers\Delivery\OrderCompletedController;
 use App\Http\Controllers\Delivery\UpdateDeliveryController;
 use App\Http\Controllers\Seller\ListNotificationController;
 use App\Http\Controllers\Seller\ListSubscriptionController;
+use App\Http\Controllers\Seller\ShowPaymentByRefController;
 use App\Http\Controllers\Seller\ShowSubscriptionController;
 use App\Http\Controllers\User\MakeCommentProductController;
 use App\Http\Controllers\Product\PublishedProductController;
@@ -171,7 +172,7 @@ Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
-    
+    Route::get('/show/payment/coins/{ref}',[ShowPaymentByRefController::class,'show']);
     Route::post('validate/payment/coins',[ValidatePaymentCoinController::class,'handle']);
     Route::post("init/payment/coins", [InitCoinsPaymentController::class, "payin"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
