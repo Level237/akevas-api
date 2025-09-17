@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Delivery;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
