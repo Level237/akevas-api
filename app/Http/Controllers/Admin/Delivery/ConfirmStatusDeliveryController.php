@@ -7,6 +7,7 @@ use App\Models\Delivery;
 use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendVerificationDeliveryJob;
 
 class ConfirmStatusDeliveryController extends Controller
 {
@@ -14,16 +15,18 @@ class ConfirmStatusDeliveryController extends Controller
 
         try{
             $delivery = User::find($id);
-
+            $message='';
             if($request->isDelivery==0){
                 $feedBack=new FeedBack;
                 $feedBack->user_id=$delivery->id;
                 $feedBack->message=$request->message;
                 $feedBack->status=0;
                 $feedBack->save();
+                $message=$request->message;
             }
             $delivery->isDelivery = $request->isDelivery;
             $delivery->save();
+            SendVerificationDeliveryJob::dispatch($delivery->id,$message);
             return response()->json(['message' => 'Status de livraison confirmé avec succès']);
         }catch (\Exception $e) {
             return response()->json([
