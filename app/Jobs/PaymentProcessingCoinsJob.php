@@ -57,7 +57,7 @@ class PaymentProcessingCoinsJob implements ShouldQueue
                     "reference" => $this->reference
                 ]);
                 // On redéclenche le job avec les mêmes données, pas d'objet Request
-                Self::dispatch($this->amount, $this->reference)->delay(now()->addSeconds(15));
+                Self::dispatch($this->amount,$this->userId, $this->reference)->delay(now()->addSeconds(15));
             }
             if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
             
@@ -66,7 +66,7 @@ class PaymentProcessingCoinsJob implements ShouldQueue
             }
 
             if (isset($responseStatus) && $responseStatus == 'SUCCESS') {
-                (new ValidatePaymentCoinService())->handle($this->reference,$this->amount,$this->$userId);
+                (new ValidatePaymentCoinService())->handle($this->reference,$this->amount,$this->userId);
             }
         
     }
