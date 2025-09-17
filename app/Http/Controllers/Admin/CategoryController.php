@@ -24,6 +24,11 @@ class CategoryController extends Controller
         return response()->json(['categories'=>$categories],200);
     }
 
+    public function getCategory($id){
+        $category = Category::findOrFail($id);
+        return response()->json(['category'=>CategoryResource::make($category)],200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

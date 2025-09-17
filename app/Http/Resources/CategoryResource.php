@@ -18,6 +18,7 @@ class CategoryResource extends JsonResource
         return [
             "id"=>$this->id,
             "category_name"=>$this->category_name,
+            "genders"=>$this->genders,
             "products_count"=>$this->products->count(),
             "category_profile"=>URL("/storage/".$this->category_profile),
             "category_url"=>$this->category_url,
