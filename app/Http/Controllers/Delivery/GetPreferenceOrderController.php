@@ -20,7 +20,7 @@ class GetPreferenceOrderController extends Controller
      
             $QuarterNameArray[]=$vehicle->quarter_name;
        }
-       $orders=Order::whereIn('quarter_delivery',$QuarterNameArray)->where('fee_of_shipping',"!=",0)->orderBy('created_at','desc')->get();
+       $orders=Order::whereIn('quarter_delivery',$QuarterNameArray)->where('fee_of_shipping',"!=",0)->where('isTake',"!=",1)->orderBy('created_at','desc')->get();
        return response()->json(OrderResource::collection($orders));
 
 

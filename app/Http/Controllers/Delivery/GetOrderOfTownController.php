@@ -34,7 +34,7 @@ class GetOrderOfTownController extends Controller
             ->where('quarter_name', $quarterInresidence->quarter_name)
             ->first();
             
-            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->where('status',"!=","2")->orderBy('created_at','desc')->where('quarter_delivery',$quarterUser->quarter_name)->get();
+            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->where('status',"!=","2")->where('isTake',"!=",1)->orderBy('created_at','desc')->where('quarter_delivery',$quarterUser->quarter_name)->get();
            
             
         return response()->json(OrderResource::collection($orders));
@@ -46,7 +46,7 @@ class GetOrderOfTownController extends Controller
             ->where('quarter_name', $quarterInresidence->quarter_name)
             ->first();
             $ordArray=[];
-            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->where('status',"!=","2")->orderBy('created_at','desc')->get();
+            $orders=Order::with('user')->where('fee_of_shipping',"!=",0)->where('status',"!=","2")->where('isTake',"!=",1)->orderBy('created_at','desc')->get();
             foreach($orders as $order){
                 if($order->quarter_delivery){
                     $quarter=Quarter::where('quarter_name',$order->quarter_delivery)->first();
