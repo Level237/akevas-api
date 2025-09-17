@@ -20,7 +20,7 @@ class CategoryController extends Controller
     }
 
     public function all(){
-        $categories = CategoryResource::collection(Category::all());
+        $categories = CategoryResource::collection(Category::orderBy('created_at', 'desc')->get());
         return response()->json(['categories'=>$categories],200);
     }
 
