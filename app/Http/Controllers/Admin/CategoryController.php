@@ -34,12 +34,7 @@ class CategoryController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'category_name' => 'required|string|max:255',
-            'gender_id' => 'required|integer|exists:genders,id',
-            'parent_id' => 'nullable|integer|exists:categories,id',
-            'category_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+       
 
         try {
             DB::beginTransaction();
@@ -48,39 +43,25 @@ class CategoryController extends Controller
 
             // Mettre à jour les données de base
             $category->category_name = $request->category_name;
-            $category->parent_id = $request->parent_id;
-
+            $category->parent_id = intval($request->parent_id);
+            $category->category_url = Str::slug($request->category_name);
             // Gérer l'image de profil
-            if ($request->hasFile('category_profile')) {
-                // Supprimer l'ancienne image si elle existe
-                if ($category->category_profile) {
-                    Storage::disk('public')->delete($category->category_profile);
-                }
-
-                // Stocker la nouvelle image
-                $image = $request->file('category_profile');
-                $imageName = time() . '_' . Str::slug($request->category_name) . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->store('categories/profile', $imageName, 'public');
-                $category->category_profile = $imagePath;
+            if($request->category_profile){
+                $file=$request->file('category_profile');
+                $category->category_profile = $file->store('categories/profile', 'public');
             }
 
             // Générer l'URL de la catégorie si elle n'existe pas
-            if (!$category->category_url) {
-                $category->category_url = Str::slug($request->category_name);
-            }
+           
 
             $category->save();
 
             // Mettre à jour la relation avec le genre
-            $category->genders()->sync([$request->gender_id]);
+            $category->genders()->sync([intval($request->gender_id)]);
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Catégorie mise à jour avec succès',
-                'data' => $category->load('genders', 'parent')
-            ], 200);
+            return $request->all();
 
         } catch (Exception $e) {
             DB::rollBack();
