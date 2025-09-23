@@ -177,20 +177,7 @@ use App\Http\Resources\ProductResource;
                                 Log::info('VariationAttribute (size) processed', ['id' => $attrVariation->id, 'attribute_value_id' => $attributeValue['id']]);
 
                                 // Gestion des prix de gros pour cette VariationAttribute spécifique
-                                if (isset($attributeValue['is_wholesale']) && $attributeValue['is_wholesale'] &&
-                                    isset($attributeValue['wholesale_prices']) && is_array($attributeValue['wholesale_prices'])) {
-
-                                    // Supprime les anciens prix de gros pour éviter les doublons si vous utilisez updateOrCreate
-                                    $attrVariation->wholesalePrices()->delete();
-
-                                    foreach ($attributeValue['wholesale_prices'] as $wholesalePriceData) {
-                                        $attrVariation->wholesalePrices()->create([ // Lie les prix de gros à VariationAttribute
-                                            'min_quantity' => $wholesalePriceData['min_quantity'],
-                                            'wholesale_price' => $wholesalePriceData['wholesale_price'],
-                                        ]);
-                                        Log::info('Attribute variation wholesale price saved', ['attr_variation_id' => $attrVariation->id, 'min_quantity' => $wholesalePriceData['min_quantity']]);
-                                    }
-                                }
+                              
                             }
                         }
 
@@ -209,20 +196,7 @@ use App\Http\Resources\ProductResource;
                                 Log::info('VariationAttribute (shoe size) processed', ['id' => $attrVariation->id, 'attribute_value_id' => $attributeValue['id']]);
 
                                 // Gestion des prix de gros pour cette VariationAttribute spécifique
-                                if (isset($attributeValue['is_wholesale']) && $attributeValue['is_wholesale'] &&
-                                    isset($attributeValue['wholesale_prices']) && is_array($attributeValue['wholesale_prices'])) {
-
-                                    // Supprime les anciens prix de gros pour éviter les doublons si vous utilisez updateOrCreate
-                                    $attrVariation->wholesalePrices()->delete();
-
-                                    foreach ($attributeValue['wholesale_prices'] as $wholesalePriceData) {
-                                        $attrVariation->wholesalePrices()->create([ // Lie les prix de gros à VariationAttribute
-                                            'min_quantity' => $wholesalePriceData['min_quantity'],
-                                            'wholesale_price' => $wholesalePriceData['wholesale_price'],
-                                        ]);
-                                        Log::info('Attribute variation wholesale price saved', ['attr_variation_id' => $attrVariation->id, 'min_quantity' => $wholesalePriceData['min_quantity']]);
-                                    }
-                                }
+                               
                             }
                         }
                     }
