@@ -25,125 +25,136 @@ class CurrentSellerController extends Controller
     }
 
     public function updateSeller(Request $request){
-        $user=Auth::guard('api')->user();
-        $seller = User::query()->with(['shops', 'shops.images', 'shops.categories'])->findOrFail($user->id);
-        $shop   = $seller->shops->first();
-
-
-        $notEmpty = fn($v) => !is_null($v) && (!is_string($v) || trim($v) !== ''); // garde 0/'0'
-$onlyProvided = function(\Illuminate\Http\Request $r, array $keys) use ($notEmpty) {
-  return array_filter($r->only($keys), $notEmpty);
-};
-
-
-        
+       
+        // 1. Démarrer la transaction
+        DB::beginTransaction();
 
         try {
-            // 1) Mise à jour vendeur
-            $seller->fill([
-                'firstName'    => $request->input('firstName', $seller->firstName),
-                'lastName'     => $request->input('lastName', $seller->lastName),
-                'email'        => $request->input('email', $seller->email),
-                'phone_number' => $request->input('phone_number', $seller->phone_number),
-                'birthDate'    => $request->input('birthDate', $seller->birthDate),
-                'nationality'  => $request->input('nationality', $seller->nationality),
+           
+            $user =Auth::guard('api')->user();
+            $shop = $user->shop;
+            
+            // --- 2. Validation des Données ---
+            $rules = [
+                // Règles Vendeur (User)
+                'firstName' => ['nullable', 'string', 'max:255'],
+                'lastName' => ['nullable', 'string', 'max:255'],
+                'email' => ['nullable', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'phone_number' => ['nullable', 'string', 'max:20'],
+                'birthDate' => ['nullable', 'date'],
+                'nationality' => ['nullable', 'string', 'max:100'],
+                'isWholesaler' => ['nullable', 'in:0,1,2'],
+
+                // Règles Boutique (Shop)
+                'shop_name' => ['nullable', 'string', 'max:255'],
+                'shop_description' => ['nullable', 'string', 'max:1000'],
+                'product_type' => ['nullable', 'in:0,1,2'],
+                'shop_gender' => ['nullable', 'in:1,2'], 
+                'town' => ['nullable', 'string', 'max:100'],
+                'quarter' => ['nullable', 'string', 'max:100'],
+                // NOTE: Si le frontend envoie les IDs, utilisez 'town_id' et 'quarter_id'
+
+                // Règles Fichiers (si un nouveau fichier est envoyé)
+                'identity_card_in_front' => ['nullable', 'file', 'mimes:jpeg,png,jpg', 'max:5120'], 
+                'identity_card_in_back' => ['nullable', 'file', 'mimes:jpeg,png,jpg', 'max:5120'],
+                'identity_card_with_the_person' => ['nullable', 'file', 'mimes:jpeg,png,jpg', 'max:5120'],
+                'shop_profile' => ['nullable', 'file', 'mimes:jpeg,png,jpg', 'max:5120'],
+                'images' => ['nullable', 'array', 'max:10'], // Galerie
+                'images.*' => ['file', 'mimes:jpeg,png,jpg', 'max:5120'],
+
+                // Catégories (IDs)
+                'categories' => ['nullable', 'array'],
+                'categories.*' => ['integer', 'exists:categories,id'],
+            ];
+
+            $data = $request->validate($rules);
+
+            // --- 3. Mise à jour du Vendeur (User) et des Fichiers d'Identité ---
+            $userData = $request->only(['firstName', 'lastName', 'email', 'phone_number', 'birthDate', 'nationality']);
+            if (isset($data['isWholesaler'])) {
+                $userData['is_wholesaler'] = $data['isWholesaler'];
+            }
+            $user->update(array_filter($userData)); // array_filter retire les champs vides/nuls
+
+            // Traitement des fichiers CNI/Identité
+            $identityFiles = [
+                'identity_card_in_front' => 'identity_card_in_front',
+                'identity_card_in_back' => 'identity_card_in_back',
+                'identity_card_with_the_person' => 'identity_card_with_the_person',
+            ];
+            foreach ($identityFiles as $requestKey => $modelAttribute) {
+                if ($request->hasFile($requestKey)) {
+                    // **SUPPRESSION DE L'ANCIEN FICHIER**
+                    if ($user->$modelAttribute && Storage::disk('public')->exists($user->$modelAttribute)) {
+                        Storage::disk('public')->delete($user->$modelAttribute);
+                    }
+                    // Stocker le nouveau fichier
+                    $path = $request->file($requestKey)->store('seller/identity', 'public');
+                    $user->$modelAttribute = $path;
+                    $user->save();
+                }
+            }
+            
+            // --- 4. Mise à jour de la Boutique (Shop) et du Profil ---
+            $shopData = $request->only(['shop_name', 'shop_description', 'town', 'quarter']);
+
+            if (isset($data['product_type'])) {
+                $shopData['product_type'] = $data['product_type'];
+            }
+            if (isset($data['shop_gender'])) {
+                $shopData['gender'] = $data['shop_gender'];
+            }
+            
+            $shop->update(array_filter($shopData));
+
+            // Traitement de la photo de profil de la boutique
+            if ($request->hasFile('shop_profile')) {
+                // **SUPPRESSION DE L'ANCIEN FICHIER**
+                if ($shop->shop_profile && Storage::disk('public')->exists($shop->shop_profile)) {
+                    Storage::disk('public')->delete($shop->shop_profile);
+                }
+                // Stocker la nouvelle photo de profil
+                $shop->shop_profile = $request->file('shop_profile')->store('shop/profile', 'public');
+                $shop->save();
+            }
+
+            // --- 5. Synchronisation des Catégories ---
+            if (isset($data['categories'])) {
+                // Utilisation de sync() pour s'assurer qu'il n'y ait que les nouvelles catégories
+                $shop->categories()->sync($data['categories']);
+            }
+
+            // --- 6. Traitement de la Galerie d'images ---
+            // Le frontend doit gérer la suppression des anciennes images. Ici, on ajoute seulement les nouvelles.
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $imagePath = $file->store('shop/gallery', 'public');
+
+                    // Créer un enregistrement dans la table de galerie
+                    $shop->images()->create([
+                        'image_path' => $imagePath // Assurez-vous que c'est le bon nom de colonne
+                    ]);
+                }
+            }
+
+
+            // 7. Valider la transaction
+            DB::commit();
+
+            // Recharger l'utilisateur avec la relation de boutique mise à jour pour la réponse
+            $user->load('shop.categories', 'shop.images');
+
+            return response()->json([
+                'message' => 'Boutique et informations du vendeur mises à jour avec succès.',
+                'seller_data' => $user->toArray(),
             ]);
 
-            DB::transaction(function() use ($request, $seller, $onlyProvided, $notEmpty) {
-                // USER: update partiel sans null
-                $userData = $onlyProvided($request, [
-                  'firstName','lastName','email','phone_number','birthDate','nationality','isWholesaler'
-                ]);
-                if (!empty($userData)) {
-                  // caster isWholesaler si présent
-                  if (array_key_exists('isWholesaler', $userData)) {
-                    $userData['isWholesaler'] = (string)$userData['isWholesaler'];
-                  }
-                  $seller->update($userData);
-                }
-              
-                // FICHIERS USER
-                if ($request->hasFile('identity_card_in_front')) {
-                  $seller->identity_card_in_front = $request->file('identity_card_in_front')->store('cni/front','public');
-                }
-                if ($request->hasFile('identity_card_in_back')) {
-                  $seller->identity_card_in_back = $request->file('identity_card_in_back')->store('cni/back','public');
-                }
-                if ($request->hasFile('identity_card_with_the_person')) {
-                  $seller->identity_card_with_the_person = $request->file('identity_card_with_the_person')->store('cni/person','public');
-                }
-                $seller->save();
-              
-                // SHOP
-                $shop = $seller->shop ?: new Shop(['user_id' => $seller->id]);
-              
-                $shopData = $onlyProvided($request, [
-                  'shop_name','shop_description','product_type','town_id','quarter_id'
-                ]);
-              
-                if (array_key_exists('product_type', $shopData)) {
-                  $shopData['product_type'] = (string)$shopData['product_type'];
-                }
-               
-              
-                if (!empty($shopData)) {
-                  $shop->fill($shopData); // fillable requis dans Shop
-                }
-              
-                // FICHIER SHOP PROFILE
-                if ($request->hasFile('shop_profile')) {
-                  $shop->shop_profile = $request->file('shop_profile')->store('shop/profile','public');
-                }
-              
-                // Localisation par nom (optionnel, uniquement si fourni et non vide)
-                if ($request->filled('town')) {
-                  $town = \App\Models\Town::where('town_name', $request->input('town'))->first();
-                  if ($town) $shop->town_id = $town->id;
-                }
-                if ($request->filled('quarter')) {
-                  $quarter = \App\Models\Quarter::where('quarter_name', $request->input('quarter'))->first();
-                  if ($quarter) $shop->quarter_id = $quarter->id;
-                }
-              
-                $shop->save();
-              
-                // Catégories: sync seulement si fourni
-                if ($request->has('categories') && is_array($request->input('categories'))) {
-                  $ids = collect($request->input('categories'))
-                    ->map(fn($it) => is_array($it) ? ($it['id'] ?? $it['value'] ?? null) : $it)
-                    ->filter()->unique()->values()->all();
-                  $shop->categories()->sync($ids);
-                }
-              
-                // Images: remplacer seulement si fichiers fournis
-                if ($request->hasFile('images')) {
-                  $files = $request->file('images');
-                  if (is_array($files) && count($files) > 0) {
-                    $shop->images()->detach();
-                    $attach = [];
-                    foreach ($files as $f) {
-                      $img = new \App\Models\Image();
-                      $img->image_path = $f->store('shop/images','public');
-                      $img->save();
-                      $attach[] = $img->id;
-                    }
-                    if ($attach) $shop->images()->attach($attach);
-                  }
-                }
-              });
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Shop updated successfully',
-            ], 200);
-
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Shop update error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error("Erreur de mise à jour de boutique pour l'utilisateur {$user->id}: " . $e->getMessage());
+
             return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong',
-                'errors'  => $e->getMessage(),
+                'message' => 'Une erreur interne est survenue lors de la mise à jour.'.$e->getMessage(),
             ], 500);
         }
     }

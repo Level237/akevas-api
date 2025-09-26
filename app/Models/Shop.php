@@ -24,10 +24,14 @@ class Shop extends Model
 
     protected $fillable = [
         'shop_name',
-        'shop_key',
         'shop_description',
-        'user_id',
-        'shop_type_id',
+        'product_type',
+        'shop_gender',           // Assurez-vous que le nom du champ est bien 'gender' et non 'shop_gender'         // Si vous stockez le nom du quartier
+        'town_id',          // Si vous utilisez les IDs
+        'quarter_id',       // Si vous utilisez les IDs
+        'shop_profile',     // Pour l'URL/chemin de l'image de profil
+        'user_id',          // Important si c'est défini lors de la création
+        // Ajoutez ici toutes les colonnes qui pourraient être mises à jour
     ];
 
     protected $keyType = 'string';

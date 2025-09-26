@@ -29,6 +29,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'userName',
+        "firstName",
+        "lastName",
+        "birthDate",
+        "nationality",
+        "isWholesaler",
+        "identity_card_in_front",
+        'identity_card_in_back',
+        "identity_card_with_the_person",
+        
         'role_id',
         'town_id',
         'phone_number',
@@ -67,8 +76,8 @@ class User extends Authenticatable
         return $this->where('phone_number','=', $username)->first();
     }
 
-    public function shops():HasMany{
-        return $this->hasMany(Shop::class);
+    public function shop():HasOne{
+        return $this->hasOne(Shop::class);
     }
 
     public function vehicles():HasMany{
