@@ -8,6 +8,7 @@
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.2",
         "illuminate/broadcasting": "^10.48",
+        "intervention/image": "^3.11",
         "laravel/framework": "^10.10",
         "laravel/passport": "^12.3",
         "laravel/sanctum": "^3.3",
