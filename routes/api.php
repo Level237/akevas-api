@@ -83,6 +83,7 @@ use App\Http\Controllers\Admin\Delivery\RecentDeliveryController;
 use App\Http\Controllers\Admin\Stat\ActiveDeliveryStatController;
 use App\Http\Controllers\Payment\Coolpay\Product\PayinController;
 use App\Http\Controllers\Product\Payment\SucessPaymentController;
+use App\Http\Controllers\Product\ResizeAllProductImageController;
 use App\Http\Controllers\User\ControlPaymentStatusByRefController;
 use App\Http\Controllers\Admin\Seller\ConfirmStatusSellerController;
 use App\Http\Controllers\Payment\Coolpay\Product\CheckPayinController;
@@ -114,6 +115,8 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 
 
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
+
+Route::get("resize/products",[ResizeAllProductImageController::class,"resizeAllProductImage"]);
 
 Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
 Route::get('/filter/categories/{arraySubCategoryId}',[CategoryFilterController::class,'getCategoryBySubCategory']);
