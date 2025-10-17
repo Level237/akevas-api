@@ -15,5 +15,6 @@ class ResizeAllProductImageController extends Controller
         foreach ($products as $product) {
             dispatch(new ResizeProductImagesJob($product));
         }
+        
     }
 }

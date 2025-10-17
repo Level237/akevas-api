@@ -4,7 +4,9 @@ namespace App\Jobs;
 
 use App\Models\Product;
 use Illuminate\Bus\Queueable;
-use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Log;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,59 +16,90 @@ class ResizeProductImagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
+    protected Product $product;
+    protected ImageManager $imageManager;
 
-     protected $product;
-
-     public function __construct(Product $product)
+    public function __construct(Product $product)
     {
         $this->product = $product;
+        // On force Imagick comme driver
+        $this->imageManager = new ImageManager(new Driver());
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         $this->resizeProductProfile();
         $this->resizeVariationImages();
-        $this->resizeAdditionalImages();
+        //$this->resizeAdditionalImages();
     }
 
     protected function resizeProductProfile()
     {
         if (!$this->product->product_profile) return;
 
-        $originalPath = storage_path('app/public/' . $this->product->product_profile);
-        $newPath = storage_path('app/public/resized/' . basename($originalPath));
+        try {
+            $originalPath = public_path('storage/'.$this->product->product_profile);
 
-        // Création dossier si pas existant
-        if (!file_exists(dirname($newPath))) mkdir(dirname($newPath), 0755, true);
+            if (!is_readable($originalPath)) {
+                Log::warning("Fichier illisible (permissions): " . $originalPath);
+                return;
+            }
+            if (!file_exists($originalPath)) {
+                Log::warning("Image profil du produit introuvable : {$originalPath}");
+                return;
+            }
 
-        $img = Image::make($originalPath)
-            ->resize(800, 600, fn($c) => $c->aspectRatio()->upsize())
-            ->resizeCanvas(800, 600, 'center', false, '#f8f8f8')
-            ->save($newPath);
+            
 
-        // Mettre à jour le champ product_profile
-        $this->product->update(['product_profile' => 'resized/' . basename($originalPath)]);
+            $newPath = public_path('storage/resized/products/'.basename($originalPath));
+            if (!file_exists(dirname($newPath))) mkdir(dirname($newPath), 0755, true);
+           
+            $image = $this->imageManager->read($originalPath)
+            ->scaleDown(800, 800);
+        
+            $canvas = $this->imageManager->create(800, 800, '#f8f8f8');
+            $canvas->place($image, 'center')->save($newPath);
+                
+                
+
+            //$this->product->update(['product_profile' => 'resized/products/'.basename($originalPath)]);
+        } catch (\Throwable $e) {
+
+            $imgInfo = @getimagesize($originalPath);
+
+            if (!$imgInfo) {
+                Log::warning("Image illisible : {$originalPath}");
+            }
+            Log::warning("Erreur redimensionnement image variation du produit {$this->product->id} : " 
+            . $e->getMessage() 
+            . " | Image : " . ($originalPath ?? 'inconnue'));
+        }
     }
 
     protected function resizeVariationImages()
     {
         foreach ($this->product->variations as $variation) {
             foreach ($variation->images as $imgModel) {
-                $originalPath = storage_path('app/public/' . $imgModel->image_path);
-                $newPath = storage_path('app/public/resized/' . basename($originalPath));
+                try {
+                     $originalPath = public_path('storage/'.$imgModel->image_path);
+                    if (!file_exists($originalPath)) {
+                        Log::warning("Image variation introuvable : {$originalPath}");
+                        continue;
+                    }
 
-                $img = Image::make($originalPath)
-                    ->resize(800, 600, fn($c) => $c->aspectRatio()->upsize())
-                    ->resizeCanvas(800, 600, 'center', false, '#f8f8f8')
-                    ->save($newPath);
+                    $newPath = public_path('storage/resized/variations/'.basename($originalPath));
+                    if (!file_exists(dirname($newPath))) mkdir(dirname($newPath), 0755, true);
 
-                $imgModel->update(['image_path' => 'resized/' . basename($originalPath)]);
+                    $image = $this->imageManager->read($originalPath)
+                    ->scaleDown(800, 800);
+                
+                    $canvas = $this->imageManager->create(800, 800, '#f8f8f8');
+                    $canvas->place($image, 'center')->save($newPath);
+
+                    //$imgModel->update(['image_path' => 'resized/variations/'.basename($originalPath)]);
+                } catch (\Throwable $e) {
+                    Log::warning("Erreur redimensionnement image variation du produit {$this->product->id} : " . $e->getMessage());
+                }
             }
         }
     }
@@ -74,15 +107,26 @@ class ResizeProductImagesJob implements ShouldQueue
     protected function resizeAdditionalImages()
     {
         foreach ($this->product->images as $imgModel) {
-            $originalPath = storage_path('app/public/' . $imgModel->image_path);
-            $newPath = storage_path('app/public/resized/' . basename($originalPath));
+            try {
+                $originalPath = public_path('storage/'.$imgModel->image_path);
+                if (!file_exists($originalPath)) {
+                    Log::warning("Image additionnelle introuvable : {$originalPath}");
+                    continue;
+                }
 
-            $img = Image::make($originalPath)
-                ->resize(800, 600, fn($c) => $c->aspectRatio()->upsize())
-                ->resizeCanvas(800, 600, 'center', false, '#f8f8f8')
-                ->save($newPath);
+                $newPath = public_path('storage/resized/images/'.basename($originalPath));
+                if (!file_exists(dirname($newPath))) mkdir(dirname($newPath), 0755, true);
 
-            $imgModel->update(['image_path' => 'resized/' . basename($originalPath)]);
+                $image = $this->imageManager->read($originalPath)
+                ->scaleDown(800, 800);
+            
+                $canvas = $this->imageManager->create(800, 800, '#f8f8f8');
+                $canvas->place($image, 'center')->save($newPath);
+
+                //$imgModel->update(['image_path' => 'resized/images/'.basename($originalPath)]);
+            } catch (\Throwable $e) {
+                Log::warning("Erreur redimensionnement image additionnelle du produit {$this->product->id} : " . $e->getMessage());
+            }
         }
     }
 }
