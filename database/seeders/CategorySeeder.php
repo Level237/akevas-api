@@ -16,13 +16,14 @@ class CategorySeeder extends Seeder
         $homme = Gender::create(['gender_name' => 'Homme',"gender_profile"=>"/genders/mens.jpg","gender_description"=>"Découvrez notre collection exclusive pour hommes - Du style pour tous les jours"]);
         $femme = Gender::create(['gender_name' => 'Femme',"gender_profile"=>"/genders/girl.jpg","gender_description"=>"Découvrez notre collection exclusive pour femmes - Du style pour tous les jours"]);
         $enfant = Gender::create(['gender_name' => 'Enfant',"gender_profile"=>"/genders/enfants.jpg","gender_description"=>"Découvrez notre collection exclusive pour enfants - Du style pour tous les jours"]);
-         $categories = [
+
+        $categories = [
             ['name' => 'Vêtements', 'url' => 'vetements','category_profile'=>"/categories/profile/dress.jpg"],
             ['name' => 'Bijoux', 'url' => 'bijoux','category_profile'=>"/categories/profile/bijoux.jpg"],
             ['name' => 'Chaussures', 'url' => 'chaussures','category_profile'=>"/categories/profile/chaussures.jpg"],
             ['name' => 'Parfums', 'url' => 'parfums','category_profile'=>"/categories/profile/parfums.jpg"],
             ['name' => 'Mèches', 'url' => 'meches','category_profile'=>"/categories/profile/meches.jpg"],
-            ['name' => 'Beauté', 'url' => 'beaute','category_profile'=>"/categories/profile/beaute.jpg"],
+            ['name' => 'Soins et beauté', 'url' => 'soins-et-beaute','category_profile'=>"/categories/profile/beaute.jpg"],
             ['name' => 'Sport', 'url' => 'sport','category_profile'=>"/categories/profile/sports.jpg"],
             ['name' => 'Accessoires', 'url' => 'accessoires','category_profile'=>"/categories/profile/accessoires.jpg"],
         ];
@@ -42,7 +43,7 @@ class CategorySeeder extends Seeder
         $parentCategories['Chaussures']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         $parentCategories['Parfums']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         $parentCategories['Mèches']->genders()->attach($femme->id);
-        $parentCategories['Beauté']->genders()->attach($femme->id);
+        $parentCategories['Soins et beauté']->genders()->attach([$femme->id,$homme->id,$enfant->id]);
         $parentCategories['Sport']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         $parentCategories['Accessoires']->genders()->attach([$homme->id, $femme->id, $enfant->id]);
         // Sous-catégories pour Vêtements
@@ -330,78 +331,68 @@ foreach ($sousCategoriesMechesFemmes as $categoryData) {
 }
 
 // Catégorie parente : Beauté
-$beauté = $parentCategories['Beauté'];
+$beauté = $parentCategories['Soins et beauté'];
 
 // Sous-catégories pour Soins du visage
-$soinsVisage = Category::create([
-    'category_name' => 'Soins du visage',
-    'category_url' => 'soins-du-visage',
-    'parent_id' => $beauté->id,
-]);
 
 // Enfants de Soins du visage
-$sousCategoriesVisage = [
-    ["name" => 'Nettoyants et exfoliants', "url" => "nettoyants-et-exfoliants"],
-    ["name" => 'Masques et peelings', "url" => "masques-et-peelings"],
-    ["name" => 'Crèmes hydratantes', "url" => "cremes-hydratantes"],
-    ["name" => 'Sérums et huiles', "url" => "serums-et-huiles"],
-    ["name" => 'Soins anti-âge', "url" => "soins-anti-age"],
-    ["name" => 'Soins pour peaux spécifiques (acné, tâches)', "url" => "soins-peaux-specifiques"],
+$sousCategoriesSoinsFemmes = [
+    ["name" => 'Crèmes solaires', "url" => "cremes-solaires"],
+    ["name" => 'Maquillages', "url" => "maquillages"],
+    ["name" => 'Soin de visage', "url" => "soin-de-visage-femme"],
+    ["name" => 'Soin de corps', "url" => "soin-de-corps-femme"],
+    ["name" => 'Soin carpilaire', "url" => "soin-carpilaire"],
+    ["name" => 'Matériel de soins', "url" => "materiel-de-soins"],
+    ["name" => 'Huile de beauté', "url" => "huile-de-beaute"],
+    ["name" => 'Produit de beauté', "url" => "produit-de-beaute"],
+    ["name" => 'Accessoire de beauté', "url" => "accessoire-de-beaute"],
+    ["name" => 'Autre', "url" => "autres-soins-et-beaute-femme"],
 ];
 
-foreach ($sousCategoriesVisage as $categoryData) {
+foreach ($sousCategoriesSoinsFemmes as $categoryData) {
     $category=Category::create([
         'category_name' => $categoryData['name'],
         'category_url' => $categoryData['url'],
-        'parent_id' => $soinsVisage->id
+        'parent_id' => $beauté->id
     ]);
+    $category->genders()->attach($femme->id);
     
 }
 
-// Sous-catégories pour Maquillage
-$maquillage = Category::create([
-    'category_name' => 'Maquillage',
-    'category_url' => 'maquillage',
-    'parent_id' => $beauté->id,
-]);
-
-// Enfants de Maquillage
-$sousCategoriesMaquillage = [
-    ["name" => 'Teint (fond de teint, poudres, correcteurs)', "url" => "teint"],
-    ["name" => 'Lèvres (rouges à lèvres, gloss, baumes)', "url" => "levres"],
-    ["name" => 'Yeux (mascara, eye-liner, palettes)', "url" => "yeux"],
-    ["name" => 'Ongles (vernis, accessoires)', "url" => "ongles"],
+$sousCategoriesSoinsHommes = [
+    ["name" => 'Accessoire de soins', "url" => "accessoire-de-soins-hommes"],
+    ["name" => 'Parfums & déodorants', "url" => "parfums-et-deodorants-hommes"],
+    ["name" => 'Rasage', "url" => "rasage-homme"],
+    ["name" => 'Soin de visage', "url" => "soin-de-visage-homme"],
+    ["name" => 'Soin de corps', "url" => "soin-de-corps-homme"],
+    ["name" => 'Autre', "url" => "autres-soins-et-beaute-homme"],
 ];
 
-foreach ($sousCategoriesMaquillage as $categoryData) {
-    Category::create([
+foreach ($sousCategoriesSoinsHommes as $categoryData) {
+    $category=Category::create([
         'category_name' => $categoryData['name'],
         'category_url' => $categoryData['url'],
-        'parent_id' => $maquillage->id
+        'parent_id' => $beauté->id
     ]);
+    $category->genders()->attach($homme->id);
+    
 }
 
-// Sous-catégories pour Soins du corps
-$soinsCorps = Category::create([
-    'category_name' => 'Soins du corps',
-    'category_url' => 'soins-du-corps',
-    'parent_id' => $beauté->id,
-]);
-
-// Enfants de Soins du corps
-$sousCategoriesCorps = [
-    ["name" => 'Crèmes et laits hydratants', "url" => "cremes-et-laits-hydratants"],
-    ["name" => 'Gommages corporels', "url" => "gommages-corporels"],
-    ["name" => 'Huiles essentielles et de massage', "url" => "huiles-essentielles"],
-    ["name" => 'Produits éclaircissants', "url" => "produits-eclaircissants"],
+$sousCategoriesSoinsEnfants = [
+    ["name" => 'Huile de soin', "url" => "huile-de-soin-enfant"],
+    ["name" => 'Huiles essentielles', "url" => "huiles-essentielles-enfants"],
+    ["name" => 'Accessoires de soins', "url" => "accessoires-de-soins-enfants"],
+    ["name" => 'Autres', "url" => "autres-soins-et-beaute-enfants"],
 ];
 
-foreach ($sousCategoriesCorps as $categoryData) {
-    Category::create([
+foreach ($sousCategoriesSoinsEnfants as $categoryData) {
+    $category=Category::create([
         'category_name' => $categoryData['name'],
         'category_url' => $categoryData['url'],
-        'parent_id' => $soinsCorps->id
+        'parent_id' => $beauté->id
     ]);
+    $category->genders()->attach($enfant->id);
+    
 }
 
 // Sous-catégories pour Parfums
