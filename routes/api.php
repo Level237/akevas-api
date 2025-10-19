@@ -23,6 +23,7 @@ use App\Http\Controllers\Shops\ShopListController;
 use App\Http\Controllers\User\ListOrderController;
 use App\Http\Controllers\User\ShowOrderController;
 use App\Http\Controllers\Admin\GiveCoinsController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Seller\BoostShopController;
 use App\Http\Controllers\Seller\CatalogueController;
 use App\Http\Controllers\Seller\OrderListController;
@@ -252,7 +253,7 @@ Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
-   
+    
 });
 
 
@@ -289,4 +290,12 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::get('/delivery/stats/overview',[StatOverviewController::class,'getStatOverview']);
     Route::get('/delivery/stats/by-day',[StatOverviewController::class,'statsByDay']);
 });
+
+
+Route::prefix('auth/google')->group(function () {
+
+    Route::get('/', [SocialAuthController::class, 'redirectToGoogle']);
+    Route::get('callback',[SocialAuthController::class,"handleGoogleCallback"]);
+});
+
 
