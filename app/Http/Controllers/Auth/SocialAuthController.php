@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -51,7 +52,18 @@ class SocialAuthController extends Controller
         $tokenResult = $user->createToken('GoogleAuthToken', [$scope]);
         $token = $tokenResult->accessToken;
 
-        return redirect("{$frontendUrl}/auth/callback?token={$token}&user_id={$user->id}&role_id={$user->role_id}");
+        // Refresh Token (Créer un jeton de durée de vie plus longue pour le rafraîchissement)
+        $refreshToken = $user->createToken('GoogleRefreshToken', [], Carbon::now()->addDays(30))->accessToken;
+
+        $domain = config('app.env') === 'production' ? parse_url(config('app.url'), PHP_URL_HOST) : null;
+        $secure = config('app.env') === 'production';
+
+        return redirect("{$frontendUrl}/auth/callback")->cookie('accessToken', $accessToken, 
+        Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
+        '/', $domain, $secure, true, false, 'lax') // ttl, path, domain, secure, httpOnly, raw, sameSite
+    ->cookie('refreshToken', $refreshToken, 
+        Carbon::now()->addDays(30)->timestamp, // Longue durée de vie
+        '/', $domain, $secure, true, false, 'lax');
     }
 
     protected function getUserScope(int $roleId): string

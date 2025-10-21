@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('profile')->nullable();
             $table->string("drivers_license")->nullable();
             $table->string('residence')->default("1");
+            $table->string('google_id')->nullable();
             $table->boolean('isSeller')->default(0);
             $table->boolean('isDelivery')->default(0);
             $table->rememberToken();
