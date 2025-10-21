@@ -55,9 +55,10 @@ class SocialAuthController extends Controller
         // Refresh Token (Créer un jeton de durée de vie plus longue pour le rafraîchissement)
         $refreshToken = $user->createToken('GoogleRefreshToken', [], Carbon::now()->addDays(30))->accessToken;
 
-        $domain = config('app.env') === 'production' ? parse_url(config('app.url'), PHP_URL_HOST) : null;
+        $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
         $secure = config('app.env') === 'production';
 
+        
         return redirect("{$frontendUrl}/auth/callback")->cookie('accessToken', $accessToken, 
         Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
         '/', $domain, $secure, true, false, 'none') // ttl, path, domain, secure, httpOnly, raw, sameSite

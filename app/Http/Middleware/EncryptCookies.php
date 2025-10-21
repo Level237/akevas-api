@@ -12,6 +12,7 @@ class EncryptCookies extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'accessToken',    // ⬅️ Ajouter le cookie d'authentification
+        'refreshToken',   // ⬅️ Ajouter le cookie de rafraîchissement
     ];
 }

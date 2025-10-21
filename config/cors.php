@@ -28,6 +28,7 @@ return [
     'exposed_headers' => ["*"],
 
     'max_age' => 0,
+    "Access-Control-Allow-Credentials" =>true,
 
     'supports_credentials' => true,
        // Très important !
