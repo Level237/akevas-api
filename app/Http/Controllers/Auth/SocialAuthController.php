@@ -37,8 +37,8 @@ class SocialAuthController extends Controller
             Log::error("Erreur de callback Google: " . $e->getMessage());
             return redirect("{$frontendUrl}/login?error=google_auth_failed");
         }
-
-        $user = User::where('email', $googleUser->getEmail())->first();
+        $email = $googleUser->getEmail();
+        $user = User::where('email', $email)->first();
 
         if($user){
             if (is_null($user->google_id)) {
@@ -46,6 +46,9 @@ class SocialAuthController extends Controller
             }
             // Mettre à jour d'autres informations si nécessaire
             $user->save();
+        }else{
+            $errorMsg = urlencode("Cette adresse email ({$email}) n'existe pas dans nos bases de données. Veuillez vous enregistrer d'abord.");
+            return redirect("{$frontendUrl}/login?code=401");
         }
 
         $scope = $this->getUserScope($user->role_id);
