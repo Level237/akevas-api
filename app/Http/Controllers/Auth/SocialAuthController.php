@@ -59,7 +59,7 @@ class SocialAuthController extends Controller
         $secure = config('app.env') === 'production';
 
         
-        return redirect("{$frontendUrl}/auth/callback")->cookie('accessToken', $accessToken, 
+        return redirect("{$frontendUrl}/authenticate")->cookie('accessToken', $accessToken, 
         Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
         '/', $domain, $secure, true, false, 'none') // ttl, path, domain, secure, httpOnly, raw, sameSite
     ->cookie('refreshToken', $refreshToken, 
