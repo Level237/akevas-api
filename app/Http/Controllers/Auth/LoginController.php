@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Services\Auth\LoginService;
 use App\Http\Controllers\Controller;
+
 use App\Repositories\GetClientRepository;
 use App\Services\Auth\GenerateTokenUserService;
-use App\Services\Auth\LoginService;
-
-use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -32,7 +33,24 @@ class LoginController extends Controller
                 return response()->json(['message'=>"vous n'avez pas les droits d'acces à cette application"], 403);
             }
             $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
-            return $tokenUser;
+            
+            $tokenData = json_decode($tokenUser->getContent(), true);
+
+            if ($tokenUser->getStatusCode() === 200) {
+                $accessToken = $tokenData['access_token'];
+                $refreshToken = $tokenData['refresh_token'];
+
+                $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
+                $secure = config('app.env') === 'production';
+
+                return response()->noContent(204)->cookie('accessToken', $accessToken, 
+                Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
+                '/', $domain, $secure, true, false, 'none')
+            ->cookie('refreshToken', $refreshToken, 
+                Carbon::now()->addDays(30)->timestamp,
+                '/', $domain, $secure, true, false, 'none');
+            }
+            
         }catch(\Exception $e){
             return response()->json([
                 'success' => false,
