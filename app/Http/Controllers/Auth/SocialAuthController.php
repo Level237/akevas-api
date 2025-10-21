@@ -50,7 +50,7 @@ class SocialAuthController extends Controller
 
         $scope = $this->getUserScope($user->role_id);
         $tokenResult = $user->createToken('GoogleAuthToken', [$scope]);
-        $token = $tokenResult->accessToken;
+        $accessToken = $tokenResult->accessToken;
 
         // Refresh Token (Créer un jeton de durée de vie plus longue pour le rafraîchissement)
         $refreshToken = $user->createToken('GoogleRefreshToken', [], Carbon::now()->addDays(30))->accessToken;
