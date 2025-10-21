@@ -60,10 +60,10 @@ class SocialAuthController extends Controller
 
         return redirect("{$frontendUrl}/auth/callback")->cookie('accessToken', $accessToken, 
         Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
-        '/', $domain, $secure, true, false, 'lax') // ttl, path, domain, secure, httpOnly, raw, sameSite
+        '/', $domain, $secure, true, false, 'none') // ttl, path, domain, secure, httpOnly, raw, sameSite
     ->cookie('refreshToken', $refreshToken, 
         Carbon::now()->addDays(30)->timestamp, // Longue durée de vie
-        '/', $domain, $secure, true, false, 'lax');
+        '/', $domain, $secure, true, false, 'none');
     }
 
     protected function getUserScope(int $roleId): string

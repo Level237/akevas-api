@@ -168,7 +168,7 @@ return [
     |
     */
     'http_only' => true, // Activer le cookie HTTP only
-    'secure' => env('SESSION_SECURE_COOKIE',false),
+    'secure' => env('SESSION_SECURE_COOKIE',true),
 
     /*
     |--------------------------------------------------------------------------
@@ -196,7 +196,7 @@ return [
     |
     */
 
-    'same_site' => 'lax',
+    'same_site' => env('SESSION_SAME_SITE', 'none'),
 
     /*
     |--------------------------------------------------------------------------
