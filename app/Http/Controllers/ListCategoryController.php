@@ -42,16 +42,33 @@ class ListCategoryController extends Controller
         //$response = CategoryResource::collection($categories);
         return response()->json(['categories'=>$categories],200);
     }
-    public function getCategoryWithParentIdNull(){
-        $rootCategories = Cache::remember('root_categories', 60, function () {
-            return Category::whereDoesntHave('parent')->get();
-        });
+    public function getCategoryWithParentIdNull(Request $request){
+        // Vérifier si un genre est spécifié dans la requête
+        if ($request->has('gender') && $request->gender) {
+            $genderId = $request->gender;
+            
+            $rootCategories = Cache::remember('root_categories_gender_' . $genderId, 60, function () use ($genderId) {
+                return Category::whereDoesntHave('parent')
+                    ->whereHas('genders', function($query) use ($genderId) {
+                        $finalIds = [];
+                        if($genderId == 4){
+                            $finalIds = [1, 2, 3];
+                        } else {
+                            $finalIds = [$genderId];
+                        }
+                        $query->whereIn('genders.id', $finalIds);
+                    })->get();
+            });
+        } else {
+            $rootCategories = Cache::remember('root_categories', 60, function () {
+                return Category::whereDoesntHave('parent')->get();
+            });
+        }
 
         
         return CategoryResource::collection($rootCategories);
     }
-public function getCategoriesByGender($parentCategoryId) {
-    // Récupérer la catégorie parente
+public function getCategoriesByGender($parentCategoryId,Request $request) {
     $parentCategory = Cache::remember('parent_category_'.$parentCategoryId, 60, function () use ($parentCategoryId) {
         return Category::find($parentCategoryId);
     });
@@ -60,16 +77,27 @@ public function getCategoriesByGender($parentCategoryId) {
         return response()->json(['message' => 'Catégorie parente non trouvée'], 404);
     }
 
-    // Récupérer les sous-catégories
     $children = Cache::remember('children_category_'.$parentCategoryId, 60, function () use ($parentCategory) {
         return $parentCategory->children;
     });
 
-    // Organiser les sous-catégories par genre
+    if ($request->has('gender') && $request->gender) {
+        $genderId = (int) $request->gender;
+        $finalIds = $genderId === 4 ? [1, 2, 3] : [$genderId];
+
+        $filtered = $children->filter(function ($child) use ($finalIds) {
+            return $child->genders()->whereIn('genders.id', $finalIds)->exists();
+        })->values();
+
+        // Charger la relation genders pour la réponse
+        $filtered->load('genders');
+
+        return response()->json(['categories' => $filtered], 200);
+    }
+
     $categoriesByGender = [];
 
     foreach ($children as $child) {
-        // Vérifier si la sous-catégorie a des genres
         if ($child->genders->isNotEmpty()) {
             foreach ($child->genders as $gender) {
                 $genderName = $gender->gender_name;
@@ -81,15 +109,11 @@ public function getCategoriesByGender($parentCategoryId) {
                 $categoriesByGender[$genderName][] = $child;
             }
         } else {
-            // Si pas de genre, ajouter l'enfant et vérifier pour ses enfants
             $categoriesByGender['sans_genre'][] = $child;
 
-            // Récursion pour ajouter les enfants de cette sous-catégorie
             if ($child->children->isNotEmpty()) {
-                // Appel de la fonction
-                $response = $this->getCategoriesByGender($child->id);
+                $response = $this->getCategoriesByGender($child->id, new Request());
 
-                // Récupérer les données de la réponse JSON
                 $categoriesData = $response->getData();
                 $categoriesByGender['sans_genre'] = array_merge(
                     $categoriesByGender['sans_genre'],
