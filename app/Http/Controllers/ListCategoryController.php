@@ -57,11 +57,11 @@ class ListCategoryController extends Controller
                             $finalIds = [$genderId];
                         }
                         $query->whereIn('genders.id', $finalIds);
-                    })->get();
+                    })->take(8)->get();
             });
         } else {
             $rootCategories = Cache::remember('root_categories', 60, function () {
-                return Category::whereDoesntHave('parent')->get();
+                return Category::whereDoesntHave('parent')->take(8)->get();
             });
         }
 

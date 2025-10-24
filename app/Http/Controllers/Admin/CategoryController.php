@@ -80,7 +80,10 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         try{
-            $category = new Category;
+            $gender_name = "";
+            
+            if($request->parent_id == null){
+                $category = new Category;
             $category->category_name = $request->category_name;
             $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
             
@@ -89,9 +92,9 @@ class CategoryController extends Controller
                 $category->category_profile = $file->store('categories/profile', 'public');
             }
             
-            if($request->parent_id){
+            
                 $category->parent_id = $request->parent_id;
-            }
+            
             
             $category->save();
             
@@ -99,12 +102,51 @@ class CategoryController extends Controller
             if($request->gender_id){
                 $category->genders()->attach($request->gender_id);
             }
+            }else{
+                foreach($request->gender_id as $gender){
+                    $category = new Category;
+                    $category_name=$request->category_name;
+                    if($request->parent_id){
+                        $category_name= $request->category_name . " " . $gender_name;
+                        $category->parent_id = $request->parent_id;
+                    }
+                    if($gender == "1"){
+                        $gender_name="homme";
+                    }else if($gender ==  "2"){
+                        $gender_name = "femme";
+                    }else{
+                        $gender_name = "enfant";
+                    }
+    
+                    
+                    $category->category_name = $request->category_name . " " . $gender_name;
+                    $category->category_url = \Illuminate\Support\Str::slug($request->category_name . " " . $gender_name);
+                
+                    if($request->category_profile){
+                        $file=$request->file('category_profile');
+                        $category->category_profile = $file->store('categories/profile', 'public');
+                    }
+                    
+                    
+                    
+                    $category->save();
+    
+                   
+                        $category->genders()->attach($gender);
+                    
+                }
+            }
+            
+            
             
             return response()->json([
                 'success' => true,
                 'message' => "Category created successfully",
                 'data' => $category->load('genders')
             ], 200);
+            
+            // Attacher les genres si fournis
+            
             
         } catch(\Exception $e){
             return response()->json([
