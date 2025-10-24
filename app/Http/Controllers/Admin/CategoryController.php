@@ -100,7 +100,7 @@ class CategoryController extends Controller
             
             // Attacher les genres si fournis
             if($request->gender_id){
-                $category->genders()->attach($request->gender_id);
+                $category->genders()->attach(intval($request->gender_id));
             }
             }else{
                 foreach($request->gender_id as $gender){
@@ -132,7 +132,7 @@ class CategoryController extends Controller
                     $category->save();
     
                    
-                        $category->genders()->attach($gender);
+                        $category->genders()->attach(intval($gender));
                     
                 }
             }
