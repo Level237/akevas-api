@@ -83,11 +83,11 @@ class CategoryController extends Controller
             $gender_name = "";
             
             if($request->parent_id == null){
-                $category = new Category;
+            $category = new Category;
             $category->category_name = $request->category_name;
             $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
             
-            if($request->category_profile){
+            if($request->category_profile != null){
                 $file=$request->file('category_profile');
                 $category->category_profile = $file->store('categories/profile', 'public');
             }
