@@ -204,7 +204,7 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::post("/delivery/update/docs",[UpdateDeliveryController::class,'updateDocuments']);
 });
 
-Route::middleware(['auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
+Route::middleware(['auth_seller','auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
     Route::post('update/seller',[CurrentSellerController::class,'updateSeller']);
      Route::get('/seller/notifications',[ListNotificationController::class,'list']);
