@@ -32,6 +32,16 @@ class LoginController extends Controller
             if($request->role_id != $loginUser['role_id']){
                 return response()->json(['message'=>"vous n'avez pas les droits d'acces à cette application"], 403);
             }
+            if($request->role_id==1 || $request->role_id==3){
+                $accessTokenName="accessToken";
+                $refreshTokenName="refreshToken";
+            }else if ($request->role_id==2){
+                $accessTokenName="accessTokenSeller";
+                $refreshTokenName="refreshTokenSeller";
+            }else{
+                $accessTokenName="accessTokenDelivery";
+                $refreshTokenName="refreshTokenDelivery";
+            }
             $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
             
             $tokenData = json_decode($tokenUser->getContent(), true);
@@ -43,10 +53,10 @@ class LoginController extends Controller
                 $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
                 $secure = config('app.env') === 'production';
 
-                return response()->noContent(204)->cookie('accessToken', $accessToken, 
+                return response()->noContent(204)->cookie($accessTokenName, $accessToken, 
                 Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
                 '/', $domain, $secure, true, false, 'none')
-            ->cookie('refreshToken', $refreshToken, 
+            ->cookie($refreshTokenName, $refreshToken, 
                 Carbon::now()->addDays(30)->timestamp,
                 '/', $domain, $secure, true, false, 'none');
             }
