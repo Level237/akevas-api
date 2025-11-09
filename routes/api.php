@@ -172,7 +172,7 @@ Route::get("/get/sales/{shopId}",[ShopController::class,"countShopSales"]);
 Route::get('/attributes/value/by/group/{id}',[ListCategoryController::class,"getAttributeValueByAttributeId"]);
 Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
 
-Route::middleware(['auth:api', 'scopes:seller', "isSeller"])->prefix('v1')->group(function () {
+Route::middleware(["auth:api", 'scopes:seller', "isSeller", "verify.role"])->prefix('v1')->group(function () {
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
@@ -204,7 +204,7 @@ Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function
     Route::post("/delivery/update/docs",[UpdateDeliveryController::class,'updateDocuments']);
 });
 
-Route::middleware(['auth_seller','auth:api', 'scopes:seller'])->prefix('v1')->group(function () {
+Route::middleware(["auth:api", 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
     Route::post('update/seller',[CurrentSellerController::class,'updateSeller']);
      Route::get('/seller/notifications',[ListNotificationController::class,'list']);
@@ -213,7 +213,7 @@ Route::middleware(['auth_seller','auth:api', 'scopes:seller'])->prefix('v1')->gr
     Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
 });
 
-Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function () {
+Route::middleware(["auth:api", 'scopes:admin'])->prefix('v1')->group(function () {
     Route::post('/decline/or/validate/{reviewId}/{status}',[DeclineOrValidateReviewController::class,'declineOrValidate']);
     Route::post('/decline/or/validate/shop/review/{reviewId}/{status}',[DeclineOrValidateShopReviewController::class,'declineOrValidate']);
     Route::get('/recent/products', [RecentProductController::class, 'index']);
@@ -248,7 +248,7 @@ Route::middleware(['auth:api', 'scopes:admin'])->prefix('v1')->group(function ()
     Route::post('update/category/{id}', [CategoryController::class, 'update']);
 });
 
-Route::middleware(['auth:api', 'scopes:customer'])->prefix('v1')->group(function () {
+Route::middleware(["auth:api", 'scopes:customer'])->prefix('v1')->group(function () {
     Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
@@ -277,7 +277,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::post('/payin',[PayinController::class,'payin']);
 });
 
-Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
+Route::middleware(["auth:api", 'scopes:delivery'])->prefix('v1')->group(function () {
     
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
     Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);

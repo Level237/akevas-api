@@ -51,17 +51,6 @@ class SocialAuthController extends Controller
             return redirect("{$frontendUrl}/login?code=401");
         }
 
-        if($user->role_id==1 || $user->role_id==3){
-            $accessTokenName="accessToken";
-            $refreshTokenName="refreshToken";
-        }else if ($user->role_id==2){
-            $accessTokenName="accessTokenSeller";
-            $refreshTokenName="refreshTokenSeller";
-        }else{
-            $accessTokenName="accessTokenDelivery";
-            $refreshTokenName="refreshTokenDelivery";
-        }
-
         $scope = $this->getUserScope($user->role_id);
         $tokenResult = $user->createToken('GoogleAuthToken', [$scope]);
         $accessToken = $tokenResult->accessToken;
@@ -73,10 +62,10 @@ class SocialAuthController extends Controller
         $secure = config('app.env') === 'production';
 
         
-        return redirect("{$frontendUrl}/authenticate")->cookie($accessTokenName, $accessToken, 
+        return redirect("{$frontendUrl}/authenticate")->cookie('accessToken', $accessToken, 
         Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
         '/', $domain, $secure, true, false, 'none') // ttl, path, domain, secure, httpOnly, raw, sameSite
-    ->cookie($refreshTokenName, $refreshToken, 
+    ->cookie('refreshToken', $refreshToken, 
         Carbon::now()->addDays(30)->timestamp, // Longue durée de vie
         '/', $domain, $secure, true, false, 'none');
     }

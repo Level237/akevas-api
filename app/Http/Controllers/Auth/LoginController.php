@@ -6,8 +6,9 @@ namespace App\Http\Controllers\Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\Auth\LoginService;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
+use App\Http\Controllers\Controller;
 use App\Repositories\GetClientRepository;
 use App\Services\Auth\GenerateTokenUserService;
 
@@ -32,32 +33,50 @@ class LoginController extends Controller
             if($request->role_id != $loginUser['role_id']){
                 return response()->json(['message'=>"vous n'avez pas les droits d'acces à cette application"], 403);
             }
-            if($request->role_id==1 || $request->role_id==3){
-                $accessTokenName="accessToken";
-                $refreshTokenName="refreshToken";
-            }else if ($request->role_id==2){
-                $accessTokenName="accessTokenSeller";
-                $refreshTokenName="refreshTokenSeller";
-            }else{
-                $accessTokenName="accessTokenDelivery";
-                $refreshTokenName="refreshTokenDelivery";
-            }
             $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
             
             $tokenData = json_decode($tokenUser->getContent(), true);
-
+             $origin = $request->headers->get('origin');
+            
             if ($tokenUser->getStatusCode() === 200) {
                 $accessToken = $tokenData['access_token'];
                 $refreshToken = $tokenData['refresh_token'];
 
-                $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
+                $domain = '.akevas.com';
                 $secure = config('app.env') === 'production';
 
-                return response()->noContent(204)->cookie($accessTokenName, $accessToken, 
-                Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
+                if (config('app.env') === 'production') {
+                   
+
+                    if (str_contains($origin, 'seller.akevas.com')) {
+                        
+        $cookieNameAccess = 'accessTokenSeller';
+         
+        $cookieNameRefresh = 'refreshTokenSeller';
+    } elseif (str_contains($origin, 'delivery.akevas.com')) {
+        $cookieNameAccess = 'accessTokenDelivery';
+        $cookieNameRefresh = 'refreshTokenDelivery';
+    } else if (str_contains($origin, 'localhost')) {
+        $cookieNameAccess = 'accessTokenSeller';
+        $cookieNameRefresh = 'refreshTokenSeller';
+    } else {
+        $cookieNameAccess = 'accessToken';
+        $cookieNameRefresh = 'refreshToken';
+    }
+                }
+                Log::info('Seller origin: ' . $cookieNameAccess,[
+                    'cookieNameAccess' => $cookieNameAccess,
+                    'cookieNameRefresh' => $cookieNameRefresh,
+                    'accessToken' => $accessToken,
+                    'refreshToken' => $refreshToken,
+                    'domain' => $domain,
+                    'secure' => $secure,
+                ]);
+                return response()->json(['message' => 'Login success'], 200)->cookie($cookieNameAccess, $accessToken, 
+                config('passport.token_ttl'),
                 '/', $domain, $secure, true, false, 'none')
-            ->cookie($refreshTokenName, $refreshToken, 
-                Carbon::now()->addDays(30)->timestamp,
+            ->cookie($cookieNameRefresh, $refreshToken, 
+                60*24*30,
                 '/', $domain, $secure, true, false, 'none');
             }
             
