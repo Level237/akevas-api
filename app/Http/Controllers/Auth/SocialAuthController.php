@@ -27,7 +27,7 @@ class SocialAuthController extends Controller
     // 3. Rediriger vers Google
     return Socialite::driver('google')->stateless()->redirect();
 }
-    public function handleGoogleCallback(): RedirectResponse
+    public function handleGoogleCallback(Request $request): RedirectResponse
     {
         $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
 
@@ -61,12 +61,26 @@ class SocialAuthController extends Controller
         $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
         $secure = config('app.env') === 'production';
 
+        $origin = $request->headers->get('origin');
         
-        return redirect("{$frontendUrl}/authenticate")->cookie('accessToken', $accessToken, 
-        Carbon::now()->addMinutes(config('passport.token_ttl'))->timestamp, 
+        if(str_contains($origin, 'seller.akevas.com')){
+            $cookieNameAccess = 'accessTokenSeller';
+            $cookieNameRefresh = 'refreshTokenSeller';
+        }elseif(str_contains($origin, 'delivery.akevas.com')){
+            $cookieNameAccess = 'accessTokenDelivery';
+            $cookieNameRefresh = 'refreshTokenDelivery';
+        }else if (str_contains($origin, 'localhost')) {
+        $cookieNameAccess = 'accessTokenSeller';
+        $cookieNameRefresh = 'refreshTokenSeller';
+    }else{
+            $cookieNameAccess = 'accessToken';
+            $cookieNameRefresh = 'refreshToken';
+        }
+        return redirect("{$frontendUrl}/authenticate")->cookie($cookieNameAccess, $accessToken, 
+        config('passport.token_ttl'), 
         '/', $domain, $secure, true, false, 'none') // ttl, path, domain, secure, httpOnly, raw, sameSite
-    ->cookie('refreshToken', $refreshToken, 
-        Carbon::now()->addDays(30)->timestamp, // Longue durée de vie
+    ->cookie($cookieNameRefresh, $refreshToken, 
+        60*24*30, // Longue durée de vie
         '/', $domain, $secure, true, false, 'none');
     }
 
