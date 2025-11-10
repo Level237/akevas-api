@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\ValidateProductController;
 use App\Http\Controllers\Delivery\OrderHistoryController;
 use App\Http\Controllers\Delivery\StatOverviewController;
 use App\Http\Controllers\Product\DetailProductController;
+use App\Http\Controllers\Shops\CheckShopStatusController;
 use App\Http\Controllers\Category\CategoryByUrlController;
 use App\Http\Controllers\Payment\Stripe\PaymentController;
 use App\Http\Controllers\Product\SimilarProductController;
@@ -114,6 +115,10 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
     */
 
 
+
+
+
+Route::post("check/shop/status",[CheckShopStatusController::class,'checkShopStatus']);
 
 Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
 
