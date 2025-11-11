@@ -3,10 +3,13 @@
 namespace App\Http\Resources;
 
 use App\Models\Shop;
+use App\Models\FeedBack;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use App\Http\Resources\ShopResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\URL;
+
 class SellerResource extends JsonResource
 {
     /**
@@ -33,6 +36,7 @@ class SellerResource extends JsonResource
             "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
             "isSeller"=>$this->isSeller,
             "feedbacks"=>$this->feedbacks,
+            "last_feedbacks_product_verification"=>FeedBack::where('user_id',$this->id)->where('type','1')->where('status',0)->count(),
             "shop"=>ShopResource::make(Shop::where('user_id',$this->id)->first()),
             "created_at"=>$this->created_at
         ];

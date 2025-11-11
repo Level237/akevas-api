@@ -41,7 +41,7 @@ class NewMessageFromVerificationProductNotification extends Notification
         return [
             "product_id" => $this->product->id,
             'feedback' => $this->message,
-            'message' => 'Vous aviez recu un nouveau message suite à la verification de votre produit',
+            'message' => "Votre produit" . $this->product->product_name . "à été rejeté veuillez consultez votre boite de notification pour avoir plus de details",
         ];
     }
 
