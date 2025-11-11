@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->string("message");
             $table->boolean("status");
+            $table->string("type")->default("0");
+            $table->string("product_id")->nullable();
             $table->timestamps();
         });
     }
