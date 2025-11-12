@@ -194,6 +194,7 @@ Route::middleware(["auth:api", 'scopes:seller', "isSeller"])->prefix('v1')->grou
 
     Route::post('/put/in/trash/{id}',[ProductController::class,'putInTrash']);
     Route::get('/trash/products',[ProductController::class,'productListOfTrash']);
+    Route::get("/reject/products",[ProductController::class,"productListOfRejected"]);
     Route::post("/restore/product/{id}",[ProductController::class,'restoreProduct']);
     // Routes pour la gestion des commandes du vendeur
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);

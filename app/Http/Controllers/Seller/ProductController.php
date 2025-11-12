@@ -41,9 +41,14 @@ use App\Http\Resources\ProductResource;
             return ProductResource::collection($products);
         }
 
-        /**
-         * Store a newly created resource in storage.
-         */
+       public function productListOfRejected(){
+            $shop = Shop::where('user_id', Auth::guard('api')->user()->id)->first();
+            $products=Product::where('shop_id',$shop->id)->orderBy("created_at","desc")
+            ->where("isReject",1)
+            ->get();
+
+            return ProductResource::collection($products);
+       }
    public function store(Request $request)
     {
         try {
