@@ -44,7 +44,7 @@ use App\Http\Resources\ProductResource;
        public function productListOfRejected(){
             $shop = Shop::where('user_id', Auth::guard('api')->user()->id)->first();
             $products=Product::where('shop_id',$shop->id)->orderBy("created_at","desc")
-            ->where("isReject",1)
+            ->where("isRejet",1)
             ->get();
 
             return ProductResource::collection($products);
