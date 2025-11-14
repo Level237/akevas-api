@@ -19,28 +19,39 @@ class SocialAuthController extends Controller
     // 1. Validation (s'assurer que l'URL d'origine est valide)
     $request->validate(['origin_url' => 'required|url']);
     $originUrl = $request->input('origin_url');
-
     // 2. Stocker l'URL du frontend dans la session (ou passer un paramètre crypté dans 'state')
     // Utiliser la session est le plus simple pour cet exemple
-    session()->put('socialite_origin_url', $originUrl);
-
+    $state = base64_encode(json_encode([
+        'origin_url' => $originUrl
+    ]));
     // 3. Rediriger vers Google
-    return Socialite::driver('google')->stateless()->redirect();
+    return Socialite::driver('google')->stateless()->with(['state' => $state]) ->redirect();
 }
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
-        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
-
+         $stateData = json_decode(base64_decode($request->input('state')), true);
+        $originUrl = $stateData['origin_url'] ?? null;
         try{
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
             Log::error("Erreur de callback Google: " . $e->getMessage());
-            return redirect("{$frontendUrl}/login?error=google_auth_failed");
+            return redirect("{$originUrl}/login?error=google_auth_failed");
         }
         $email = $googleUser->getEmail();
         $user = User::where('email', $email)->first();
-
+        $role_id=0;
         if($user){
+             if (str_contains($originUrl, 'seller.akevas.com')) {
+        $frontendUrl = "https://seller.akevas.com";
+        $role_id = 2;
+    } elseif (str_contains($originUrl, 'delivery.akevas.com')) {
+        $frontendUrl = "https://delivery.akevas.com";
+        $role_id = 4;
+    } else {
+        $frontendUrl = "https://akevas.com";
+        $role_id = 3;
+    }
+           
             if (is_null($user->google_id)) {
                 $user->google_id = $googleUser->getId();
             }
@@ -51,7 +62,11 @@ class SocialAuthController extends Controller
             return redirect("{$frontendUrl}/login?code=401");
         }
 
-        $scope = $this->getUserScope($user->role_id);
+         if($user->role_id != $role_id){
+           
+                return redirect("{$frontendUrl}/login?code=500");
+            }else{
+                $scope = $this->getUserScope($user->role_id);
         $tokenResult = $user->createToken('GoogleAuthToken', [$scope]);
         $accessToken = $tokenResult->accessToken;
 
@@ -61,15 +76,15 @@ class SocialAuthController extends Controller
         $domain = (config('app.env') === 'production') ? '.akevas.com' : null;
         $secure = config('app.env') === 'production';
 
-        $origin = $request->headers->get('origin');
         
-        if(str_contains($origin, 'seller.akevas.com')){
+        
+        if(str_contains($originUrl, 'seller.akevas.com')){
             $cookieNameAccess = 'accessTokenSeller';
             $cookieNameRefresh = 'refreshTokenSeller';
-        }elseif(str_contains($origin, 'delivery.akevas.com')){
+        }elseif(str_contains($originUrl, 'delivery.akevas.com')){
             $cookieNameAccess = 'accessTokenDelivery';
             $cookieNameRefresh = 'refreshTokenDelivery';
-        }else if (str_contains($origin, 'localhost')) {
+        }else if (str_contains($originUrl, 'localhost')) {
         $cookieNameAccess = 'accessTokenSeller';
         $cookieNameRefresh = 'refreshTokenSeller';
     }else{
@@ -82,6 +97,8 @@ class SocialAuthController extends Controller
     ->cookie($cookieNameRefresh, $refreshToken, 
         60*24*30, // Longue durée de vie
         '/', $domain, $secure, true, false, 'none');
+            }
+        
     }
 
     protected function getUserScope(int $roleId): string

@@ -202,6 +202,7 @@ Route::middleware(["auth:api", 'scopes:seller', "isSeller"])->prefix('v1')->grou
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
     Route::get('/seller/order/{id}',[OrderListController::class,'getOrderById']);
     
+    Route::get('/seller/edit/product/{url}',[ProductController::class,'getEditProduct']);
    
 });
 

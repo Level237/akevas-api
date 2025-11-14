@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
 use App\Models\ProductAttributesValue;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductEditResource;
 
     class ProductController extends Controller
     {
@@ -277,5 +278,10 @@ use App\Http\Resources\ProductResource;
             $product->is_trashed=0;
             $product->save();
             return response()->json(['message' => 'Product restore successfully']);
+        }
+
+        public function getEditProduct($url){
+            $product=Product::where('product_url',$url)->first();
+            return response()->json(new ProductEditResource($product));
         }
     }
