@@ -57,8 +57,8 @@ class LoginController extends Controller
         $cookieNameAccess = 'accessTokenDelivery';
         $cookieNameRefresh = 'refreshTokenDelivery';
     } else if (str_contains($origin, 'localhost')) {
-        $cookieNameAccess = 'accessTokenSeller';
-        $cookieNameRefresh = 'refreshTokenSeller';
+        $cookieNameAccess = 'accessToken';
+        $cookieNameRefresh = 'refreshToken';
     } else {
         $cookieNameAccess = 'accessToken';
         $cookieNameRefresh = 'refreshToken';
