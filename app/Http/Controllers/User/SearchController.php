@@ -19,11 +19,13 @@ class SearchController extends Controller
         ->orWhere("product_description","like","%{$query}%")
         ->orWhere("product_price","like","%{$query}%")
         ->orWhere("product_price","like","%{$query}%")
+        ->where('status',1)
         ->take(5)->get();
 
         $shops=Shop::where("shop_name",'like',"%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
+        ->where('status',1)
         ->take(5)->get();
         
         if($userId!=0){
