@@ -53,7 +53,7 @@ class SeoBridgeController extends Controller
                 if ($shop) {
                     $data['title'] = "Boutique " . $shop->shop_name . " | Akevas";
                     $data['description'] = $shop->shop_description;
-                    $data['image'] = $shop->shop_profile;
+                    $data['image'] = URL("/storage/" . $shop->shop_profile);;
                 }
             }
         }
