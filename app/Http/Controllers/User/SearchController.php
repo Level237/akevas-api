@@ -25,7 +25,7 @@ class SearchController extends Controller
         $shops=Shop::where("shop_name",'like',"%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
-        ->where('status',1)
+        ->where('state',1)
         ->take(5)->get();
         
         if($userId!=0){

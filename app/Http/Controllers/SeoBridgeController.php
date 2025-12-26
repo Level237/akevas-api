@@ -60,9 +60,9 @@ class SeoBridgeController extends Controller
 
         // --- 2. DOMAINE VENDEUR (seller.akevas.com) ---
         elseif ($host === 'seller.akevas.com') {
-            $data['title'] = "Espace Vendeur - Akevas";
-            $data['description'] = "Gérez votre boutique et vos ventes sur Akevas.";
-            $data['image'] = asset('images/meta-seller.png');
+            $data['title'] = "Espace Vendeur - Développez votre business avec Akevas";
+            $data['description'] = "Rejoignez la marketplace qui connecte plus de 2 millions d'acheteurs à des vendeurs de confiance";
+            $data['image'] = asset('seller.png');
         }
 
         // --- 3. DOMAINE LIVREUR (delivery.akevas.com) ---
