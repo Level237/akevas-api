@@ -22,6 +22,7 @@ class ProductAttributeResource extends JsonResource
         return [
             'id' => $this->id,
             'value' => $this->attributeValue->value,
+            'price'=>$this->price,
             "product_variation"=>ProductVariationResource::make($this->variation),
         ];
     }

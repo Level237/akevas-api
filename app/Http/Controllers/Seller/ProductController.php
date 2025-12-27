@@ -270,9 +270,8 @@ use App\Http\Resources\ProductEditResource;
 {
     try {
         DB::beginTransaction();
-
         // Log de la requête entrante
-        Log::info('Product update request received', ['product_id' => $id, 'request_all' => $request->all()]);
+        Log::info('Product update request received', ['product_id' => $id, 'request_all' => $request]);
 
         $user = Auth::guard('api')->user();
         $shop = Shop::where('user_id', $user->id)->first();

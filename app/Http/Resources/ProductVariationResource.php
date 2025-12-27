@@ -32,6 +32,8 @@ class ProductVariationResource extends JsonResource
             'price' => $this->price,
             'quantity' => $this->quantity,
             'images' => ImageResource::collection($this->images),
+            'isWhole' => $this->product->wholesalePrices ? true : false,
+            "wholeSalePrice" => $this->product->wholesalePrices,
             'attributes_variation' => $this->attributesVariation->map(function($attr) {
                 return [
                     'id' => $attr->id,
