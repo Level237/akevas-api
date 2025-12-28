@@ -33,11 +33,15 @@ class SearchController extends Controller
                 "search_term" => $query,
             ]);
         if($userId!=0){
-           
-            $hystory=new History;
-            $hystory->user_id=$userId;
-            $hystory->search_term=$query;
-            $hystory->save();
+            $history=History::where('user_id',$userId)->where('search_term',$query)->first();
+            if(isset($history)){
+                return;
+            }else{
+                $hystory=new History;
+                $hystory->user_id=$userId;
+                $hystory->search_term=$query;
+                $hystory->save();
+            }
         }
 
         return response()->json([
