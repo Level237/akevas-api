@@ -268,6 +268,7 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     //Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
     
+    Route::get("/recents/histories",[SearchController::class,"recentHistory"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
     Route::post('/update/user', [ProfileController::class, 'updateUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
