@@ -136,8 +136,8 @@ private function createOrder($userId,$amount,$shipping,$productId,$quantity,$qua
 
 private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$address,$productsPayments,$reference){
 
-        foreach($productsPayments as $product){
-            $order=new Order;
+
+         $order=new Order;
             $order->user_id=$userId;
             $order->isPay=1;
             $order->total=$amount;
@@ -150,9 +150,13 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
                 $order->address=$address;
             }
             $order->save();
-            SendNewOrderNotificationJob::dispatch($order->id,$product['product_id'])->delay(now()->addMinutes(1));
+
             $this->savePaymentAndOrder($reference,$order->id);
-         if($product['hasVariation']=="true"){
+        foreach($productsPayments as $product){
+           
+            SendNewOrderNotificationJob::dispatch($order->id,$product['product_id'])->delay(now()->addMinutes(1));
+            
+         if($product['hasVariation']==true){
              $orderVariation=new OrderVariation;
              $orderVariation->order_id=$order->id;
              if($product['attributeVariationId']==null){
@@ -169,6 +173,12 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
              Log::info('Order variation create success');
              $orderVariation->save();
          }else{
+            Log::info('gain order',[
+                "order_id"=>$order->id,
+                "product_id"=>$product['product_id'],
+                "quantity"=>$product['quantity'],
+                "price"=>$product['price'],
+            ]);
              $orderDetails=new OrderDetail;
              $orderDetails->order_id=$order->id;
              $orderDetails->product_id=$product['product_id'];
@@ -181,9 +191,9 @@ private function multipleOrder($userId,$amount,$shipping,$quarter_delivery,$addr
              }
          }
         
-       return $order;
+       
     }
-    return null;
+    return $order;
 }
 
 private function reduceQuantity($productId,$quantity){

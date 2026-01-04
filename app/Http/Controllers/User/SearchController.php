@@ -7,10 +7,11 @@ use App\Models\History;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
 use App\Http\Resources\ShopResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProductResource;
-
+use Illuminate\Support\Facades\Log;
 class SearchController extends Controller
 {
     public function search($query,$userId){
@@ -25,19 +26,37 @@ class SearchController extends Controller
         $shops=Shop::where("shop_name",'like',"%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
         ->orWhere("shop_description","like","%{$query}%")
-        ->where('status',1)
+        ->where('state',1)
         ->take(5)->get();
-        
+         Log::info('SearchController: Search history', [
+                "user_id" => $userId,
+                "search_term" => $query,
+            ]);
         if($userId!=0){
-            $hystory=new History;
-            $hystory->user_id=$userId;
-            $hystory->search_term=$query;
-            $hystory->save();
+            $history=History::where('user_id',$userId)->where('search_term',$query)->first();
+            if(isset($history)){
+                return;
+            }else{
+                $hystory=new History;
+                $hystory->user_id=$userId;
+                $hystory->search_term=$query;
+                $hystory->save();
+            }
         }
 
         return response()->json([
             'products' => ProductResource::collection($products),
             'shops' => ShopResource::collection($shops),
         ]);
+    }
+
+    public function recentHistory(){
+        $user=Auth::guard('api')->user();
+
+        if(isset($user)){
+            $histories=History::where('user_id',$user->id)->get();
+            return response()->json($histories);
+        }
+        return response()->json([]);
     }
 }

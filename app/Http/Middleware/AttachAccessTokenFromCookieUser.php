@@ -17,7 +17,7 @@ class AttachAccessTokenFromCookieUser
         } elseif (str_contains($host, 'delivery.akevas.com')) {
             $cookieName = 'accessTokenDelivery';
         } elseif (str_contains($host, 'localhost:5173')) {
-            $cookieName = 'accessToken';
+            $cookieName = 'accessTokenSeller';
         } 
         else {
             $cookieName = 'accessToken'; // client / admin

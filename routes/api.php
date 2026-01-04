@@ -96,7 +96,6 @@ use App\Http\Controllers\Payment\Coolpay\Product\SubscribeProductController;
 use App\Http\Controllers\Product\Payment\PaymentProductProcessingController;
 use App\Http\Controllers\Shops\ListReviewController as ShopReviewController;
 use App\Http\Controllers\Admin\Reviews\DeclineOrValidateShopReviewController;
-use App\Http\Controllers\Payment\Coolpay\Product\BuyProductProcessController;
 use App\Http\Controllers\Product\Payment\HandleWebhookProductPaymentController;
 use App\Http\Controllers\Delivery\ProfileController as DeliveryProfileController;
 use App\Http\Controllers\Admin\RecentOrderController as AdminRecentOrderController;
@@ -266,10 +265,10 @@ Route::middleware(["auth:api", 'scopes:customer'])->prefix('v1')->group(function
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
-    Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
+    //Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
-    Route::post("payment/pending/buy/product", [BuyProductProcessController::class, "paymentPending"]);
-    Route::post("payment/callback/buy/product", [BuyProductProcessController::class, "buyProductCallBack"]);
+    
+    Route::get("/recents/histories",[SearchController::class,"recentHistory"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
     Route::post('/update/user', [ProfileController::class, 'updateUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);

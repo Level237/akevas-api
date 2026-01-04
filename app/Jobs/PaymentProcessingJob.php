@@ -70,7 +70,10 @@ class PaymentProcessingJob implements ShouldQueue
 
         if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
             Log::error('PaymentProcessingJob: Payment failed');
-            
+             Log::info('PaymentProcessingJob: Payment processing for job', [
+                "app" => $this->request,
+                "reference" => $this->reference,
+            ]);
             return;
         }
 
