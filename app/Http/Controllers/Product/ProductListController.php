@@ -148,7 +148,7 @@ class ProductListController extends Controller
             }
         }
 
-        $products = $query->cursorPaginate(20);
+        $products = $query->paginate(6);
 
         return ProductResource::collection($products);
     }
