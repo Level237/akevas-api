@@ -102,6 +102,8 @@ use App\Http\Controllers\Admin\RecentOrderController as AdminRecentOrderControll
 use App\Http\Controllers\Coins\InitPaymentController as InitCoinsPaymentController;
 use App\Http\Controllers\Delivery\ShowOrderController as DeliveryShowOrderController;
 use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -115,32 +117,34 @@ use App\Http\Controllers\Admin\Reviews\ListReviewController as AdminListReviewsC
 
 
 
+Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
 
+Route::post("/password/verify-otp", [ForgotPasswordController::class, 'verifyOtp']);
 
-Route::post("check/shop/status",[CheckShopStatusController::class,'checkShopStatus']);
+Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
 
-Route::get("catalogue/{shop_key}",[CatalogueController::class,'index']);
+Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
 
-Route::get("resize/products",[ResizeAllProductImageController::class,"resizeAllProductImage"]);
+Route::get("resize/products", [ResizeAllProductImageController::class, "resizeAllProductImage"]);
 
-Route::get('/filter/products/{arrayId}',[CategoryFilterController::class,'filter']);
-Route::get('/filter/categories/{arraySubCategoryId}',[CategoryFilterController::class,'getCategoryBySubCategory']);
+Route::get('/filter/products/{arrayId}', [CategoryFilterController::class, 'filter']);
+Route::get('/filter/categories/{arraySubCategoryId}', [CategoryFilterController::class, 'getCategoryBySubCategory']);
 //Status for notchpay
-Route::post('/get/payment/status',[HandleVerifyController::class,'getPaymentStatus']);
+Route::post('/get/payment/status', [HandleVerifyController::class, 'getPaymentStatus']);
 
 //Status for coolpay
-Route::post('/status/payin',[CheckPayinController::class,'checkStatus']);
-Route::post('/status/payin/coins',[InitCoinsPaymentController::class,'checkStatusCoins']);
+Route::post('/status/payin', [CheckPayinController::class, 'checkStatus']);
+Route::post('/status/payin/coins', [InitCoinsPaymentController::class, 'checkStatusCoins']);
 
 Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
 Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
-Route::get('/callback/payment',[CallbackPayment::class,'callbackPayment']);
-Route::get('/get/profile/shop',[GetProfileShopController::class,'getProfile']);
-Route::get("/get/modal/shop",[GetShowModalShopController::class,'showRandom']);
-Route::get("/search/{query}/{userId}",[SearchController::class,'search']);
+Route::get('/callback/payment', [CallbackPayment::class, 'callbackPayment']);
+Route::get('/get/profile/shop', [GetProfileShopController::class, 'getProfile']);
+Route::get("/get/modal/shop", [GetShowModalShopController::class, 'showRandom']);
+Route::get("/search/{query}/{userId}", [SearchController::class, 'search']);
 Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
-Route::get('/list/reviews/{productId}',[ListReviewController::class,'index']);
-Route::get('/list/reviews/shop/{shopId}',[ShopReviewController::class,'index']);
+Route::get('/list/reviews/{productId}', [ListReviewController::class, 'index']);
+Route::get('/list/reviews/shop/{shopId}', [ShopReviewController::class, 'index']);
 Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
 Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
 Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
@@ -165,68 +169,67 @@ Route::get("/home/shops", [ShopListController::class, "index"]);
 Route::get("ads/shops/{id}", [ShopListController::class, "adsShops"]);
 Route::get("all/shops", [ShopListController::class, "all"]);
 Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
-Route::get('/list/subscriptions',[ListSubscriptionController::class,'index']);
-Route::get('/show/subscription/{id}',[ShowSubscriptionController::class,'show']);
+Route::get('/list/subscriptions', [ListSubscriptionController::class, 'index']);
+Route::get('/show/subscription/{id}', [ShowSubscriptionController::class, 'show']);
 Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
-Route::get("/similar/products/{id}",[SimilarProductController::class,"getSimilarProducts"]);
+Route::get("/similar/products/{id}", [SimilarProductController::class, "getSimilarProducts"]);
 Route::get("all/products", [ProductListController::class, "allProducts"]);
 Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
 Route::get("/all/genders", [CurrentGenderController::class, "all"]);
-Route::get("/get/sales/{shopId}",[ShopController::class,"countShopSales"]);
-Route::get('/attributes/value/by/group/{id}',[ListCategoryController::class,"getAttributeValueByAttributeId"]);
-Route::get('/categories/attributes',[ListCategoryController::class,"getCategoriesWithAttributes"]);
+Route::get("/get/sales/{shopId}", [ShopController::class, "countShopSales"]);
+Route::get('/attributes/value/by/group/{id}', [ListCategoryController::class, "getAttributeValueByAttributeId"]);
+Route::get('/categories/attributes', [ListCategoryController::class, "getCategoriesWithAttributes"]);
 
 Route::middleware(["auth:api", 'scopes:seller', "isSeller"])->prefix('v1')->group(function () {
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
     Route::post('init/payment/subscription/product/pending/{membership_id}/{product_id}/{transaction_ref}', [SubscribeProductController::class, 'initPaymentPending']);
     Route::post("check/payment/subscription/product/callback", [SubscribeProductController::class, "paymentCallBack"]);
-    Route::get('/show/payment/coins/{ref}',[ShowPaymentByRefController::class,'show']);
-    Route::post('validate/payment/coins',[ValidatePaymentCoinController::class,'handle']);
+    Route::get('/show/payment/coins/{ref}', [ShowPaymentByRefController::class, 'show']);
+    Route::post('validate/payment/coins', [ValidatePaymentCoinController::class, 'handle']);
     Route::post("init/payment/coins", [InitCoinsPaymentController::class, "payin"]);
     Route::post("init/payment/subscription/shop", [SubscribeShopController::class, "initPay"]);
     Route::post('init/payment/subscription/shop/pending/{membership_id}/{shop_id}/{transaction_ref}', [SubscribeShopController::class, 'initPaymentPending']);
     Route::apiResource('/shops', ShopController::class);
     Route::apiResource("seller/products", ProductController::class);
-    Route::post('update/categories',[UpdateSellerController::class,'updateCategories']);
-    Route::post('update/images',[UpdateSellerController::class,'updateGalerieImages']);
-    Route::post("/boost/shop",[BoostShopController::class,'boost']);
+    Route::post('update/categories', [UpdateSellerController::class, 'updateCategories']);
+    Route::post('update/images', [UpdateSellerController::class, 'updateGalerieImages']);
+    Route::post("/boost/shop", [BoostShopController::class, 'boost']);
 
-    Route::post('/put/in/trash/{id}',[ProductController::class,'putInTrash']);
-    Route::get('/trash/products',[ProductController::class,'productListOfTrash']);
-    Route::get("/reject/products",[ProductController::class,"productListOfRejected"]);
-    Route::post("/restore/product/{id}",[ProductController::class,'restoreProduct']);
+    Route::post('/put/in/trash/{id}', [ProductController::class, 'putInTrash']);
+    Route::get('/trash/products', [ProductController::class, 'productListOfTrash']);
+    Route::get("/reject/products", [ProductController::class, "productListOfRejected"]);
+    Route::post("/restore/product/{id}", [ProductController::class, 'restoreProduct']);
     // Routes pour la gestion des commandes du vendeur
     Route::get('/seller/orders', [OrderListController::class, 'listOrders']);
     Route::get('/seller/orders/shop/{shopId}', [OrderListController::class, 'listOrdersByShop']);
     Route::get('/seller/orders/stats', [OrderListController::class, 'getOrderStats']);
-    Route::get('/seller/order/{id}',[OrderListController::class,'getOrderById']);
-    
-    Route::get('/seller/edit/product/{url}',[ProductController::class,'getEditProduct']);
-   
+    Route::get('/seller/order/{id}', [OrderListController::class, 'getOrderById']);
+
+    Route::get('/seller/edit/product/{url}', [ProductController::class, 'getEditProduct']);
 });
 
 Route::middleware(['auth:api', 'scopes:delivery'])->prefix('v1')->group(function () {
-   
-    Route::post("/delivery/update/docs",[UpdateDeliveryController::class,'updateDocuments']);
+
+    Route::post("/delivery/update/docs", [UpdateDeliveryController::class, 'updateDocuments']);
 });
 
 Route::middleware(["auth:api", 'scopes:seller'])->prefix('v1')->group(function () {
     Route::get('/current/seller', [CurrentSellerController::class, 'currentSeller']);
-    Route::post('update/seller',[CurrentSellerController::class,'updateSeller']);
-     Route::get('/seller/notifications',[ListNotificationController::class,'list']);
-    Route::get("/seller/recents/notifications",[ListNotificationController::class,'recentNotification']);
-    Route::get("/seller/get/notification/{id}",[ListNotificationController::class,'getNotification']);
-    Route::post("/update/docs",[UpdateSellerController::class,'updateDocuments']);
+    Route::post('update/seller', [CurrentSellerController::class, 'updateSeller']);
+    Route::get('/seller/notifications', [ListNotificationController::class, 'list']);
+    Route::get("/seller/recents/notifications", [ListNotificationController::class, 'recentNotification']);
+    Route::get("/seller/get/notification/{id}", [ListNotificationController::class, 'getNotification']);
+    Route::post("/update/docs", [UpdateSellerController::class, 'updateDocuments']);
 });
 
 Route::middleware(["auth:api", 'scopes:admin'])->prefix('v1')->group(function () {
-    Route::post('/decline/or/validate/{reviewId}/{status}',[DeclineOrValidateReviewController::class,'declineOrValidate']);
-    Route::post('/decline/or/validate/shop/review/{reviewId}/{status}',[DeclineOrValidateShopReviewController::class,'declineOrValidate']);
+    Route::post('/decline/or/validate/{reviewId}/{status}', [DeclineOrValidateReviewController::class, 'declineOrValidate']);
+    Route::post('/decline/or/validate/shop/review/{reviewId}/{status}', [DeclineOrValidateShopReviewController::class, 'declineOrValidate']);
     Route::get('/recent/products', [RecentProductController::class, 'index']);
     Route::get('/recent/sellers', [RecentSellerController::class, 'recentSeller']);
     Route::get('/recent/deliveries', [RecentDeliveryController::class, 'recentDelivery']);
     Route::get('admin/products', [ListProductController::class, 'index']);
-    Route::get("/admin/reviews",[AdminListReviewsController::class,'index']);
+    Route::get("/admin/reviews", [AdminListReviewsController::class, 'index']);
     Route::apiResource('admin/deliveries', DeliveryController::class);
     Route::post('/shop/confirm/{id}', [ConfirmStatusSellerController::class, 'index']);
     Route::post('/delivery/confirm/{id}', [ConfirmStatusDeliveryController::class, 'confirmStatusDelivery']);
@@ -236,19 +239,20 @@ Route::middleware(["auth:api", 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('towns', TownController::class);
     Route::apiResource('quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);
-    Route::post("give/coins",[GiveCoinsController::class,'giveCoins']);
+    Route::post("give/coins", [GiveCoinsController::class, 'giveCoins']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
     Route::get('/admin/active/delivery/stats', [ActiveDeliveryStatController::class, 'activeDeliveryStat']);
-    Route::get('/admin/list/feedbacks',[ListFeedbackController::class,'index']);
-    Route::get('/admin/list/shop/reviews',[ListShopReviewController::class,'index']);
+    Route::get('/admin/list/feedbacks', [ListFeedbackController::class, 'index']);
+    Route::get('/admin/list/shop/reviews', [ListShopReviewController::class, 'index']);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
-    Route::post("add/shop",[CreateSellerController::class,'create']);
+    Route::post("add/shop", [CreateSellerController::class, 'create']);
     Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
-    Route::get('/admin/order/{id}',[OrderDetailController::class,'detail']);
-    Route::get('/admin/recent/orders',[AdminRecentOrderController::class,'recentOrder']);
-    Route::get('/admin/all/categories', [CategoryController::class, 'all']);Route::get('/admin/all/categories', [CategoryController::class, 'all']);
+    Route::get('/admin/order/{id}', [OrderDetailController::class, 'detail']);
+    Route::get('/admin/recent/orders', [AdminRecentOrderController::class, 'recentOrder']);
+    Route::get('/admin/all/categories', [CategoryController::class, 'all']);
+    Route::get('/admin/all/categories', [CategoryController::class, 'all']);
     Route::post('/admin/add/category', [CategoryController::class, 'store']);
     Route::get('/admin/category/{id}', [CategoryController::class, 'getCategory']);
     Route::post('update/category/{id}', [CategoryController::class, 'update']);
@@ -259,7 +263,6 @@ Route::middleware(["auth:api", 'scopes:customer'])->prefix('v1')->group(function
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
-    
 });
 
 
@@ -267,24 +270,24 @@ Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
     //Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
-    
-    Route::get("/recents/histories",[SearchController::class,"recentHistory"]);
+
+    Route::get("/recents/histories", [SearchController::class, "recentHistory"]);
     Route::get('/current/user', [ProfileController::class, 'currentUser']);
     Route::post('/update/user', [ProfileController::class, 'updateUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
-    Route::post('/control/payment',[ControlPaymentStatusByRefController::class,'control']);
+    Route::post('/control/payment', [ControlPaymentStatusByRefController::class, 'control']);
     Route::post('/payment/product', [PaymentProductProcessingController::class, 'handlePaymentProduct']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
     Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
     Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
-    Route::post('/make/comment/shop/{shop_id}',[MakeReviewShopController::class,'makeCommentShop']);
+    Route::post('/make/comment/shop/{shop_id}', [MakeReviewShopController::class, 'makeCommentShop']);
     Route::post('/success/payment', [SucessPaymentController::class, 'successPayment']);
-    Route::get("/show/payment/{ref}",[ShowPaymentByReferenceController::class,"show"]);
-    Route::post('/payin',[PayinController::class,'payin']);
+    Route::get("/show/payment/{ref}", [ShowPaymentByReferenceController::class, "show"]);
+    Route::post('/payin', [PayinController::class, 'payin']);
 });
 
 Route::middleware(["auth:api", 'scopes:delivery'])->prefix('v1')->group(function () {
-    
+
     Route::get('/preference/orders', [GetPreferenceOrderController::class, 'getPreferenceOrders']);
     Route::get('/current/delivery', [DeliveryProfileController::class, 'currentDelivery']);
     Route::get('/show/order/{id}', [DeliveryShowOrderController::class, 'showOrder']);
@@ -293,15 +296,13 @@ Route::middleware(["auth:api", 'scopes:delivery'])->prefix('v1')->group(function
     Route::post('/cancel/order/{id}', [OrderCompletedController::class, 'cancelOrder']);
     Route::get('/orders/history', [OrderHistoryController::class, 'getOrderHistory']);
     Route::post('/order/completed/{id}/{duration}', [OrderCompletedController::class, 'orderCompleted']);
-    Route::get('/delivery/stats/overview',[StatOverviewController::class,'getStatOverview']);
-    Route::get('/delivery/stats/by-day',[StatOverviewController::class,'statsByDay']);
+    Route::get('/delivery/stats/overview', [StatOverviewController::class, 'getStatOverview']);
+    Route::get('/delivery/stats/by-day', [StatOverviewController::class, 'statsByDay']);
 });
 
 
 Route::prefix('auth/google')->group(function () {
 
     Route::get('/', [SocialAuthController::class, 'redirectToGoogle']);
-    Route::get('callback',[SocialAuthController::class,"handleGoogleCallback"]);
+    Route::get('callback', [SocialAuthController::class, "handleGoogleCallback"]);
 });
-
-
