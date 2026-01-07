@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ForgotPasswordMail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -12,7 +13,11 @@ class ForgotPasswordController extends Controller
 {
     public function sendForgotPasswordOtp(Request $request)
     {
-        $request->validate(['email' => 'required|email|exists:users,email']);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Email non trouvé'], 422);
+        }
 
         $otp = rand(100000, 999999);
 
