@@ -121,6 +121,7 @@ Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPas
 
 Route::post("/password/verify-otp", [ForgotPasswordController::class, 'verifyOtp']);
 
+Route::post("/password/reset", [ForgotPasswordController::class, 'resetPassword']);
 Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
 
 Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
