@@ -6,41 +6,42 @@ use Illuminate\Http\Request;
 use App\Mail\NewAccountCreateEmail;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\RegisterUserJob;
 use App\Services\Auth\RegisterService;
 use App\Repositories\GetClientRepository;
 use App\Services\Auth\GenerateTokenUserService;
 
 class RegisterController extends Controller
 {
-        public function register(Request $request){
+    public function register(Request $request)
+    {
 
-        try{
-            $valid = validator($request->only('phone_number','password',"userName","email","residence"), [
+        try {
+            $valid = validator($request->only('phone_number', 'password', "userName", "email", "residence"), [
                 'phone_number' => 'required',
                 'password' => 'required|string',
                 'userName' => 'required|string',
                 'email' => 'required|email',
-                'residence'=>'required'
+                'residence' => 'required'
             ]);
 
             if ($valid->fails()) {
-                return response()->json(['error'=>$valid->errors()], 400);
+                return response()->json(['error' => $valid->errors()], 400);
             }
-            $data = request()->only('phone_number','password','userName','email','residence');
-            $registerUser=(new RegisterService())->register($data);
-            
-            Mail::to('temerbtp@yahoo.com')->send(new NewAccountCreateEmail($data));
-           
-            $client=(new GetClientRepository())->getClient();
-            $tokenUser=(new GenerateTokenUserService())->generate($client,$registerUser,$data['password'],$request);
+            $data = request()->only('phone_number', 'password', 'userName', 'email', 'residence');
+            $registerUser = (new RegisterService())->register($data);
+
+            RegisterUserJob::dispatch($data);
+
+            $client = (new GetClientRepository())->getClient();
+            $tokenUser = (new GenerateTokenUserService())->generate($client, $registerUser, $data['password'], $request);
             return $tokenUser;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
                 'errors' => $e
-              ], 500);
+            ], 500);
         }
     }
 }

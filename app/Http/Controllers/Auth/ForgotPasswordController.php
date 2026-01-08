@@ -72,7 +72,7 @@ class ForgotPasswordController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'temp_token' => 'required',
-            'password' => 'required|string|min:8|confirmed', // password_confirmation côté React
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $resetData = DB::table('password_reset_tokens')->where('email', $request->email)->first();

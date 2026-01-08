@@ -17,9 +17,10 @@ use App\Services\Auth\CreateAccountSyncService;
 
 class CreateSellerController extends Controller
 {
-    public function create(Request $request){
+    public function create(Request $request)
+    {
 
-        
+
         try {
             Log::info('CreateSellerController started', ['email' => $request->email]);
 
@@ -51,8 +52,7 @@ class CreateSellerController extends Controller
                 'success' => true,
                 'message' => 'Création du vendeur en cours...',
             ], 202);
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('CreateSellerController failed', ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,

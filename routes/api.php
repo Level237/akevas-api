@@ -119,7 +119,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
 
-Route::post("/password/verify-otp", [ForgotPasswordController::class, 'verifyOtp']);
+Route::post("/password/verify", [ForgotPasswordController::class, 'verifyOtp']);
 
 Route::post("/password/reset", [ForgotPasswordController::class, 'resetPassword']);
 Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
