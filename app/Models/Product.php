@@ -63,79 +63,84 @@ class Product extends Model
             $model->id = Uuid::uuid4()->toString();
         });
     }
-    public function orderDetails():HasMany{
+    public function orderDetails(): HasMany
+    {
         return $this->hasMany(OrderDetail::class);
     }
-    public function reviews():HasMany{
+    public function reviews(): HasMany
+    {
         return $this->hasMany(Review::class);
     }
-    public function productAttributesValues():HasMany{
+    public function productAttributesValues(): HasMany
+    {
         return $this->hasMany(ProductAttributesValue::class);
     }
-    public function variations(){
+    public function variations()
+    {
         return $this->hasMany(ProductVariation::class);
     }
 
-    public function orderVariations(){
+    public function orderVariations()
+    {
         return $this->hasManyThrough(OrderVariation::class, ProductVariation::class);
     }
 
     public function getVariations()
-{
-    // Récupère toutes les variations du produit
-    return $this->variations->map(function($variation) {
-        // Vérifie si c'est une variation couleur uniquement
-        $isColorOnly = collect($variation->attributesVariation)->isEmpty() && $variation->quantity != null;
-        // Images de la variation couleur
-        $images = $variation->images->map(function($img) {
-            return URL("/storage/" . $img->image_path);
-        });
-
-        $base = [
-            "id" => $variation->id,
-            "color" => [
-                "id" => $variation->color->id,
-                "name" => $variation->color->value,
-                "hex" => $variation->color->hex_color,
-            ],
-            "images" => $images,
-            "isColorOnly" => $isColorOnly,
-        ];
-
-        if ($isColorOnly) {
-            // Cas couleur uniquement
-            $base["quantity"] = $variation->quantity;
-            $base["price"] = $variation->price;
-            // Paliers de prix de gros définis au niveau de la variation couleur
-            
-        } else {
-            // Cas couleur + attributs (taille/pointure)
-            $base["attributes"] = $variation->attributesVariation->map(function($attr) {
-                return [
-                    "id" => $attr->id,
-                    "name" => $attr->attributeValue->attribute->name ?? null,
-                    "value" => $attr->attributeValue->value ?? null,
-                    "group"=>$attr->attributeValue->attributeValueGroup->label ?? null,
-                    "label"=>$attr->attributeValue->label ?? null,
-                    "quantity" => $attr->quantity ?? null,
-                    "price" => $attr->price ?? null,
-                    // Paliers de prix de gros définis au niveau de l'attribut de variation
-                    "wholesale_prices" => $attr->wholesalePrices
-                        ->sortBy("min_quantity")
-                        ->values()
-                        ->map(function($wp) {
-                            return [
-                                "min_quantity" => $wp->min_quantity,
-                                "wholesale_price" => $wp->wholesale_price,
-                            ];
-                        }),
-                ];
+    {
+        // Récupère toutes les variations du produit
+        return $this->variations->map(function ($variation) {
+            // Vérifie si c'est une variation couleur uniquement
+            $isColorOnly = collect($variation->attributesVariation)->isEmpty() && $variation->quantity != null;
+            // Images de la variation couleur
+            $images = $variation->images->map(function ($img) {
+                return URL("/storage/" . $img->image_path);
             });
-        }
 
-        return $base;
-    });
-}
+            $base = [
+                "id" => $variation->id,
+                "color" => [
+                    "id" => $variation->color->id,
+                    "name" => $variation->color->value,
+                    "hex" => $variation->color->hex_color,
+                ],
+                "images" => $images,
+                "isColorOnly" => $isColorOnly,
+            ];
+
+            if ($isColorOnly) {
+                // Cas couleur uniquement
+                $base["quantity"] = $variation->quantity;
+                $base["price"] = $variation->price;
+                // Paliers de prix de gros définis au niveau de la variation couleur
+
+            } else {
+                // Cas couleur + attributs (taille/pointure)
+                $base["attributes"] = $variation->attributesVariation->map(function ($attr) {
+                    return [
+                        "id" => $attr->id,
+                        "name" => $attr->attributeValue->attribute->name ?? null,
+                        "value" => $attr->attributeValue->value ?? null,
+                        "group" => $attr->attributeValue->attributeValueGroup->label ?? null,
+                        "label" => $attr->attributeValue->label ?? null,
+                        "quantity" => $attr->quantity ?? null,
+                        "price" => $attr->price ?? null,
+                        // Paliers de prix de gros définis au niveau de l'attribut de variation
+                        "wholesale_prices" => $attr->wholesalePrices
+                            ->sortBy("min_quantity")
+                            ->values()
+                            ->map(function ($wp) {
+                                return [
+                                    "min_quantity" => $wp->min_quantity,
+                                    "wholesale_price" => $wp->wholesale_price,
+                                ];
+                            }),
+                    ];
+                });
+            }
+
+            return $base;
+        });
+    }
 
     public function wholesalePrices()
     {

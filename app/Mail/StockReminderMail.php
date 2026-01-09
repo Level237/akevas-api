@@ -9,18 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ForgotPasswordMail extends Mailable
+class StockReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public $otp;
-    public function __construct($otp)
-    {
-        $this->otp = $otp;
-    }
+    public function __construct(public $user, public $products) {}
 
     /**
      * Get the message envelope.
@@ -28,7 +24,7 @@ class ForgotPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Mot de passe oublié',
+            subject: 'Mise à jour hebdomadaire de vos stocks - Akevas',
         );
     }
 
@@ -38,8 +34,11 @@ class ForgotPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.forgot_password', // Crée cette vue dans resources/views/emails
-            with: ['otp' => $this->otp],
+            view: 'stock_reminder',
+            with: [
+                'user' => $this->user,
+                'products' => $this->products,
+            ],
         );
     }
 
