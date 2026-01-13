@@ -14,30 +14,31 @@ use App\Services\Auth\GenerateTokenUserService;
 
 class LoginController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
 
-        try{
-             $valid = validator($request->only('phone_number','password','role_id'), [
+        try {
+            $valid = validator($request->only('phone_number', 'password', 'role_id'), [
                 'phone_number' => 'required|string|exists:users',
                 'password' => 'required|string',
                 'role_id' => 'required|integer|exists:roles,id',
             ]);
 
             if ($valid->fails()) {
-                return response()->json(['error'=>"le numero de telephone ou le mot de passe sont incorrect"], 400);
+                return response()->json(['error' => "le numero de telephone ou le mot de passe sont incorrect"], 400);
             }
-            $data = request()->only('phone_number','password');
-            $loginUser=(new LoginService())->login($data);
-            $client=(new GetClientRepository())->getClient();
+            $data = request()->only('phone_number', 'password');
+            $loginUser = (new LoginService())->login($data);
+            $client = (new GetClientRepository())->getClient();
 
-            if($request->role_id != $loginUser['role_id']){
-                return response()->json(['message'=>"vous n'avez pas les droits d'acces à cette application"], 403);
+            if ($request->role_id != $loginUser['role_id']) {
+                return response()->json(['message' => "vous n'avez pas les droits d'acces à cette application"], 403);
             }
-            $tokenUser=(new GenerateTokenUserService())->generate($client,$loginUser,$data['password'],$request);
-            
+            $tokenUser = (new GenerateTokenUserService())->generate($client, $loginUser, $data['password'], $request);
+
             $tokenData = json_decode($tokenUser->getContent(), true);
-             $origin = $request->headers->get('origin');
-            
+            $origin = $request->headers->get('origin');
+
             if ($tokenUser->getStatusCode() === 200) {
                 $accessToken = $tokenData['access_token'];
                 $refreshToken = $tokenData['refresh_token'];
@@ -46,25 +47,32 @@ class LoginController extends Controller
                 $secure = config('app.env') === 'production';
 
                 if (config('app.env') === 'production') {
-                   
+
 
                     if (str_contains($origin, 'seller.akevas.com')) {
-                        
-        $cookieNameAccess = 'accessTokenSeller';
-         
-        $cookieNameRefresh = 'refreshTokenSeller';
-    } elseif (str_contains($origin, 'delivery.akevas.com')) {
-        $cookieNameAccess = 'accessTokenDelivery';
-        $cookieNameRefresh = 'refreshTokenDelivery';
-    } else if (str_contains($origin, 'localhost')) {
-        $cookieNameAccess = 'accessTokenSeller';
-        $cookieNameRefresh = 'refreshTokenSeller';
-    } else {
-        $cookieNameAccess = 'accessToken';
-        $cookieNameRefresh = 'refreshToken';
-    }
+
+                        $cookieNameAccess = 'accessTokenSeller';
+
+                        $cookieNameRefresh = 'refreshTokenSeller';
+                    } elseif (str_contains($origin, 'delivery.akevas.com')) {
+                        $cookieNameAccess = 'accessTokenDelivery';
+                        $cookieNameRefresh = 'refreshTokenDelivery';
+
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Login success',
+                            'access_token' => $accessToken,
+                            'refresh_token' => $refreshToken
+                        ], 200);
+                    } else if (str_contains($origin, 'localhost')) {
+                        $cookieNameAccess = 'accessTokenSeller';
+                        $cookieNameRefresh = 'refreshTokenSeller';
+                    } else {
+                        $cookieNameAccess = 'accessToken';
+                        $cookieNameRefresh = 'refreshToken';
+                    }
                 }
-                Log::info('Seller origin: ' . $cookieNameAccess,[
+                Log::info('Seller origin: ' . $cookieNameAccess, [
                     'cookieNameAccess' => $cookieNameAccess,
                     'cookieNameRefresh' => $cookieNameRefresh,
                     'accessToken' => $accessToken,
@@ -72,20 +80,35 @@ class LoginController extends Controller
                     'domain' => $domain,
                     'secure' => $secure,
                 ]);
-                return response()->json(['message' => 'Login success'], 200)->cookie($cookieNameAccess, $accessToken, 
-                config('passport.token_ttl'),
-                '/', $domain, $secure, true, false, 'none')
-            ->cookie($cookieNameRefresh, $refreshToken, 
-                60*24*30,
-                '/', $domain, $secure, true, false, 'none');
+                return response()->json(['message' => 'Login success'], 200)->cookie(
+                    $cookieNameAccess,
+                    $accessToken,
+                    config('passport.token_ttl'),
+                    '/',
+                    $domain,
+                    $secure,
+                    true,
+                    false,
+                    'none'
+                )
+                    ->cookie(
+                        $cookieNameRefresh,
+                        $refreshToken,
+                        60 * 24 * 30,
+                        '/',
+                        $domain,
+                        $secure,
+                        true,
+                        false,
+                        'none'
+                    );
             }
-            
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
                 'errors' => $e->getMessage()
-              ], 500);
+            ], 500);
         }
     }
 }
