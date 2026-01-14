@@ -116,70 +116,76 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
     */
 
 
+Route::middleware('throttle:login')->post('/login', [LoginController::class, 'login']);
 
-Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
 
-Route::post("/password/verify", [ForgotPasswordController::class, 'verifyOtp']);
+Route::middleware('throttle:api')->group(function () {
+    Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
 
-Route::post("/password/reset", [ForgotPasswordController::class, 'resetPassword']);
-Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
+    Route::post("/password/verify", [ForgotPasswordController::class, 'verifyOtp']);
 
-Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
+    Route::post("/password/reset", [ForgotPasswordController::class, 'resetPassword']);
+    Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
 
-Route::get("resize/products", [ResizeAllProductImageController::class, "resizeAllProductImage"]);
+    Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
 
-Route::get('/filter/products/{arrayId}', [CategoryFilterController::class, 'filter']);
-Route::get('/filter/categories/{arraySubCategoryId}', [CategoryFilterController::class, 'getCategoryBySubCategory']);
-//Status for notchpay
-Route::post('/get/payment/status', [HandleVerifyController::class, 'getPaymentStatus']);
+    Route::get("resize/products", [ResizeAllProductImageController::class, "resizeAllProductImage"]);
 
-//Status for coolpay
-Route::post('/status/payin', [CheckPayinController::class, 'checkStatus']);
-Route::post('/status/payin/coins', [InitCoinsPaymentController::class, 'checkStatusCoins']);
+    Route::get('/filter/products/{arrayId}', [CategoryFilterController::class, 'filter']);
+    Route::get('/filter/categories/{arraySubCategoryId}', [CategoryFilterController::class, 'getCategoryBySubCategory']);
+    //Status for notchpay
+    Route::post('/get/payment/status', [HandleVerifyController::class, 'getPaymentStatus']);
 
-Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
-Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
-Route::get('/callback/payment', [CallbackPayment::class, 'callbackPayment']);
-Route::get('/get/profile/shop', [GetProfileShopController::class, 'getProfile']);
-Route::get("/get/modal/shop", [GetShowModalShopController::class, 'showRandom']);
-Route::get("/search/{query}/{userId}", [SearchController::class, 'search']);
-Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
-Route::get('/list/reviews/{productId}', [ListReviewController::class, 'index']);
-Route::get('/list/reviews/shop/{shopId}', [ShopReviewController::class, 'index']);
-Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
-Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
-Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
-Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
-Route::get('/get/category/by-gender/{id}', [ListCategoryController::class, 'showCategoryByGender']);
-Route::get('/get/sub-categories/{arrayIds}/{id}', [ListCategoryController::class, 'getSubCategoriesByParentId']);
-Route::post('/check/email-and-phone-number', [CheckIfInputExistInDatabaseController::class, 'checkEmailAndPhoneNumber']);
-Route::post('/register', [RegisterController::class, 'register']);
-Route::get('/categories/with-parent-id-null', [ListCategoryController::class, 'getCategoryWithParentIdNull']);
-Route::get('/shop/{id}', [SellerController::class, 'show']);
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/towns', [TownController::class, 'index']);
-Route::get('/quarters', [QuarterController::class, 'index']);
-Route::get('/check/token', [CheckTokenValidityController::class, 'checkToken']);
-Route::post('/login', [LoginController::class, 'login']);
-Route::get('/refresh/token', [AuthController::class, 'refresh']);
-Route::post('create/seller', [CreateSellerController::class, 'create']);
-Route::get('shop/show/{id}', [ShopController::class, 'show']);
-Route::get("home/products", [ProductListController::class, 'index']);
-Route::get("ads/products/{id}", [ProductListController::class, "adsProducts"]);
-Route::get("/home/shops", [ShopListController::class, "index"]);
-Route::get("ads/shops/{id}", [ShopListController::class, "adsShops"]);
-Route::get("all/shops", [ShopListController::class, "all"]);
-Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
-Route::get('/list/subscriptions', [ListSubscriptionController::class, 'index']);
-Route::get('/show/subscription/{id}', [ShowSubscriptionController::class, 'show']);
-Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
-Route::get("/similar/products/{id}", [SimilarProductController::class, "getSimilarProducts"]);
-Route::get("all/products", [ProductListController::class, "allProducts"]);
-Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
-Route::get("/all/genders", [CurrentGenderController::class, "all"]);
-Route::get("/get/sales/{shopId}", [ShopController::class, "countShopSales"]);
-Route::get('/attributes/value/by/group/{id}', [ListCategoryController::class, "getAttributeValueByAttributeId"]);
-Route::get('/categories/attributes', [ListCategoryController::class, "getCategoriesWithAttributes"]);
+    //Status for coolpay
+    Route::post('/status/payin', [CheckPayinController::class, 'checkStatus']);
+    Route::post('/status/payin/coins', [InitCoinsPaymentController::class, 'checkStatusCoins']);
+
+    Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
+    Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
+    Route::get('/callback/payment', [CallbackPayment::class, 'callbackPayment']);
+    Route::get('/get/profile/shop', [GetProfileShopController::class, 'getProfile']);
+    Route::get("/get/modal/shop", [GetShowModalShopController::class, 'showRandom']);
+    Route::get("/search/{query}/{userId}", [SearchController::class, 'search']);
+    Route::get('/category/by-url/{url}', [CategoryByUrlController::class, 'index']);
+    Route::get('/list/reviews/{productId}', [ListReviewController::class, 'index']);
+    Route::get('/list/reviews/shop/{shopId}', [ShopReviewController::class, 'index']);
+    Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
+    Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
+    Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
+    Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
+    Route::get('/get/category/by-gender/{id}', [ListCategoryController::class, 'showCategoryByGender']);
+    Route::get('/get/sub-categories/{arrayIds}/{id}', [ListCategoryController::class, 'getSubCategoriesByParentId']);
+    Route::post('/check/email-and-phone-number', [CheckIfInputExistInDatabaseController::class, 'checkEmailAndPhoneNumber']);
+    Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/categories/with-parent-id-null', [ListCategoryController::class, 'getCategoryWithParentIdNull']);
+    Route::get('/shop/{id}', [SellerController::class, 'show']);
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/towns', [TownController::class, 'index']);
+    Route::get('/quarters', [QuarterController::class, 'index']);
+    Route::get('/check/token', [CheckTokenValidityController::class, 'checkToken']);
+
+    Route::get('/refresh/token', [AuthController::class, 'refresh']);
+    Route::post('create/seller', [CreateSellerController::class, 'create']);
+    Route::get('shop/show/{id}', [ShopController::class, 'show']);
+    Route::get("home/products", [ProductListController::class, 'index']);
+    Route::get("ads/products/{id}", [ProductListController::class, "adsProducts"]);
+    Route::get("/home/shops", [ShopListController::class, "index"]);
+    Route::get("ads/shops/{id}", [ShopListController::class, "adsShops"]);
+    Route::get("all/shops", [ShopListController::class, "all"]);
+    Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
+    Route::get('/list/subscriptions', [ListSubscriptionController::class, 'index']);
+    Route::get('/show/subscription/{id}', [ShowSubscriptionController::class, 'show']);
+    Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
+    Route::get("/similar/products/{id}", [SimilarProductController::class, "getSimilarProducts"]);
+    Route::get("all/products", [ProductListController::class, "allProducts"]);
+    Route::get("/attributes/value/{id}", [GetAttributesController::class, 'getValue']);
+    Route::get("/all/genders", [CurrentGenderController::class, "all"]);
+    Route::get("/get/sales/{shopId}", [ShopController::class, "countShopSales"]);
+    Route::get('/attributes/value/by/group/{id}', [ListCategoryController::class, "getAttributeValueByAttributeId"]);
+    Route::get('/categories/attributes', [ListCategoryController::class, "getCategoriesWithAttributes"]);
+});
+
+
 
 Route::middleware(["auth:api", 'scopes:seller', "isSeller"])->prefix('v1')->group(function () {
     Route::post("init/payment/subscription/product", [SubscribeProductController::class, "initPay"]);
