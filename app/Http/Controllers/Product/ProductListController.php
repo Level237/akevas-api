@@ -7,6 +7,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ProductListController extends Controller
@@ -148,7 +149,14 @@ class ProductListController extends Controller
             }
         }
 
-        $products = $query->paginate(6);
+        $cursor = $request->query('cursor', 'default');
+
+        $cacheKey = "products_list_v1_" . $cursor;
+
+        $products = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query) {
+            return $query->cursorPaginate(20);
+        });
+
 
         return ProductResource::collection($products);
     }
