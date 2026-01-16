@@ -23,9 +23,9 @@ class ProductListController extends Controller
     }
     public function allProducts(Request $request)
     {
-        $query = Product::inRandomOrder()
-            ->where('status', 1)
-            ->where('is_trashed', 0);
+        $query = Product::where('status', 1)
+            ->where('is_trashed', 0)
+            ->latest();
 
 
         // Appliquer le filtre de prix si des paramètres sont présents
@@ -149,15 +149,20 @@ class ProductListController extends Controller
             }
         }
 
-        $cursor = $request->query('cursor', 'default');
-
-        $cacheKey = "products_list_v1_" . $cursor;
+        $allParams = $request->all();
+        ksort($allParams);
+        $paramsHash = md5(json_encode($allParams));
+        $cacheKey = "products_list_v1_" . $paramsHash;
 
         $products = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query) {
-            return $query->cursorPaginate(20);
+            // On s'assure d'inclure l'ID dans le tri pour garantir l'unicité du cursor
+            return $query->orderBy('id', 'desc')->cursorPaginate(20);
         });
 
 
-        return ProductResource::collection($products);
+        return ProductResource::collection($products)->additional([
+            'next_cursor' => $products->nextCursor() ? $products->nextCursor()->encode() : null,
+            'has_more' => $products->hasMorePages(),
+        ]);
     }
 }
