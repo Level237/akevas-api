@@ -7,7 +7,6 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ProductListController extends Controller
@@ -23,9 +22,9 @@ class ProductListController extends Controller
     }
     public function allProducts(Request $request)
     {
-        $query = Product::where('status', 1)
-            ->where('is_trashed', 0)
-            ->latest();
+        $query = Product::inRandomOrder()
+            ->where('status', 1)
+            ->where('is_trashed', 0);
 
 
         // Appliquer le filtre de prix si des paramètres sont présents
@@ -149,20 +148,8 @@ class ProductListController extends Controller
             }
         }
 
-        $allParams = $request->all();
-        ksort($allParams);
-        $paramsHash = md5(json_encode($allParams));
-        $cacheKey = "products_list_v1_" . $paramsHash;
+        $products = $query->paginate(20);
 
-        $products = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query) {
-            // On s'assure d'inclure l'ID dans le tri pour garantir l'unicité du cursor
-            return $query->orderBy('id', 'desc')->cursorPaginate(20);
-        });
-
-
-        return ProductResource::collection($products)->additional([
-            'next_cursor' => $products->nextCursor() ? $products->nextCursor()->encode() : null,
-            'has_more' => $products->hasMorePages(),
-        ]);
+        return ProductResource::collection($products);
     }
 }
