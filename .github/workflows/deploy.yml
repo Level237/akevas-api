@@ -1,18 +1,4 @@
-name: Deploy Laravel API
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: hostinger
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy via SSH
+- name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -20,20 +6,26 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            # 1. Aller dans le dossier de l'API (à adapter selon ton chemin)
-            cd domains/akevas.com/public_html/api
+            # On force le chemin absolu pour éviter les erreurs
+            cd /home/${{ secrets.USERNAME }}/domains/akevas.com/public_html/api
 
-            # 2. Récupérer les derniers changements (assure-toi que git est initialisé sur le serveur)
+            # Vérifier si on est au bon endroit avant de continuer
+            if [ ! -f "artisan" ]; then
+              echo "Erreur : Fichier artisan non trouvé dans $(pwd)"
+              exit 1
+            fi
+
             git pull origin main
 
-            # 3. Installer les dépendances PHP
-            # On utilise --no-dev pour la production
+            # S'assurer que les dossiers de cache existent
+            mkdir -p storage/framework/{sessions,views,cache}
+            mkdir -p storage/logs
+            mkdir -p bootstrap/cache
+
             /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
-            # 5. Vider et recréer les caches pour la performance et les cookies
+            # Application des permissions seulement si les dossiers existent
+            chmod -R 775 storage bootstrap/cache
+            
             php artisan config:cache
             php artisan route:cache
-            php artisan view:cache
-
-            # 6. Gérer les permissions pour éviter les erreurs 500
-            chmod -R 775 storage bootstrap/cache
