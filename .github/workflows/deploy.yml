@@ -1,45 +1,52 @@
-name: Deploy Laravel API
+name: 🚀 Deploy Api Akevas to CPanel
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: hostinger
+
     steps:
-      - name: Checkout code
+      - name: 🧾 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            # On force le chemin absolu pour éviter les erreurs
-            cd domains/akevas.com/public_html/api
+          php-version: '8.2'
 
-            # Vérifier si on est au bon endroit avant de continuer
-            if [ ! -f "artisan" ]; then
-              echo "Erreur : Fichier artisan non trouvé dans $(pwd)"
-              exit 1
-            fi
+      - name: 📦 Install Composer Dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-            git pull origin main
+      - name: 📁 Prepare Laravel files
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          php artisan route:cache
 
-            # S'assurer que les dossiers de cache existent
-            mkdir -p storage/framework/{sessions,views,cache}
-            mkdir -p storage/logs
-            mkdir -p bootstrap/cache
-
-            /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
-
-            # Application des permissions seulement si les dossiers existent
-            chmod -R 775 storage bootstrap/cache
-            
-            php artisan config:cache
-            php artisan route:cache
+      - name: 📤 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.viens-yamo.com
+          username: akevasftp@akevas.com
+          password: jMylEA6+(oHD
+          exclude:exclude: .git*
+            - .git*/**
+            - node_modules/**
+            - vendor/**/*
+            - .github/**
+            - package-lock.json
+            - .gitignore
+            - storage/**
+            - webpack.config.js
+            - README.md
+            - .babelrc
+            - package.json
+            - package-lock.json
+            - postcss.config.js
+          local-dir: ./
+          server-dir: /api/
