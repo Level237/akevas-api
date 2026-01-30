@@ -21,7 +21,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             # On force le chemin absolu pour éviter les erreurs
-            cd /home/${{ secrets.USERNAME }}/domains/akevas.com/public_html/api
+            cd domains/akevas.com/public_html/api
 
             # Vérifier si on est au bon endroit avant de continuer
             if [ ! -f "artisan" ]; then
