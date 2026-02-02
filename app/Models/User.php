@@ -37,7 +37,7 @@ class User extends Authenticatable
         "identity_card_in_front",
         'identity_card_in_back',
         "identity_card_with_the_person",
-        
+
         'role_id',
         'town_id',
         'phone_number',
@@ -65,40 +65,50 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function orders():HasMany{
+    public function orders(): HasMany
+    {
         return $this->hasMany(Order::class);
     }
-    public function role():HasOne{
+    public function role(): HasOne
+    {
         return $this->hasOne(Role::class);
     }
 
-    public function findForPassport($username) {
-        return $this->where('phone_number','=', $username)->first();
+    public function findForPassport($username)
+    {
+        return $this->where('phone_number', '=', $username)->first();
     }
 
-    public function shop():HasOne{
+    public function shop()
+    {
         return $this->hasOne(Shop::class);
     }
 
-    public function vehicles():HasMany{
+    public function vehicles(): HasMany
+    {
         return $this->hasMany(Vehicle::class);
     }
 
-    public function processOrders():BelongsToMany{
+    public function processOrders(): BelongsToMany
+    {
         return $this->belongsToMany(Order::class, 'delivery_order', 'user_id', 'order_id')->withPivot('isAccepted');
     }
-    public function reviews():HasMany{
+    public function reviews(): HasMany
+    {
         return $this->hasMany(Review::class);
     }
 
-    public function hystories(){
+    public function hystories()
+    {
         return $this->hasMany(History::class);
     }
-    public function feedbacks(){
+    public function feedbacks()
+    {
 
         return $this->hasMany(FeedBack::class);
     }
-    public function shopReviews(){
+    public function shopReviews()
+    {
         return $this->hasMany(ShopReview::class);
     }
 }

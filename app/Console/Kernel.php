@@ -4,10 +4,12 @@ namespace App\Console;
 
 use App\Jobs\JobCheckSubscriptionProduct;
 use App\Mail\StockReminderMail;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -23,7 +25,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
             // On charge les produits avec leurs variations et les attributs des variations
-            $sellers = User::where('role', 'seller')
+            $sellers = Shop::where('state', 1)
                 ->with(['products.variations.color', 'products.variations.attributesVariation.attributeValue'])
                 ->get();
 
@@ -69,10 +71,10 @@ class Kernel extends ConsoleKernel
                 }
 
                 if (!empty($stockData)) {
-                    Mail::to($seller->email)->queue(new StockReminderMail($seller, $stockData));
+                    Mail::to("bramslevel129@gmail.com")->queue(new StockReminderMail($seller, $stockData));
                 }
             }
-        })->weeklyOn(0, '15:00');
+        })->everyMinute();
     }
 
     /**

@@ -16,7 +16,9 @@ class StockReminderMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $user, public $products) {}
+    public function __construct(public $user, public $products)
+    {
+    }
 
     /**
      * Get the message envelope.
@@ -34,7 +36,7 @@ class StockReminderMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'stock_reminder',
+            view: 'emails.stock_reminder',
             with: [
                 'user' => $this->user,
                 'products' => $this->products,
