@@ -55,28 +55,38 @@
         </thead>
         <tbody>
             @foreach($products as $item)
-            <tr>
-                <td style="color: #333; font-weight: 500;">
-                    {{ $item['name'] }}
-                </td>
-                <td style="text-align: center;">
-                    <span style="font-size: 16px; font-weight: bold; {{ $item['qty'] <= 3 ? 'color: #d9534f;' : '' }}">
-                        {{ $item['qty'] }}
-                    </span>
-                    @if($item['qty'] <= 3)
-                        <div style="font-size: 10px; color: #d9534f; font-weight: bold; text-transform: uppercase;">
-                        Critique
-                        </div>
+                <tr>
+                    <td style="color: #333; font-weight: 500;">
+                        {{ $item['name'] }}
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="font-size: 16px; font-weight: bold; {{ $item['qty'] <= 3 ? 'color: #d9534f;' : '' }}">
+                            {{ $item['qty'] }}
+                        </span>
+                        @if($item['qty'] <= 3)
+                            <div style="font-size: 10px; color: #d9534f; font-weight: bold; text-transform: uppercase;">
+                                Critique
+                            </div>
                         @endif
-                </td>
-                <td style="text-align: center;">
-                    @if(isset($item['url']))
-                    <a href="https://seller.akevas.com/seller/edit/product/{{ $item['url'] }}" class="button" style="padding: 6px 12px; font-size: 12px;">
-                        Voir
-                    </a>
-                    @endif
-                </td>
-            </tr>
+                    </td>
+                    <td style="text-align: center;">
+                        @if(isset($item['url']))
+                            <a href="https://akevas.com/produit/{{ $item['url'] }}" class="button"
+                                style="padding: 6px 12px; font-size: 12px;">
+                                Voir
+                            </a>
+                        @endif
+                    </td>
+
+                    <td style="text-align: center;">
+                        @if(isset($item['url']))
+                            <a href="https://seller.akevas.com/seller/product/edit/{{ $item['url'] }}" class="button"
+                                style="padding: 6px 12px; font-size: 12px;">
+                                Mettre a jour le stock
+                            </a>
+                        @endif
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>
