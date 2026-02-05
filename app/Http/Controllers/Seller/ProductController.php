@@ -17,6 +17,7 @@ use App\Services\GenerateUrlResource;
 use App\Models\ProductAttributesValue;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductEditResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -276,7 +277,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             // Log de la requête entrante
-            Log::info('Product update request received', ['product_id' => $id, 'request_all' => $request]);
+            Log::info('Product update request received', ['product_id' => $id, 'request_all' => $request->variations]);
 
             $user = Auth::guard('api')->user();
             $shop = Shop::where('user_id', $user->id)->first();
@@ -338,7 +339,29 @@ class ProductController extends Controller
 
             $product->save();
 
-            // Gestion des images du produit (Ajout)
+            // Gestion de la suppression des images du produit
+            if ($request->filled('images_to_delete')) {
+                $imagesToDelete = is_array($request->images_to_delete)
+                    ? $request->images_to_delete
+                    : json_decode($request->images_to_delete, true);
+
+                Log::info("images_images_to_delete", [
+                    "images_to_delete" => $imagesToDelete
+                ]);
+
+                if (is_array($imagesToDelete)) {
+                    $images = $product->images()->whereIn('images.id', $imagesToDelete)->get();
+
+                    foreach ($images as $image) {
+                        if (Storage::disk('public')->exists($image->image_path)) {
+                            Storage::disk('public')->delete($image->image_path);
+                        }
+                        $image->delete();
+                    }
+                }
+            }
+
+            // Gestion de l'ajout de nouvelles images
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $imagePath = $image->store('product/images', 'public');
@@ -346,14 +369,50 @@ class ProductController extends Controller
                 }
             }
 
-            // Gestion de la suppression des images du produit
-            if ($request->filled('images_to_delete')) {
-                $imagesToDelete = json_decode($request->images_to_delete, true);
-                if (is_array($imagesToDelete)) {
-                    // Supposons que imagesToDelete contient les IDs des images
-                    // Si ce sont des chemins, il faudra adapter la requête
-                    // $product->images()->whereIn('id', $imagesToDelete)->delete(); 
-                    // Note: Assurez-vous de supprimer aussi les fichiers physiques si nécessaire
+            // Synchronisation des catégories
+            $categories = [];
+            if ($request->has('categories') && is_array($request->categories)) {
+                $categories = array_merge($categories, array_map('intval', $request->categories));
+            }
+            if ($request->has('sub_categories') && is_array($request->sub_categories)) {
+                $categories = array_merge($categories, array_map('intval', $request->sub_categories));
+            }
+            // Si aucune catégorie n'est envoyée, on ne touche pas (ou on peut décider de tout détacher, mais sync sans array le fait déjà ?)
+            // sync() avec un tableau vide détache tout. Assurons-nous que c'est le comportement voulu si les champs sont présents.
+            // Si les champs ne sont pas présents, on suppose pas de modification ? 
+            // Le code original faisait sync($categories) inconditionnellement si on passait dans le block 'images_to_delete'.
+            // Mieux vaut conditionner le sync à la présence des champs ou toujours le faire si c'est un formulaire complet.
+            // Vu le frontend, 'selectedCategories' est obligatoire, donc on peut sync.
+            $product->categories()->sync($categories);
+
+
+            // Suppression d'images de variation spécifiques
+            if ($request->filled('variation_images_to_delete')) {
+                $varImagesToDelete = json_decode($request->variation_images_to_delete, true);
+                Log::info('Variation images to delete request', ['data' => $varImagesToDelete]);
+
+                if (is_array($varImagesToDelete)) {
+                    foreach ($varImagesToDelete as $frameId => $imageIds) {
+                        // On nettoie frameId au cas où (parfois les clés JSON peuvent être des chaînes)
+                        if (is_numeric($frameId)) {
+                            $variation = $product->variations()->find($frameId);
+
+                            if ($variation) {
+                                // Récupérer les images pour suppression physique
+                                $images = $variation->images()->whereIn('id', $imageIds)->get();
+                                Log::info('Deleting images for variation', ['variation_id' => $variation->id, 'images_count' => $images->count()]);
+
+                                foreach ($images as $image) {
+                                    if (Storage::disk('public')->exists($image->image_path)) {
+                                        Storage::disk('public')->delete($image->image_path);
+                                    }
+                                    $image->delete();
+                                }
+                            } else {
+                                Log::warning('Variation not found for deletion', ['frame_id' => $frameId, 'product_id' => $product->id]);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -367,146 +426,64 @@ class ProductController extends Controller
                         (isset($variationData['shoeSizes']) && is_array($variationData['shoeSizes']) && count($variationData['shoeSizes']) > 0);
 
                     // Mise à jour ou Création de la variation
-                    // On utilise l'ID s'il est présent et valide (non null)
                     $variation = null;
-                    if (isset($variationData['id']) && $variationData['id']) {
+                    if (!empty($variationData['id'])) {
                         $variation = $product->variations()->find($variationData['id']);
                     }
 
+                    $variationFields = [
+                        'color_id' => $variationData['color_id'],
+                        'price' => !$isColorAndAttribute ? ($variationData['price'] ?? 0) : 0,
+                        'quantity' => !$isColorAndAttribute ? ($variationData['quantity'] ?? 0) : null,
+                    ];
                     if ($variation) {
-                        // Mise à jour
-                        $variation->update([
-                            'color_id' => $variationData['color_id'],
-                            'price' => !$isColorAndAttribute && isset($variationData['price']) ? $variationData['price'] : 0,
-                            'quantity' => !$isColorAndAttribute && isset($variationData['quantity']) ? $variationData['quantity'] : null,
-                        ]);
+                        $variation->update($variationFields);
                     } else {
-                        // Création
-                        $variation = $product->variations()->create([
-                            'color_id' => $variationData['color_id'],
-                            'price' => !$isColorAndAttribute && isset($variationData['price']) ? $variationData['price'] : 0,
-                            'quantity' => !$isColorAndAttribute && isset($variationData['quantity']) ? $variationData['quantity'] : null,
-                        ]);
+                        $variation = $product->variations()->create($variationFields);
                     }
 
                     $processedVariationIds[] = $variation->id;
-                    $variationId = $variationData['id'] ?? $variation->id; // ID utilisé pour les images (frameId)
+                    $lookupKey = $variationData['tempId'] ?? $variationData['id'];
 
-                    // Gestion des images de variation (Ajout)
-                    // Le frontend envoie `variation_images[frameId][index]`
-                    // Si c'est une nouvelle variation, frameId est temporaire, mais le frontend l'utilise pour mapper les fichiers
-                    // Il faut faire attention ici : si le frontend envoie un ID temporaire 'frame-...', il faut le récupérer
-                    $frameId = $variationData['id'] ?? null;
-                    // Note: Dans votre code frontend, vous envoyez `variation_images[frame.id]`. 
-                    // Si frame.id est 'frame-...', c'est ce qui est utilisé comme clé.
-                    // Si frame.id est un ID de base de données, c'est ce qui est utilisé.
-
-                    // On doit itérer sur les fichiers envoyés pour trouver ceux correspondant à cette variation
-                    // Astuce : Le frontend utilise l'ID de la frame (qui peut être temporaire ou réel) comme clé.
-                    // Vous devez probablement passer cet ID temporaire dans le payload JSON des variations pour faire le lien.
-                    // Dans votre code frontend actuel, vous envoyez `id: frame.id.startsWith('frame-') ? null : frame.id`.
-                    // Cela signifie que vous perdez l'ID temporaire dans le JSON 'variations'.
-                    // CORRECTION REQUISE CÔTÉ FRONTEND ou BACKEND : 
-                    // Le plus simple est de se fier à l'ordre ou d'envoyer l'ID temporaire dans le JSON.
-                    // MAIS, le frontend envoie `variation_images[frame.id]`.
-                    // Si frame.id est null dans le JSON, on ne peut pas faire le lien facilement si on a plusieurs nouvelles variations.
-
-                    // Supposons pour l'instant que vous utilisez l'ID réel pour les updates, et que pour les créations ça marche par index ou que vous avez ajusté le frontend.
-                    // Pour ce code, je vais assumer que vous pouvez récupérer les images via une clé.
-
-                    // Approche robuste : Le frontend devrait envoyer un `temp_id` dans le JSON si `id` est null, et utiliser ce `temp_id` pour les clés de fichiers.
-                    // Avec le code actuel du frontend : `formData.append('variation_images[${frame.id}][${imgIndex}]', img);`
-                    // Si frame.id est 'frame-123', c'est la clé. Mais dans le JSON `variations`, `id` est null.
-                    // Il faudrait modifier le frontend pour envoyer `temp_id` ou `key` dans le JSON.
-
-                    // Workaround avec le code actuel : 
-                    // Si `id` est présent (update), la clé est l'ID.
-                    // Si `id` est null (create), c'est compliqué sans changer le frontend.
-
-                    // Code générique pour les images (à adapter selon votre logique de clé)
-                    $imageKey = $variationData['id'] ?: $variationData['temp_id'] ?? null; // Idéalement
-                    if ($imageKey) {
-                        $prefix = "variation_images.{$imageKey}"; // Notation dot pour array imbriqué
-                        // Laravel gère les tableaux de fichiers différemment, souvent via $request->file('variation_images')[$key]
-                        $uploadedImages = $request->file('variation_images');
-                        if (isset($uploadedImages[$imageKey])) {
-                            foreach ($uploadedImages[$imageKey] as $image) {
-                                $imagePath = $image->store('product/variations', 'public');
-                                $variation->images()->create(['image_path' => $imagePath]);
-                            }
+                    if ($lookupKey && $request->hasFile("variation_images.$lookupKey")) {
+                        $files = $request->file("variation_images")[$lookupKey];
+                        foreach ($files as $image) {
+                            $imagePath = $image->store('product/variations', 'public');
+                            $variation->images()->create(['image_path' => $imagePath]);
                         }
                     }
 
-                    // Gestion des attributs (Tailles/Pointures)
                     if ($isColorAndAttribute) {
                         $processedAttrIds = [];
                         $attributesList = array_merge($variationData['sizes'] ?? [], $variationData['shoeSizes'] ?? []);
 
                         foreach ($attributesList as $attrData) {
-                            // Update ou Create VariationAttribute
-                            // On cherche par attribute_value_id pour cette variation
                             $attrVariation = $variation->attributesVariation()->updateOrCreate(
                                 ['attribute_value_id' => $attrData['id']],
                                 [
                                     'quantity' => $attrData['quantity'],
-                                    'price' => $attrData['price'],
+                                    'price' => $attrData['price'] ?? 0,
                                 ]
                             );
                             $processedAttrIds[] = $attrVariation->id;
 
-                            // Prix de gros attribut
-                            if (isset($attrData['wholesalePrices']) && is_array($attrData['wholesalePrices'])) {
-                                $attrVariation->wholesalePrices()->delete(); // Remplacer
-                                foreach ($attrData['wholesalePrices'] as $wpData) {
-                                    $attrVariation->wholesalePrices()->create([
-                                        'min_quantity' => $wpData['min_quantity'],
-                                        'wholesale_price' => $wpData['wholesale_price'],
-                                    ]);
+                            if (isset($attrData['wholesalePrices'])) {
+                                $attrVariation->wholesalePrices()->delete();
+                                foreach ($attrData['wholesalePrices'] as $wp) {
+                                    $attrVariation->wholesalePrices()->create($wp);
                                 }
                             }
                         }
-                        // Supprimer les attributs qui ne sont plus présents
                         $variation->attributesVariation()->whereNotIn('id', $processedAttrIds)->delete();
                     }
                 }
-
-                // Supprimer les variations qui ne sont plus dans la liste (si on veut une synchro complète)
-                // Attention : cela supprimera les variations non renvoyées.
                 $product->variations()->whereNotIn('id', $processedVariationIds)->delete();
             }
-
-            // Suppression d'images de variation spécifiques
-            if ($request->filled('variation_images_to_delete')) {
-                $varImagesToDelete = json_decode($request->variation_images_to_delete, true);
-                // Structure attendue : { "frameId": [imageId1, imageId2] }
-                foreach ($varImagesToDelete as $frameId => $imageIds) {
-                    // Trouver la variation (soit par frameId si c'est l'ID réel, sinon ignorer car nouvelle variation n'a pas d'images à supprimer)
-                    // Si frameId est un ID numérique
-                    if (is_numeric($frameId)) {
-                        $variation = $product->variations()->find($frameId);
-                        if ($variation) {
-                            // $variation->images()->whereIn('id', $imageIds)->delete();
-                        }
-                    }
-                }
-            }
-
-            // Synchronisation des catégories
-            $categories = [];
-            if ($request->has('categories') && is_array($request->categories)) {
-                $categories = array_merge($categories, array_map('intval', $request->categories));
-            }
-            if ($request->has('sub_categories') && is_array($request->sub_categories)) {
-                $categories = array_merge($categories, array_map('intval', $request->sub_categories));
-            }
-            $product->categories()->sync($categories);
-
 
             DB::commit();
             Log::info('Product update transaction committed', ['product_id' => $product->id]);
 
             return response()->json(['message' => "Product updated successfully"], 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Product update failed', [

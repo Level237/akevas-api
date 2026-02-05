@@ -71,10 +71,10 @@ class Kernel extends ConsoleKernel
                 }
 
                 if (!empty($stockData)) {
-                    Mail::to("bramslevel129@gmail.com")->queue(new StockReminderMail($seller, $stockData));
+                    Mail::to($seller->user->email)->queue(new StockReminderMail($seller, $stockData));
                 }
             }
-        })->everyMinute();
+        })->weeklyOn(0, '10:00');
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Models\History;
 use App\Models\Vehicle;
 use App\Models\FeedBack;
 use App\Models\ShopReview;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -69,9 +70,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
-    public function role(): HasOne
+    public function role(): BelongsTo
     {
-        return $this->hasOne(Role::class);
+        // On précise 'role_id' car c'est le nom de la colonne dans ta table 'users'
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function findForPassport($username)
