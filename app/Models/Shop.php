@@ -36,17 +36,20 @@ class Shop extends Model
 
     protected $keyType = 'string';
     public $incrementing = false;
- protected $primaryKey = 'id';
- 
-    public function user():BelongsTo{
+    protected $primaryKey = 'id';
+
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function shopType():BelongsTo{
+    public function shopType(): BelongsTo
+    {
         return $this->belongsTo(ShopType::class);
     }
 
-    public function products():HasMany{
+    public function products(): HasMany
+    {
 
         return $this->hasMany(Product::class);
     }
@@ -60,28 +63,47 @@ class Shop extends Model
         });
     }
 
-    public function categories():BelongsToMany{
-        return $this->belongsToMany(Category::class,'category_shop');
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_shop');
     }
 
-    public function images():BelongsToMany{
+    public function images(): BelongsToMany
+    {
         return $this->belongsToMany(Image::class);
     }
 
-    public function town():BelongsTo{
+    public function town(): BelongsTo
+    {
         return $this->belongsTo(Town::class);
     }
 
-    public function quarter():BelongsTo{
+    public function quarter(): BelongsTo
+    {
         return $this->belongsTo(Quarter::class);
     }
 
-    public function reviews():HasMany{
+    public function reviews(): HasMany
+    {
         return $this->hasMany(ShopReview::class);
     }
 
     public function visits()
-{
-    return $this->hasMany(ShopVisit::class);
-}
+    {
+        return $this->hasMany(ShopVisit::class);
+    }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        if (!$this->isSubscribe || !$this->subscription_ends_at) {
+            return false;
+        }
+
+        return now()->lessThan($this->subscription_ends_at);
+    }
 }

@@ -8,8 +8,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,17 +21,17 @@ return new class extends Migration
             $table->text("shop_description");
             $table->string('shop_gender');
             $table->foreignIdFor(User::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+                ->constrained()
+                ->restrictOnDelete()
+                ->restrictOnUpdate();
             $table->foreignIdFor(Town::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+                ->constrained()
+                ->restrictOnDelete()
+                ->restrictOnUpdate();
             $table->foreignIdFor(Quarter::class)
-            ->constrained()
-            ->restrictOnDelete()
-            ->restrictOnUpdate();
+                ->constrained()
+                ->restrictOnDelete()
+                ->restrictOnUpdate();
             $table->string('coins')->default(0);
             $table->string('product_type');
             $table->string('shop_banner')->nullable();
@@ -40,7 +39,11 @@ return new class extends Migration
             $table->boolean("isPublished")->default(0);
             $table->boolean('isSubscribe')->default(0);
             $table->timestamp('expire')->nullable();
-            $table->string('subscribe_id')->nullable();
+
+            $table->foreignId('subscription_id')->nullable()->constrained('subscriptions')->onDelete('set null');
+            $table->timestamp('subscription_starts_at')->nullable();
+            $table->timestamp('subscription_ends_at')->nullable();
+
             $table->string('shop_level')->default(1);
             $table->string('state')->default(0);
             $table->string("accountId")->nullable();

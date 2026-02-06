@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Description;
-use App\Models\SubscriptionUser;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subscription extends Model
@@ -15,7 +15,7 @@ class Subscription extends Model
         'subscription_name',
         'subscription_price',
         'subscription_description',
-        
+
     ];
 
     public function descriptions()
@@ -23,7 +23,8 @@ class Subscription extends Model
         return $this->belongsToMany(Description::class, 'description_subscription');
     }
 
-    public function subscriptionUser():BelongsTo{
-        return $this->hasMany(SubscriptionUser::class);
+    public function shops(): HasMany
+    {
+        return $this->hasMany(Shop::class);
     }
 }
