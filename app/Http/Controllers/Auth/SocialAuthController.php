@@ -51,7 +51,7 @@ class SocialAuthController extends Controller
                 $frontendUrl = "https://akevas.com";
                 $role_id = 3;
             }
-
+            Log::info($role_id);
             if (is_null($user->google_id)) {
                 $user->google_id = $googleUser->getId();
             }
