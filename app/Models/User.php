@@ -7,6 +7,7 @@ use App\Models\Shop;
 use App\Models\Order;
 use App\Models\Review;
 use App\Models\History;
+use App\Models\Payment;
 use App\Models\Vehicle;
 use App\Models\FeedBack;
 use App\Models\ShopReview;
@@ -112,5 +113,15 @@ class User extends Authenticatable
     public function shopReviews()
     {
         return $this->hasMany(ShopReview::class);
+    }
+
+    public function subscriptionUsers(): HasMany
+    {
+        return $this->hasMany(SubscriptionUser::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

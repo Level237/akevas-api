@@ -6,7 +6,8 @@ use App\Models\Description;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\Shop;
+use App\Models\SubscriptionUser;
 class Subscription extends Model
 {
     use HasFactory;
@@ -27,4 +28,10 @@ class Subscription extends Model
     {
         return $this->hasMany(Shop::class);
     }
+
+    public function subscriptionUsers(): HasMany
+    {
+        return $this->hasMany(SubscriptionUser::class);
+    }
+
 }

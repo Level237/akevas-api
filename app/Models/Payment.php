@@ -6,12 +6,13 @@ use App\Models\User;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable=[
+    protected $fillable = [
         'payment_type',
         'price',
         'user_id',
@@ -24,12 +25,19 @@ class Payment extends Model
     ];
 
 
-    public function order(){
+    public function order()
+    {
 
         return $this->belongsTo(Order::class);
     }
-    public function user(){
+    public function user()
+    {
 
         return $this->belongsTo(User::class);
+    }
+
+    public function subscriptionUser(): HasOne
+    {
+        return $this->hasOne(SubscriptionUser::class);
     }
 }

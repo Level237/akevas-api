@@ -13,60 +13,70 @@ use Illuminate\Support\Facades\Auth;
 
 class BoostShopController extends Controller
 {
-    public function boost(Request $request){
+    public function boost(Request $request)
+    {
 
-        try{
-            $shop = Shop::where('user_id',Auth::guard('api')->user()->id)->first();
-        $Subscription=Subscription::find($request->subscription_id);
-        
-        if(!isset($shop)){
+        try {
+            $user = Auth::guard('api')->user();
+            $shop = Shop::where('user_id', $user->id)->first();
+            $subscriptionPlan = Subscription::findOrFail($request->subscription_id);
+
+            if (!$shop) {
+                return response()->json(['message' => 'Boutique introuvable'], 404);
+            }
+
+            $priceInCoins = (int) $subscriptionPlan->subscription_price;
+            if ($shop->coins < $priceInCoins) {
+                return response()->json(['message' => 'Solde de coins insuffisant'], 402);
+            }
+
+            $startDate = ($shop->isSubscribe && $shop->subscription_ends_at > now())
+                ? Carbon::parse($shop->subscription_ends_at)
+                : Carbon::now();
+            $expirationDate = $startDate->addDays($subscriptionPlan->subscription_duration)
+                ->setTimezone('Africa/Douala');
+
+
+            $shop->subscription_id = $subscriptionPlan->id;
+            $shop->subscription_starts_at = Carbon::now(); // La transaction se fait maintenant
+            $shop->subscription_ends_at = $expirationDate;
+            $shop->isSubscribe = 1;
+
+            $shop->coins -= $priceInCoins;
+
+            if ($shop->shop_level == 3) {
+                $shop->shop_level = 4;
+
+            }
+            if ($subscriptionPlan->id == 3) {
+                $shop->coins += 500;
+            }
+
+            $shop->save();
+
+            $payment = Payment::create([
+                'payment_type' => "coins",
+                'price' => $priceInCoins,
+                'payment_of' => "Boostage boutique : " . $subscriptionPlan->subscription_name,
+                'user_id' => $user->id,
+                'status' => 'completed'
+            ]);
+            SubscriptionUser::create([
+                'user_id' => $user->id,
+                'subscription_id' => $subscriptionPlan->id,
+                'expire_at' => $expirationDate,
+                'payment_id' => $payment->id,
+                'status' => 1
+            ]);
+
             return response()->json([
-                'message' => 'Shop not found'
-            ], 404);
+                "status" => 1,
+                "message" => "Boutique boostée avec succès !",
+                "expires_at" => $expirationDate->toDateTimeString()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(["status" => $e->getMessage()]);
         }
-        
-        $newDateTime = Carbon::now()->addDay(intval($Subscription->subscription_duration));
-        
-        $newDateTime->setTimezone('Africa/Douala');
-        
-        $shop->subscribe_id = $Subscription->id;
-        
-        if($shop->shop_level==3){
-            $shop->shop_level=4;
-            
-        }
-        if($Subscription->id==3){
-            $shop->coins=$shop->coins+500;
-        }
-        $shop->expire=null;
-       
-        $shop->isSubscribe=1;
-        
-        $shop->coins=$shop->coins-$request->coins;
-        
-        $shop->save();
-        
-        $payment=new Payment;
-        $payment->payment_type="coins";
-        $payment->price=$request->coins;
-        $payment->payment_of="Boostage boutique";
-        $payment->user_id=Auth::guard('api')->user()->id;
-        if($payment->save()){
-        $subscription=new SubscriptionUser;
-        $subscription->user_id=$shop->user_id;
-        $subscription->subscription_id=$Subscription->id;
-        $subscription->expire_at=$newDateTime;
-        $subscription->payment_id=$payment->id;
-        $subscription->status=1;
-        $subscription->save();
 
-        return response()->json(["status"=>1,"paymentId"=>$payment->id]);
-        }else{
-            return response()->json(["status"=>0]);
-        }
-        }catch(\Exception $e){
-            return response()->json(["status"=>$e->getMessage()]);
-        }
-        
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class GenerateProductUrlJob implements ShouldQueue
 {
@@ -30,9 +31,9 @@ class GenerateProductUrlJob implements ShouldQueue
      */
     public function handle(): void
     {
-         $product = Product::find($this->productId);
-
-          if (!$product) {
+        $product = Product::find($this->productId);
+        Log::info($product);
+        if (!$product) {
             return;
         }
 
@@ -41,12 +42,13 @@ class GenerateProductUrlJob implements ShouldQueue
         $counter = 1;
 
         if (Product::where('product_url', $baseSlug)->exists()) {
-        while (Product::where('product_url', $uniqueSlug)->exists()) {
-            $uniqueSlug = "{$baseSlug}{$counter}";
-            $counter++;
+            while (Product::where('product_url', $uniqueSlug)->exists()) {
+                $uniqueSlug = "{$baseSlug}{$counter}";
+                $counter++;
+            }
         }
-    }
         $product->product_url = $uniqueSlug;
         $product->save();
+        Log::info("level");
     }
 }
