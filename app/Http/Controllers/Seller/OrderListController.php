@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Seller;
 
+use App\Http\Resources\SellerOrderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderVariation;
@@ -19,55 +20,78 @@ class OrderListController extends Controller
     public function listOrders()
     {
         $user = Auth::guard('api')->user();
-        
-        // Récupérer toutes les boutiques du vendeur
-        $shops = Shop::where('user_id', $user->id)->pluck('id');
-        
-        // Récupérer les commandes de produits non variés (orderDetails)
-        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shops) {
-            $query->whereHas('product', function($productQuery) use ($shops) {
-                $productQuery->whereIn('shop_id', $shops);
-            });
-        })
-        ->with(['orderDetails.product.shop', 'user'])
-        ->get();
 
-        // Récupérer les commandes de produits variés (orderVariations)
-        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shops) {
-            $query->whereHas('productVariation', function($productVariationQuery) use ($shops) {
-                $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                    $productQuery->whereIn('shop_id', $shops);
-                });
+        // 1. Récupérer les IDs des boutiques sous forme de tableau simple
+        $shopIds = Shop::where('user_id', $user->id)->pluck('id')->toArray();
+
+        if (empty($shopIds)) {
+            return response()->json([]);
+        }
+
+        // 2. Récupérer les commandes qui concernent le vendeur
+        $orders = Order::where(function ($query) use ($shopIds) {
+            $query->whereHas('orderDetails.product', function ($q) use ($shopIds) {
+                $q->whereIn('shop_id', $shopIds);
             })
-            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                    $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                        $productQuery->whereIn('shop_id', $shops);
-                    });
+                ->orWhereHas('orderVariations.productVariation.product', function ($q) use ($shopIds) {
+                    $q->whereIn('shop_id', $shopIds);
+                })
+                ->orWhereHas('orderVariations.variationAttribute.variation.product', function ($q) use ($shopIds) {
+                    $q->whereIn('shop_id', $shopIds);
                 });
-            });
         })
-        ->with(['orderVariations.productVariation.product.shop', 'orderVariations.variationAttribute.variation.product.shop', 'user'])
-        ->get();
+            ->with([
+                'user',
+                'orderDetails.product.shop',
+                'orderVariations.productVariation.product.shop',
+                'orderVariations.variationAttribute.variation.product.shop'
+            ])
+            ->orderByDesc('created_at')
+            ->get();
 
-        // Combiner et dédupliquer les commandes
-        $allOrders = $ordersFromDetails->merge($ordersFromVariations)->unique('id')->sortByDesc('created_at');
+        // 3. FILTRAGE MANUEL DE LA COLLECTION (Méthode radicale)
+        $filteredOrders = $orders->map(function ($order) use ($shopIds) {
 
-        return response()->json(OrderResource::collection($allOrders));
+            // On filtre les détails de produits simples
+            $order->setRelation('orderDetails', $order->orderDetails->filter(function ($detail) use ($shopIds) {
+                return $this->in_with_shop($detail->product, $shopIds);
+            }));
+
+            // On filtre les détails de produits variés
+            $order->setRelation('orderVariations', $order->orderVariations->filter(function ($variation) use ($shopIds) {
+                // On vérifie les deux chemins possibles pour la boutique
+                $shopIdFromVariation = $variation->productVariation?->product?->shop_id;
+                $shopIdFromAttribute = $variation->variationAttribute?->variation?->product?->shop_id;
+
+                return in_array($shopIdFromVariation, $shopIds) || in_array($shopIdFromAttribute, $shopIds);
+            }));
+
+            return $order;
+        });
+
+        // On retire les commandes qui se retrouveraient vides après filtrage (sécurité)
+        $finalOrders = $filteredOrders->filter(function ($order) {
+            return $order->orderDetails->isNotEmpty() || $order->orderVariations->isNotEmpty();
+        });
+
+        return response()->json(SellerOrderResource::collection($finalOrders));
     }
-
+    function in_with_shop($product, $shopIds)
+    {
+        return $product && in_array($product->shop_id, $shopIds);
+    }
     /**
      * Lister les commandes d'une boutique spécifique
      */
     public function listOrdersByShop($shopId)
     {
         $user = Auth::guard('api')->user();
-        
+
         // Vérifier que la boutique appartient au vendeur
         $shop = Shop::where('id', $shopId)
-                   ->where('user_id', $user->id)
-                   ->first();
-        
+            ->where('user_id', $user->id)
+            ->first();
+
         if (!$shop) {
             return response()->json([
                 'success' => false,
@@ -76,31 +100,31 @@ class OrderListController extends Controller
         }
 
         // Récupérer les commandes de produits non variés pour cette boutique
-        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shopId) {
-            $query->whereHas('product', function($productQuery) use ($shopId) {
+        $ordersFromDetails = Order::whereHas('orderDetails', function ($query) use ($shopId) {
+            $query->whereHas('product', function ($productQuery) use ($shopId) {
                 $productQuery->where('shop_id', $shopId);
             });
         })
-        ->with(['orderDetails.product.shop', 'user'])
-        ->get();
+            ->with(['orderDetails.product.shop', 'user'])
+            ->get();
 
         // Récupérer les commandes de produits variés pour cette boutique
-        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shopId) {
-            $query->whereHas('productVariation', function($productVariationQuery) use ($shopId) {
-                $productVariationQuery->whereHas('product', function($productQuery) use ($shopId) {
+        $ordersFromVariations = Order::whereHas('orderVariations', function ($query) use ($shopId) {
+            $query->whereHas('productVariation', function ($productVariationQuery) use ($shopId) {
+                $productVariationQuery->whereHas('product', function ($productQuery) use ($shopId) {
                     $productQuery->where('shop_id', $shopId);
                 });
             })
-            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shopId) {
-                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shopId) {
-                    $productVariationQuery->whereHas('product', function($productQuery) use ($shopId) {
-                        $productQuery->where('shop_id', $shopId);
+                ->orWhereHas('variationAttribute', function ($variationAttributeQuery) use ($shopId) {
+                    $variationAttributeQuery->whereHas('variation', function ($productVariationQuery) use ($shopId) {
+                        $productVariationQuery->whereHas('product', function ($productQuery) use ($shopId) {
+                            $productQuery->where('shop_id', $shopId);
+                        });
                     });
                 });
-            });
         })
-        ->with(['orderVariations.productVariation.product.shop', 'orderVariations.variationAttribute.variation.product.shop', 'user'])
-        ->get();
+            ->with(['orderVariations.productVariation.product.shop', 'orderVariations.variationAttribute.variation.product.shop', 'user'])
+            ->get();
 
         // Combiner et dédupliquer les commandes
         $allOrders = $ordersFromDetails->merge($ordersFromVariations)->unique('id')->sortByDesc('created_at');
@@ -114,31 +138,31 @@ class OrderListController extends Controller
     public function getOrderStats()
     {
         $user = Auth::guard('api')->user();
-        
+
         // Récupérer toutes les boutiques du vendeur
         $shops = Shop::where('user_id', $user->id)->pluck('id');
-        
+
         // Compter les commandes de produits non variés
-        $ordersFromDetails = Order::whereHas('orderDetails', function($query) use ($shops) {
-            $query->whereHas('product', function($productQuery) use ($shops) {
+        $ordersFromDetails = Order::whereHas('orderDetails', function ($query) use ($shops) {
+            $query->whereHas('product', function ($productQuery) use ($shops) {
                 $productQuery->whereIn('shop_id', $shops);
             });
         })->get();
 
         // Compter les commandes de produits variés
-        $ordersFromVariations = Order::whereHas('orderVariations', function($query) use ($shops) {
-            $query->whereHas('productVariation', function($productVariationQuery) use ($shops) {
-                $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
+        $ordersFromVariations = Order::whereHas('orderVariations', function ($query) use ($shops) {
+            $query->whereHas('productVariation', function ($productVariationQuery) use ($shops) {
+                $productVariationQuery->whereHas('product', function ($productQuery) use ($shops) {
                     $productQuery->whereIn('shop_id', $shops);
                 });
             })
-            ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                    $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
-                        $productQuery->whereIn('shop_id', $shops);
+                ->orWhereHas('variationAttribute', function ($variationAttributeQuery) use ($shops) {
+                    $variationAttributeQuery->whereHas('variation', function ($productVariationQuery) use ($shops) {
+                        $productVariationQuery->whereHas('product', function ($productQuery) use ($shops) {
+                            $productQuery->whereIn('shop_id', $shops);
+                        });
                     });
                 });
-            });
         })->get();
 
         // Combiner et dédupliquer pour le total
@@ -180,55 +204,55 @@ class OrderListController extends Controller
     }
 
     /**
- * Obtenir une commande spécifique par son ID
- */
-public function getOrderById($orderId)
-{
-    $user = Auth::guard('api')->user();
-    
-    // Récupérer toutes les boutiques du vendeur
-    $shops = Shop::where('user_id', $user->id)->pluck('id');
-    
-    // Récupérer la commande avec tous les détails
-    $order = Order::where('id', $orderId)
-        ->where(function($query) use ($shops) {
-            // Vérifier si la commande contient des produits de ses boutiques
-            $query->whereHas('orderDetails', function($orderDetailQuery) use ($shops) {
-                $orderDetailQuery->whereHas('product', function($productQuery) use ($shops) {
-                    $productQuery->whereIn('shop_id', $shops);
-                });
-            })
-            ->orWhereHas('orderVariations', function($orderVariationQuery) use ($shops) {
-                $orderVariationQuery->whereHas('productVariation', function($productVariationQuery) use ($shops) {
-                    $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
+     * Obtenir une commande spécifique par son ID
+     */
+    public function getOrderById($orderId)
+    {
+        $user = Auth::guard('api')->user();
+
+        // Récupérer toutes les boutiques du vendeur
+        $shops = Shop::where('user_id', $user->id)->pluck('id');
+
+        // Récupérer la commande avec tous les détails
+        $order = Order::where('id', $orderId)
+            ->where(function ($query) use ($shops) {
+                // Vérifier si la commande contient des produits de ses boutiques
+                $query->whereHas('orderDetails', function ($orderDetailQuery) use ($shops) {
+                    $orderDetailQuery->whereHas('product', function ($productQuery) use ($shops) {
                         $productQuery->whereIn('shop_id', $shops);
                     });
                 })
-                ->orWhereHas('variationAttribute', function($variationAttributeQuery) use ($shops) {
-                    $variationAttributeQuery->whereHas('variation', function($productVariationQuery) use ($shops) {
-                        $productVariationQuery->whereHas('product', function($productQuery) use ($shops) {
+                    ->orWhereHas('orderVariations', function ($orderVariationQuery) use ($shops) {
+                    $orderVariationQuery->whereHas('productVariation', function ($productVariationQuery) use ($shops) {
+                        $productVariationQuery->whereHas('product', function ($productQuery) use ($shops) {
                             $productQuery->whereIn('shop_id', $shops);
                         });
-                    });
+                    })
+                        ->orWhereHas('variationAttribute', function ($variationAttributeQuery) use ($shops) {
+                            $variationAttributeQuery->whereHas('variation', function ($productVariationQuery) use ($shops) {
+                                $productVariationQuery->whereHas('product', function ($productQuery) use ($shops) {
+                                    $productQuery->whereIn('shop_id', $shops);
+                                });
+                            });
+                        });
                 });
-            });
-        })
-        ->with([
-            'orderDetails.product.shop',
-            'orderVariations.productVariation.product.shop',
-            'orderVariations.variationAttribute.variation.product.shop',
-            'user',
-            'payment'
-        ])
-        ->first();
-    
-    if (!$order) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Commande non trouvée ou non autorisée'
-        ], 404);
+            })
+            ->with([
+                'orderDetails.product.shop',
+                'orderVariations.productVariation.product.shop',
+                'orderVariations.variationAttribute.variation.product.shop',
+                'user',
+                'payment'
+            ])
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Commande non trouvée ou non autorisée'
+            ], 404);
+        }
+
+        return response()->json(OrderResource::make($order));
     }
-    
-    return response()->json(OrderResource::make($order));
-}
 }

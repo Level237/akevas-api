@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,9 +18,10 @@ return new class extends Migration
             $table->text('product_description');
             $table->foreignIdFor(Shop::class)
                 ->constrained()
+
                 ->restrictOnDelete()
                 ->restrictOnUpdate();
-            
+
             $table->string('product_url')->nullable();
             $table->string('product_price')->nullable();
             $table->boolean('is_wholesale')->default(0);
