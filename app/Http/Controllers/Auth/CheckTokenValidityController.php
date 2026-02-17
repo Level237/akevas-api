@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 class CheckTokenValidityController extends Controller
 {
     public function checkIsAuthenticated(Request $request)
-{
-            $origin = $request->headers->get('origin');
+    {
+        $origin = $request->headers->get('origin');
 
         // 2️⃣ Déterminer quel cookie utiliser selon le sous-domaine
         if (str_contains($origin, 'seller.akevas.com')) {
@@ -18,7 +18,7 @@ class CheckTokenValidityController extends Controller
             $cookieNameAccess = 'accessTokenDelivery';
         } elseif (str_contains($origin, 'localhost')) {
             // En local, on suppose qu’on teste le vendeur
-            $cookieNameAccess = 'accessTokenSeller';
+            $cookieNameAccess = 'accessToken';
         } else {
             $cookieNameAccess = 'accessToken';
         }
@@ -55,5 +55,5 @@ class CheckTokenValidityController extends Controller
             'host' => $origin
         ]);
 
-}
+    }
 }
