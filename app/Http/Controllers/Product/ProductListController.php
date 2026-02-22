@@ -13,18 +13,19 @@ class ProductListController extends Controller
 {
     public function index()
     {
-        return ProductResource::collection(Product::inRandomOrder()->where('status', 1)->where('is_trashed', 0)->take(5)->get());
+        return ProductResource::collection(Product::inRandomOrder()->where('status', 1)->where('is_trashed', 0)->where("isRejet", 0)->take(5)->get());
     }
 
     public function adsProducts($id)
     {
-        return ProductResource::collection(Product::inRandomOrder()->Where('subscribe_id', $id)->where('status', 1)->where('is_trashed', 0)->get());
+        return ProductResource::collection(Product::inRandomOrder()->Where('subscribe_id', $id)->where('status', 1)->where('is_trashed', 0)->where("isRejet", 0)->get());
     }
     public function allProducts(Request $request)
     {
         $query = Product::inRandomOrder()
             ->where('status', 1)
-            ->where('is_trashed', 0);
+            ->where('is_trashed', 0)
+            ->where("isRejet", 0);
 
 
         // Appliquer le filtre de prix si des paramètres sont présents

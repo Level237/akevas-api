@@ -20,25 +20,24 @@ class SellerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id"=>$this->id,
-            "firstName"=>$this->firstName,
-            'email'=>$this->email,
-            "notifications_is_count"=>$this->notifications()->where('read_at',null)->count(),
-            "lastName"=>$this->lastName,
-            "birthDate"=>$this->birthDate,
-            "nationality"=>$this->nationality,
-            "isWholesaler"=>$this->isWholesaler,
-            "role_id"=>$this->role_id,
-            "phone_number"=>$this->phone_number,
-            "isWholesaler"=>$this->isWholesaler,
-            "identity_card_in_front"=>URL("/storage/".$this->identity_card_in_front),
-            "identity_card_in_back"=>URL("/storage/".$this->identity_card_in_back),
-            "identity_card_with_the_person"=>URL("/storage/".$this->identity_card_with_the_person),
-            "isSeller"=>$this->isSeller,
-            "feedbacks"=>$this->feedbacks,
-            "last_feedbacks_product_verification"=>FeedBack::where('user_id',$this->id)->where('type','1')->where('status',0)->count(),
-            "shop"=>ShopResource::make(Shop::where('user_id',$this->id)->first()),
-            "created_at"=>$this->created_at
+            "id" => $this->id,
+            "firstName" => $this->firstName,
+            'email' => $this->email,
+            "notifications_is_count" => $this->notifications()->where('read_at', null)->count(),
+            "lastName" => $this->lastName,
+            "birthDate" => $this->birthDate,
+            "nationality" => $this->nationality,
+            "isWholesaler" => $this->isWholesaler,
+            "role_id" => $this->role_id,
+            "phone_number" => $this->phone_number,
+            "identity_card_in_front" => URL("/storage/" . $this->identity_card_in_front),
+            "identity_card_in_back" => URL("/storage/" . $this->identity_card_in_back),
+            "identity_card_with_the_person" => URL("/storage/" . $this->identity_card_with_the_person),
+            "isSeller" => $this->isSeller,
+            "feedbacks" => $this->feedbacks,
+            "last_feedbacks_product_verification" => FeedBack::where('user_id', $this->id)->where('type', '1')->where('status', 0)->count(),
+            "shop" => ShopResource::make(Shop::where('user_id', $this->id)->first()),
+            "created_at" => $this->created_at
         ];
     }
 }
