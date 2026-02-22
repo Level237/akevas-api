@@ -15,7 +15,7 @@ class QuarterController extends Controller
     public function index()
     {
         $quarters = Quarter::all();
-        return response()->json(['quarters'=>QuarterResource::collection($quarters)]);
+        return response()->json(['quarters' => QuarterResource::collection($quarters)]);
     }
 
     /**
@@ -23,7 +23,8 @@ class QuarterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $quarter = Quarter::create($request->all());
+        return response()->json($quarter, 201);
     }
 
     /**
@@ -31,7 +32,8 @@ class QuarterController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $quarter = Quarter::find($id);
+        return response()->json($quarter, 200);
     }
 
     /**
@@ -39,7 +41,9 @@ class QuarterController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $quarter = Quarter::find($id);
+        $quarter->update($request->all());
+        return response()->json($quarter, 200);
     }
 
     /**
@@ -47,6 +51,8 @@ class QuarterController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $quarter = Quarter::find($id);
+        $quarter->delete();
+        return response()->json($quarter, 200);
     }
 }

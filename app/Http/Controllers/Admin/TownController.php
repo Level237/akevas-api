@@ -13,8 +13,8 @@ class TownController extends Controller
      */
     public function index()
     {
-        $towns=Town::all();
-        return response()->json(['towns'=>$towns],200);
+        $towns = Town::all();
+        return response()->json(['towns' => $towns], 200);
     }
 
     /**
@@ -22,7 +22,8 @@ class TownController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $town = Town::create($request->all());
+        return response()->json($town, 201);
     }
 
     /**
@@ -30,7 +31,8 @@ class TownController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $town = Town::find($id);
+        return response()->json($town, 200);
     }
 
     /**
@@ -38,7 +40,9 @@ class TownController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $town = Town::find($id);
+        $town->update($request->all());
+        return response()->json($town, 200);
     }
 
     /**
@@ -46,6 +50,8 @@ class TownController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $town = Town::find($id);
+        $town->delete();
+        return response()->json($town, 200);
     }
 }
