@@ -243,8 +243,8 @@ Route::middleware(["auth:api", 'scopes:admin'])->prefix('v1')->group(function ()
     Route::apiResource('sellers', SellerController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::delete('admin/category/{id}', [CategoryController::class, 'destroy']);
-    Route::apiResource('towns', TownController::class);
-    Route::apiResource('quarters', QuarterController::class);
+    Route::apiResource('/admin/towns', TownController::class);
+    Route::apiResource('/admin/quarters', QuarterController::class);
     Route::apiResource('admin/customers', CustomerController::class);
     Route::post("give/coins", [GiveCoinsController::class, 'giveCoins']);
     Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);

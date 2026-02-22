@@ -14,7 +14,7 @@ class TownController extends Controller
     public function index()
     {
         $towns = Town::all();
-        return response()->json(['towns' => $towns], 200);
+        return response()->json($towns);
     }
 
     /**
