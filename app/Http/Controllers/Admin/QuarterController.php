@@ -15,7 +15,7 @@ class QuarterController extends Controller
     public function index()
     {
         $quarters = Quarter::all();
-        return response()->json(['quarters' => QuarterResource::collection($quarters)]);
+        return QuarterResource::collection($quarters);
     }
 
     /**
