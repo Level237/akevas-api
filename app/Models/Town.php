@@ -14,15 +14,23 @@ class Town extends Model
 {
     use HasFactory;
 
-    public function quarters():HasMany{
+    protected $fillable = [
+        'town_name',
+        'code',
+    ];
+
+    public function quarters(): HasMany
+    {
         return $this->hasMany(Quarter::class);
     }
 
-    public function shops():HasMany{
+    public function shops(): HasMany
+    {
         return $this->hasMany(Shop::class);
     }
 
-    public function vehicles():BelongsToMany{
+    public function vehicles(): BelongsToMany
+    {
         return $this->belongsToMany(Vehicle::class);
     }
 }

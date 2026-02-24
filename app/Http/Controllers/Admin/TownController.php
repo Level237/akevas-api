@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Town;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class TownController extends Controller
 {
     /**
@@ -38,11 +39,43 @@ class TownController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $town = Town::find($id);
-        $town->update($request->all());
-        return response()->json($town, 200);
+
+
+        try {
+            DB::beginTransaction();
+
+            $town = Town::findOrFail($id);
+
+
+            $town->town_name = $request->town_name;
+
+
+
+
+            $town->save();
+
+
+
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ville mise à jour avec succès',
+                'data' => $town
+            ], 200);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de la ville',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -50,8 +83,20 @@ class TownController extends Controller
      */
     public function destroy(string $id)
     {
-        $town = Town::find($id);
+        $town = Town::withCount('shops')->find($id);
+
+        if (!$town) {
+            return response()->json(['message' => 'Ville introuvable'], 404);
+        }
+
+        // On vérifie si le compteur de relations est supérieur à 0
+        if ($town::shops_count > 0) {
+            return response()->json([
+                'message' => "Impossible de supprimer : cette ville est liée à {$town->shops_count} boutique(s)."
+            ], 422);
+        }
+
         $town->delete();
-        return response()->json($town, 200);
+        return response()->json(['message' => 'Ville supprimée avec succès'], 200);
     }
 }
