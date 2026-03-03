@@ -9,16 +9,20 @@ use Illuminate\Http\Request;
 
 class ShopListController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return ShopResource::collection(
-            Shop::inRandomOrder()->where('state',1)->take(7)->get());
+            Shop::inRandomOrder()->where('state', 1)->take(7)->get()
+        );
     }
 
-    public function all(){
-        return ShopResource::collection(Shop::where('state',1)->orderBy('created_at', 'desc')->paginate(6));
+    public function all()
+    {
+        return ShopResource::collection(Shop::where('state', 1)->orderBy('created_at', 'desc')->paginate(6));
     }
 
-    public function adsShops($id){
-        return ShopResource::collection(Shop::where('state',1)->where('subscribe_id',$id)->where('status',1)->inRandomOrder()->get());
+    public function adsShops($id)
+    {
+        return ShopResource::collection(Shop::where('state', 1)->where('subscribe_id', $id)->where('status', 1)->inRandomOrder()->get());
     }
 }

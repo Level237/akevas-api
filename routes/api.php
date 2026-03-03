@@ -173,6 +173,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::get("ads/shops/{id}", [ShopListController::class, "adsShops"]);
     Route::get("all/shops", [ShopListController::class, "all"]);
     Route::get("current/gender/{id}", [CurrentGenderController::class, "show"]);
+    Route::get("current/gender/categories/{id}", [CurrentGenderController::class, "GenderWithCategories"]);
     Route::get('/list/subscriptions', [ListSubscriptionController::class, 'index']);
     Route::get('/show/subscription/{id}', [ShowSubscriptionController::class, 'show']);
     Route::get("product/detail/{product_url}", [DetailProductController::class, "index"]);
