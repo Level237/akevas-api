@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\Auth\LoginService;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
@@ -115,19 +117,9 @@ class LoginController extends Controller
     public function loginwithToken(Request $request)
     {
         // 1. Validation des entrées
-        $validator = Validator::make($request->only('phone_number', 'password', 'role_id'), [
-            'phone_number' => 'required|string|exists:users,phone_number',
-            'password' => 'required|string',
-            'role_id' => 'required|integer|exists:roles,id',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Le numéro de téléphone ou le mot de passe sont incorrects.',
-                'errors' => $validator->errors()
-            ], 400);
-        }
+
+
 
         try {
             // 2. Authentification de l'utilisateur
