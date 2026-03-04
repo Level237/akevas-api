@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\Auth\LoginService;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Repositories\GetClientRepository;
 use App\Services\Auth\GenerateTokenUserService;
@@ -108,6 +108,79 @@ class LoginController extends Controller
                 'success' => false,
                 'message' => 'Something went wrong',
                 'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function loginwithToken(Request $request)
+    {
+        // 1. Validation des entrées
+        $validator = Validator::make($request->only('phone_number', 'password', 'role_id'), [
+            'phone_number' => 'required|string|exists:users,phone_number',
+            'password' => 'required|string',
+            'role_id' => 'required|integer|exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Le numéro de téléphone ou le mot de passe sont incorrects.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // 2. Authentification de l'utilisateur
+            $data = $request->only('phone_number', 'password');
+            $loginUser = (new LoginService())->login($data);
+
+            // Récupération du client Passport
+            $client = (new GetClientRepository())->getClient();
+
+            // 3. Vérification du rôle (Sécurité)
+            if ($request->role_id != $loginUser['role_id']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Vous n'avez pas les droits d'accès à cette application."
+                ], 403);
+            }
+
+            // 4. Génération du Token
+            $tokenResponse = (new GenerateTokenUserService())->generate($client, $loginUser, $data['password'], $request);
+            $tokenData = json_decode($tokenResponse->getContent(), true);
+
+            // 5. Retour du Token dans le JSON
+            if ($tokenResponse->getStatusCode() === 200) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Connexion réussie',
+                    'data' => [
+                        'access_token' => $tokenData['access_token'],
+                        'refresh_token' => $tokenData['refresh_token'],
+                        'token_type' => 'Bearer',
+                        'expires_in' => config('passport.token_ttl'), // Utile pour le frontend
+                        // Optionnel : renvoyer les infos user pour éviter une requête /me
+                        'user' => [
+                            'id' => $loginUser['id'],
+                            'name' => $loginUser['name'],
+                            'phone_number' => $loginUser['phone_number'],
+                            'role_id' => $loginUser['role_id'],
+                        ]
+                    ]
+                ], 200);
+            }
+
+            // Cas où la génération de token échoue
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du token.'
+            ], $tokenResponse->getStatusCode());
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

@@ -117,7 +117,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 
 
 Route::middleware('throttle:login')->post('/login', [LoginController::class, 'login']);
-
+Route::middleware('throttle:login')->post('/login/mobile', [LoginController::class, 'loginwithToken']);
 
 Route::middleware('throttle:api')->group(function () {
     Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
@@ -156,6 +156,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::get('/get/category/by-gender/{id}', [ListCategoryController::class, 'showCategoryByGender']);
     Route::get('/get/sub-categories/{arrayIds}/{id}', [ListCategoryController::class, 'getSubCategoriesByParentId']);
     Route::post('/check/email-and-phone-number', [CheckIfInputExistInDatabaseController::class, 'checkEmailAndPhoneNumber']);
+    Route::post('/check/login/phone-number', [CheckIfInputExistInDatabaseController::class, 'checkPhoneNumber']);
     Route::post('/register', [RegisterController::class, 'register']);
     Route::get('/categories/with-parent-id-null', [ListCategoryController::class, 'getCategoryWithParentIdNull']);
     Route::get('/shop/{id}', [SellerController::class, 'show']);
