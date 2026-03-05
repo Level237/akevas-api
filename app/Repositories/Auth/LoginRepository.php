@@ -15,7 +15,7 @@ class LoginRepository
         if ($data['password']) {
             $hashedPassword = $user->password;
             if (!Hash::check($data['password'], $hashedPassword)) {
-                return response()->json(['code' => '404']);
+                return "404";
             }
         }
         return $user;

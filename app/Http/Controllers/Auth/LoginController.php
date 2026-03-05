@@ -126,6 +126,12 @@ class LoginController extends Controller
             $data = $request->only('phone_number', 'password');
             $loginUser = (new LoginService())->login($data);
 
+            if ($loginUser == "404") {
+                return response()->json([
+                    'code' => "404",
+                    'message' => "Utilisateur non trouvé."
+                ], 404);
+            }
             // Récupération du client Passport
             $client = (new GetClientRepository())->getClient();
 

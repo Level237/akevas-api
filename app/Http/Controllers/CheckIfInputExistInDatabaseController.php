@@ -40,6 +40,7 @@ class CheckIfInputExistInDatabaseController extends Controller
         $phoneNumber = $request->phone;
 
         $userPhone = User::where('phone_number', $phoneNumber)->first();
+
         if ($userPhone) {
             return response()->json(['code' => '200']);
         }
