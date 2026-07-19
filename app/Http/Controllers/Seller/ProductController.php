@@ -18,7 +18,7 @@ use App\Models\ProductAttributesValue;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductEditResource;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Cache;
 class ProductController extends Controller
 {
     /**
@@ -243,6 +243,8 @@ class ProductController extends Controller
             DB::commit();
             Log::info('Product creation transaction committed successfully for product', ['product_id' => $product->id]);
 
+            Cache::forget("product.detail.{$product->product_url}");
+            Cache::forget("products.similar.{$product->id}");
             return response()->json(['message' => "Product created successfully"], 201);
 
         } catch (\Exception $e) {
