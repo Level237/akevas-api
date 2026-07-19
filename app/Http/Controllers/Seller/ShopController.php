@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GenerateUrlResource;
 use App\Service\Shop\generateShopNameService;
+use Illuminate\Support\Facades\Cache;
 
 class ShopController extends Controller
 {
@@ -28,27 +29,27 @@ class ShopController extends Controller
      */
     public function store(ShopRequest $request)
     {
-        try{
+        try {
 
-            $shop=new Shop;
-            $shop->shop_name=$request->shop_name;
-            $shop->user_id=Auth::guard('api')->user()->id;
-            $shop->shop_key=(new generateShopNameService())->generateShopName();
-            $shop->shop_description=$request->shop_description;
-            $shop->shop_type_id=$request->shop_type_id;
-            $shop->shop_url=(new GenerateUrlResource())->generateUrl($request->shop_name);
+            $shop = new Shop;
+            $shop->shop_name = $request->shop_name;
+            $shop->user_id = Auth::guard('api')->user()->id;
+            $shop->shop_key = (new generateShopNameService())->generateShopName();
+            $shop->shop_description = $request->shop_description;
+            $shop->shop_type_id = $request->shop_type_id;
+            $shop->shop_url = (new GenerateUrlResource())->generateUrl($request->shop_name);
             $file = $request->file('shop_profile');
             $image_path = $file->store('shops', 'public');
-            $shop->shop_profile=$image_path;
+            $shop->shop_profile = $image_path;
             $shop->save();
 
-            return response()->json(['message'=>"shop created successfully"],201);
-        }catch(\Exception $e){
+            return response()->json(['message' => "shop created successfully"], 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
                 'errors' => $e
-              ], 500);
+            ], 500);
         }
 
 
@@ -59,7 +60,7 @@ class ShopController extends Controller
      */
     public function show(string $id)
     {
-        $shop=Shop::find($id);
+        $shop = Shop::find($id);
 
         return $shop;
     }
@@ -80,72 +81,76 @@ class ShopController extends Controller
         //
     }
 
-    public function getShopEarnings($shopId){
-        $shop = Shop::findOrFail($shopId);
-        $totalEarnings = 0.0;
+    public function getShopEarnings($shopId)
+    {
+        $cacheKey = "shop.earnings.{$shopId}";
 
-        // Étape 1: Récupérer les IDs des produits de la boutique
-        $productIds = $shop->products()->pluck('id');
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($shopId) {
 
-        // Étape 2: Récupérer les IDs de commandes de produits simples
-        $simpleOrderIds = DB::table('order_details')
-            ->whereIn('product_id', $productIds)
-            ->pluck('order_id');
+            // 1. Récupérer UNIQUEMENT les IDs des commandes (pas les modèles complets)
+            // On utilise des JOINs pour éviter de charger tous les produits en mémoire
+            $simpleOrderIds = DB::table('order_details')
+                ->join('products', 'order_details.product_id', '=', 'products.id')
+                ->where('products.shop_id', $shopId)
+                ->pluck('order_details.order_id');
 
-        // Étape 3: Récupérer les IDs de commandes de produits variés
-        $productVariationIds = ProductVariation::whereIn('product_id', $productIds)->pluck('id');
+            $variedOrderIds = DB::table('order_variations')
+                ->join('product_variations', 'order_variations.product_variation_id', '=', 'product_variations.id')
+                ->join('products', 'product_variations.product_id', '=', 'products.id')
+                ->where('products.shop_id', $shopId)
+                ->pluck('order_variations.order_id');
 
-        $variedOrderIds = DB::table('order_variations')
-            ->whereIn('product_variation_id', $productVariationIds)
-            ->pluck('order_id');
+            $allOrderIds = $simpleOrderIds->merge($variedOrderIds)->unique();
 
-        // Étape 4: Combiner les IDs de commandes et enlever les doublons
-        $allOrderIds = $simpleOrderIds->merge($variedOrderIds)->unique();
+            if ($allOrderIds->isEmpty()) {
+                return 0.0;
+            }
 
-        // Étape 5: Récupérer les commandes (payées et livrées) et calculer les gains
-        $orders = Order::whereIn('id', $allOrderIds)
-            ->get();
-        
-        foreach ($orders as $order) {
-            $subtotal = floatval($order->total) - floatval($order->fee_of_shipping);
-            
-            // On retire la taxe de 5%
-            $taxAmount = $subtotal * 0.05;
-            $netEarnings = $subtotal - $taxAmount;
-            
-            $totalEarnings += $netEarnings;
-        }
+            // 2. 🚨 CRITIQUE : LAISSER LA BASE DE DONNÉES FAIRE LE CALCUL (SUM)
+            // Au lieu de charger les commandes en PHP et de boucler, on demande à MySQL de faire la somme.
+            // C'est des milliers de fois plus rapide et ça ne consomme aucune mémoire PHP.
+            $totalEarnings = DB::table('orders')
+                ->whereIn('id', $allOrderIds)
+                // 🚨 ADAPTE 'delivered' ou 'paid' selon le nom réel de ta colonne de statut
+                ->where('status', 'delivered')
+                ->select(DB::raw('SUM((total - fee_of_shipping) * 0.95) as total_earnings'))
+                ->value('total_earnings');
 
-        return $totalEarnings;
-    
+            return (float) ($totalEarnings ?? 0);
+        });
+
     }
 
-    public function countShopSales($shopId): int
+    public function countShopSales($shopId)
     {
-        $shop = Shop::findOrFail($shopId);
+        $cacheKey = "shop.sales_count.{$shopId}";
 
-        // Étape 1: Récupérer les IDs des produits de la boutique
-        $productIds = $shop->products()->pluck('id');
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($shopId) {
 
-        // Étape 2: Récupérer les IDs de commandes de produits simples
-        $simpleOrderIds = DB::table('order_details')
-            ->whereIn('product_id', $productIds)
-            ->pluck('order_id');
+            // 1. Récupérer UNIQUEMENT les IDs des commandes via des JOINs
+            $simpleOrderIds = DB::table('order_details')
+                ->join('products', 'order_details.product_id', '=', 'products.id')
+                ->where('products.shop_id', $shopId)
+                ->pluck('order_details.order_id');
 
-        // Étape 3: Récupérer les IDs de commandes de produits variés
-        $productVariationIds = ProductVariation::whereIn('product_id', $productIds)->pluck('id');
+            $variedOrderIds = DB::table('order_variations')
+                ->join('product_variations', 'order_variations.product_variation_id', '=', 'product_variations.id')
+                ->join('products', 'product_variations.product_id', '=', 'products.id')
+                ->where('products.shop_id', $shopId)
+                ->pluck('order_variations.order_id');
 
-        $variedOrderIds = DB::table('order_variations')
-            ->whereIn('product_variation_id', $productVariationIds)
-            ->pluck('order_id');
+            $allOrderIds = $simpleOrderIds->merge($variedOrderIds)->unique();
 
-        // Étape 4: Combiner les IDs de commandes et enlever les doublons
-        $allOrderIds = $simpleOrderIds->merge($variedOrderIds)->unique();
+            if ($allOrderIds->isEmpty()) {
+                return 0;
+            }
 
-        // Étape 5: Compter le nombre de commandes finalisées
-        $salesCount = Order::whereIn('id', $allOrderIds)
-            ->count();
-        
-        return $salesCount;
+            // 2. 🚨 CRITIQUE : LAISSER LA BASE DE DONNÉES COMPTER (COUNT)
+            return DB::table('orders')
+                ->whereIn('id', $allOrderIds)
+                // 🚨 ADAPTE 'delivered' ou 'paid' selon le nom réel de ta colonne de statut
+                ->where('status', 'delivered')
+                ->count();
+        });
     }
 }

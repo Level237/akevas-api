@@ -44,7 +44,7 @@ class CurrentGenderController extends Controller
     {
         $cacheKey = 'genders.all';
 
-        $genders = Cache::remember($cacheKey, now()->addHours(2), function () {
+        $genders = Cache::remember($cacheKey, now()->addHours(24), function () {
             return Gender::all();
         });
 
