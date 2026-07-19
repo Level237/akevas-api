@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Town;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache; // ✅ AJOUTER CETTE LIGNE
+use Illuminate\Support\Facades\Cache;
 
 class TownController extends Controller
 {

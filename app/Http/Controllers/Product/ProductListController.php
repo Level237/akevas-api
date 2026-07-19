@@ -7,149 +7,159 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+;
 
 class ProductListController extends Controller
 {
     public function index()
     {
-        return ProductResource::collection(Product::inRandomOrder()->where('status', 1)->where('is_trashed', 0)->where("isRejet", 0)->take(5)->get());
+        $cacheKey = 'home.products.featured';
+
+        // 🚨 Le mélange aléatoire n'est calculé que TOUTES LES 2 HEURES.
+        // Le reste du temps, c'est instantané (0 requête SQL).
+        $products = Cache::remember($cacheKey, now()->addHours(2), function () {
+            return Product::where('status', 1)
+                ->where('is_trashed', 0)
+                ->where('isRejet', 0)
+                //->with(['categories', 'shop:id,shop_name']) // 🚨 Évite le N+1 du Resource
+                ->inRandomOrder()
+                ->take(5)
+                ->get();
+        });
+
+        return ProductResource::collection($products);
     }
 
     public function adsProducts($id)
     {
-        return ProductResource::collection(Product::inRandomOrder()->Where('subscribe_id', $id)->where('status', 1)->where('is_trashed', 0)->where("isRejet", 0)->get());
+        $cacheKey = "products.ads.subscribe.{$id}";
+
+        $products = Cache::remember($cacheKey, now()->addHours(2), function () use ($id) {
+            return Product::where('subscribe_id', $id)
+                ->where('status', 1)
+                ->where('is_trashed', 0)
+                ->where('isRejet', 0)
+                ->inRandomOrder()
+                ->get();
+        });
+
+        return ProductResource::collection($products);
     }
     public function allProducts(Request $request)
     {
-        $query = Product::inRandomOrder()
+        // 1. CLÉ DE CACHE INTELLIGENTE (MD5 des paramètres triés)
+        $queryParams = $request->except(['page']);
+        ksort($queryParams);
+        $paramsHash = md5(json_encode($queryParams));
+        $currentPage = $request->get('page', 1);
+
+        $cacheKey = "products.all.{$paramsHash}.page.{$currentPage}";
+
+        // 2. REQUÊTE DE BASE AVEC EAGER LOADING MASSIF
+        $query = Product::with([
+            'categories',
+            'variations.color',
+            'variations.attributesVariation.attributeValue',
+            'variations.wholesalePrices',
+            'wholesalePrices',
+            'shop:id,shop_name' // Ajoute les relations dont ton ProductResource a besoin
+        ])
             ->where('status', 1)
             ->where('is_trashed', 0)
-            ->where("isRejet", 0);
+            ->where('isRejet', 0)
+            ->latest('created_at'); // 🚨 CRUCIAL : Remplace inRandomOrder() par latest() pour la pagination
 
-
-        // Appliquer le filtre de prix si des paramètres sont présents
+        // 3. FILTRES (Ta logique originale, conservée car elle est correcte)
         if ($request->has('min_price') || $request->has('max_price')) {
             $minPrice = $request->input('min_price') ? floatval($request->input('min_price')) : null;
             $maxPrice = $request->input('max_price') ? floatval($request->input('max_price')) : null;
 
             $query->where(function (Builder $subQuery) use ($minPrice, $maxPrice) {
-
-                // Filtre pour les produits simples (prix dans la table 'products')
-                $subQuery->where(function ($simpleProductQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
-                        $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
-                        $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
-
-                // Filtre pour les produits variés (couleur uniquement, prix dans la table 'product_variations')
-                $subQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
-                        $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
-                        $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
-
-                // Filtre pour les produits variés (couleur + attributs, prix dans 'variation_attributes')
-                $subQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
-                        $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
-                        $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
+                $subQuery->where(function ($q) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null)
+                        $q->whereRaw('CAST(product_price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                    if ($maxPrice !== null)
+                        $q->whereRaw('CAST(product_price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
+                })->orWhereHas('variations', function ($q) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null)
+                        $q->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                    if ($maxPrice !== null)
+                        $q->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
+                })->orWhereHas('variations.attributesVariation', function ($q) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null)
+                        $q->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
+                    if ($maxPrice !== null)
+                        $q->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
                 });
             });
         }
 
         if ($request->has('categories')) {
-            $categoryIdsString = $request->input('categories');
-            $categoryIds = explode(',', $categoryIdsString);
-
-            $query->whereHas('categories', function (Builder $categoryQuery) use ($categoryIds) {
-                $categoryQuery->whereIn('categories.id', $categoryIds); // <-- Corrected
+            $categoryIds = explode(',', $request->input('categories'));
+            $query->whereHas('categories', function (Builder $q) use ($categoryIds) {
+                $q->whereIn('categories.id', $categoryIds);
             });
         }
 
         if ($request->has('colors')) {
-            $colorsString = $request->input('colors');
-            $colorNames = explode(',', $colorsString);
-
-            $query->whereHas('variations', function (Builder $variationQuery) use ($colorNames) {
-                $variationQuery->whereHas('color', function (Builder $colorQuery) use ($colorNames) {
-                    $colorQuery->whereIn('value', $colorNames);
+            $colorNames = explode(',', $request->input('colors'));
+            $query->whereHas('variations', function (Builder $q) use ($colorNames) {
+                $q->whereHas('color', function (Builder $cq) use ($colorNames) {
+                    $cq->whereIn('value', $colorNames);
                 });
             });
         }
 
         if ($request->has('attributes')) {
             $attributesToFilter = $request->input('attributes');
-
-            // Check if the input is a string and handle it as a single attribute
             if (!is_array($attributesToFilter) && is_string($attributesToFilter)) {
-                // Assuming a single attribute ID is passed, e.g., ?attributes=5
                 $attributesToFilter = [$attributesToFilter => []];
             }
-
             foreach ($attributesToFilter as $attributeId => $valueIdsString) {
                 $valueIds = explode(',', $valueIdsString);
-
-                $query->whereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($attributeId, $valueIds) {
-                    $attributeQuery->whereHas('attributeValue', function (Builder $attributeValueQuery) use ($attributeId, $valueIds) {
-                        $attributeValueQuery
-                            ->whereIn('id', $valueIds);
+                $query->whereHas('variations.attributesVariation', function (Builder $q) use ($attributeId, $valueIds) {
+                    $q->whereHas('attributeValue', function (Builder $aq) use ($valueIds) {
+                        $aq->whereIn('id', $valueIds);
                     });
                 });
             }
         }
 
         if ($request->has('gender')) {
-            $genderId = $request->input('gender');
-            $query->where('product_gender', $genderId);
+            $query->where('product_gender', $request->input('gender'));
         }
 
         if ($request->has('seller_mode') && $request->input('seller_mode') == true) {
             $query->where('is_wholesale', 1);
-
             if ($request->has('bulk_price_range')) {
                 list($minBulkPrice, $maxBulkPrice) = explode('-', $request->input('bulk_price_range'));
-
                 $minBulkPrice = floatval($minBulkPrice);
                 $maxBulkPrice = floatval($maxBulkPrice);
-                // On regroupe toutes les conditions de prix de gros
-                $query->where(function (Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
 
-                    // Cas 1: Prix de gros pour les produits simples (sans variations)
-                    $bulkPriceQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
-                        $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
-                    });
-
-                    // Cas 2: Prix de gros pour les produits variés (couleur uniquement)
-                    $bulkPriceQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minBulkPrice, $maxBulkPrice) {
-                        $variationQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                            $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
-                            $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
+                $query->where(function (Builder $q) use ($minBulkPrice, $maxBulkPrice) {
+                    $q->whereHas('wholesalePrices', function ($wq) use ($minBulkPrice, $maxBulkPrice) {
+                        $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                        $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
+                    })->orWhereHas('variations', function ($vq) use ($minBulkPrice, $maxBulkPrice) {
+                        $vq->whereHas('wholesalePrices', function ($wq) use ($minBulkPrice, $maxBulkPrice) {
+                            $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                            $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                         });
-                    });
-
-                    // Cas 3: Prix de gros pour les produits variés (couleur + attribut)
-                    $bulkPriceQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minBulkPrice, $maxBulkPrice) {
-                        $attributeQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
-                            $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
-                            $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
+                    })->orWhereHas('variations.attributesVariation', function ($aq) use ($minBulkPrice, $maxBulkPrice) {
+                        $aq->whereHas('wholesalePrices', function ($wq) use ($minBulkPrice, $maxBulkPrice) {
+                            $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
+                            $wq->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                         });
                     });
                 });
             }
         }
 
-        $products = $query->paginate(20);
+        // 4. EXÉCUTION AVEC CACHE (15 minutes pour les recherches filtrées)
+        $products = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($query) {
+            return $query->paginate(20);
+        });
 
         return ProductResource::collection($products);
     }

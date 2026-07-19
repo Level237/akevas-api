@@ -6,7 +6,7 @@ use App\Models\Quarter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\QuarterResource;
-
+use Illuminate\Support\Facades\Cache;
 class QuarterController extends Controller
 {
     /**
@@ -14,7 +14,11 @@ class QuarterController extends Controller
      */
     public function index()
     {
-        $quarters = Quarter::all();
+        // 🚨 CACHE DE 30 JOURS
+        $quarters = Cache::remember('quarters.all', now()->addDays(30), function () {
+            return Quarter::all();
+        });
+
         return QuarterResource::collection($quarters);
     }
 
@@ -24,6 +28,7 @@ class QuarterController extends Controller
     public function store(Request $request)
     {
         $quarter = Quarter::create($request->all());
+        Cache::forget('quarters.all');
         return response()->json($quarter, 201);
     }
 
@@ -43,6 +48,7 @@ class QuarterController extends Controller
     {
         $quarter = Quarter::find($id);
         $quarter->update($request->all());
+        Cache::forget('quarters.all');
         return response()->json($quarter, 200);
     }
 
@@ -53,6 +59,7 @@ class QuarterController extends Controller
     {
         $quarter = Quarter::find($id);
         $quarter->delete();
+        Cache::forget('quarters.all');
         return response()->json($quarter, 200);
     }
 }
