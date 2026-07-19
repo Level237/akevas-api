@@ -43,7 +43,7 @@ class SellerController extends Controller
         });
 
         // 3. Retourner la Resource de l'utilisateur associé au shop
-        return response()->json(SellerResource::make($shop->user));
+        return SellerResource::make($shop->user);
     }
 
     /**
