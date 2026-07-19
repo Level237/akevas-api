@@ -98,7 +98,7 @@ class CategoryController extends Controller
             // On vide le nouveau cache pour qu'il se régénère avec les nouvelles données
             Cache::forget('category.url.' . $category->category_url);
             // On vide aussi le cache global de l'arbre des catégories (vu précédemment)
-            Cache::forget('categories.tree');
+            Cache::forget('categories.root');
 
             // 6. Retour propre (pas $request->all())
             return response()->json([
@@ -124,80 +124,83 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
-            $gender_name = "";
+            $createdCategories = [];
+
+            // Tableau de correspondance propre pour éviter les bugs de variables non initialisées
+            $genderMap = [
+                '1' => 'homme',
+                '2' => 'femme',
+                '3' => 'enfant'
+            ];
 
             if ($request->parent_id == null) {
-                $category = new Category;
+                // --- CAS 1 : Catégorie Racine ---
+                $category = new Category();
                 $category->category_name = $request->category_name;
-                $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
+                $category->category_url = Str::slug($request->category_name) . '-' . time(); // Garantit l'unicité
+                $category->parent_id = null;
 
-                if ($request->category_profile != null) {
-                    $file = $request->file('category_profile');
-                    $category->category_profile = $file->store('categories/profile', 'public');
+                if ($request->hasFile('category_profile')) {
+                    $category->category_profile = $request->file('category_profile')->store('categories/profile', 'public');
                 }
-
-
-                $category->parent_id = $request->parent_id;
-
 
                 $category->save();
 
-                // Attacher les genres si fournis
                 if ($request->gender_id) {
-                    $category->genders()->attach(intval($request->gender_id));
+                    $category->genders()->attach((int) $request->gender_id);
                 }
+
+                $createdCategories[] = $category;
+
             } else {
-                foreach ($request->gender_id as $gender) {
-                    $category = new Category;
-                    $category_name = $request->category_name;
-                    if ($request->parent_id) {
-                        $category_name = $request->category_name . " " . $gender_name;
-                        $category->parent_id = $request->parent_id;
+                // --- CAS 2 : Sous-catégories par Genre ---
+                // S'assurer que gender_id est un tableau pour la boucle
+                $genderIds = is_array($request->gender_id) ? $request->gender_id : [$request->gender_id];
+
+                foreach ($genderIds as $genderId) {
+                    $genderName = $genderMap[(string) $genderId] ?? 'inconnu';
+
+                    $category = new Category();
+                    $category->category_name = $request->category_name . ' ' . ucfirst($genderName);
+                    $category->category_url = Str::slug($request->category_name . ' ' . $genderName) . '-' . time();
+                    $category->parent_id = (int) $request->parent_id;
+
+                    if ($request->hasFile('category_profile')) {
+                        $category->category_profile = $request->file('category_profile')->store('categories/profile', 'public');
                     }
-                    if ($gender == "1") {
-                        $gender_name = "homme";
-                    } else if ($gender == "2") {
-                        $gender_name = "femme";
-                    } else {
-                        $gender_name = "enfant";
-                    }
-
-
-                    $category->category_name = $request->category_name . " " . $gender_name;
-                    $category->category_url = \Illuminate\Support\Str::slug($request->category_name . " " . $gender_name);
-
-                    if ($request->category_profile) {
-                        $file = $request->file('category_profile');
-                        $category->category_profile = $file->store('categories/profile', 'public');
-                    }
-
-
 
                     $category->save();
+                    $category->genders()->attach((int) $genderId);
 
-
-                    $category->genders()->attach(intval($gender));
-
+                    $createdCategories[] = $category;
                 }
             }
 
+            DB::commit();
+
+            // 🚨 CRITIQUE : Invalidation du cache après création réussie
+            Cache::forget('categories.all');
+            Cache::forget('categories.root');
 
 
             return response()->json([
                 'success' => true,
-                'message' => "Category created successfully",
-                'data' => $category->load('genders')
-            ], 200);
-
-            // Attacher les genres si fournis
-
+                'message' => "Catégorie(s) créée(s) avec succès",
+                'data' => $createdCategories
+            ], 201); // 201 Crea
 
         } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Nettoyage des fichiers uploadés en cas d'échec (optionnel mais recommandé)
+            // ...
+
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong',
-                'errors' => $e->getMessage()
+                'message' => 'Une erreur est survenue lors de la création',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -226,44 +229,56 @@ class CategoryController extends Controller
         try {
             $category = Category::findOrFail($id);
 
-            // Vérifier s'il y a des sous-catégories
-            if ($category->children()->count() > 0) {
+            // 1. Vérifier s'il y a des sous-catégories (exists() est plus rapide que count() > 0)
+            if ($category->children()->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cannot delete category with subcategories. Please delete subcategories first.'
+                    'message' => 'Impossible de supprimer une catégorie contenant des sous-catégories. Veuillez les supprimer d\'abord.'
                 ], 400);
             }
 
-            // Vérifier s'il y a des produits associés
-            if ($category->products()->count() > 0) {
+            // 2. Vérifier s'il y a des produits associés
+            if ($category->products()->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cannot delete category with associated products. Please remove products first.'
+                    'message' => 'Impossible de supprimer une catégorie contenant des produits. Veuillez les déplacer ou les supprimer d\'abord.'
                 ], 400);
             }
 
-            // Supprimer les relations avec les genres
+            // 3. 🚨 Nettoyage : Supprimer l'image du serveur si elle existe
+            if ($category->category_profile) {
+                Storage::disk('public')->delete($category->category_profile);
+            }
+
+            // 4. Sauvegarder l'URL avant suppression pour invalider le cache spécifique
+            $oldUrl = $category->category_url;
+            $oldId = $category->id;
+
+            // 5. Suppression des relations et de la catégorie
             $category->genders()->detach();
-
-            // Supprimer la catégorie
             $category->delete();
+
+            // 🚨 CRITIQUE : Invalidation du cache après suppression
+            Cache::forget('categories.all');
+            Cache::forget('categories.root');
+            Cache::forget('category.url.' . $oldUrl); // Invalide l'ancienne page de cette catégorie
+            Cache::forget('category.id.' . $oldId);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Category deleted successfully'
+                'message' => 'Catégorie supprimée avec succès'
             ], 200);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Category not found'
+                'message' => 'Catégorie introuvable'
             ], 404);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong',
-                'errors' => $e->getMessage()
+                'message' => 'Une erreur est survenue lors de la suppression',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
