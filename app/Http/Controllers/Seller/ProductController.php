@@ -482,6 +482,9 @@ class ProductController extends Controller
                 $product->variations()->whereNotIn('id', $processedVariationIds)->delete();
             }
 
+            Cache::forget("product.detail.{$product->product_url}");
+            Cache::forget("products.similar.{$product->id}");
+
             DB::commit();
             Log::info('Product update transaction committed', ['product_id' => $product->id]);
 
