@@ -263,6 +263,17 @@ class CategoryController extends Controller
             Cache::forget('categories.root');
             Cache::forget('category.url.' . $oldUrl); // Invalide l'ancienne page de cette catégorie
             Cache::forget('category.id.' . $oldId);
+            Cache::forget('categories.root.gender.1');
+            Cache::forget('categories.root.gender.2');
+            Cache::forget('categories.root.gender.3');
+            Cache::forget('categories.root.gender.4');
+
+            Cache::forget("root_categories_gender_1");
+            Cache::forget("root_categories_gender_2");
+            Cache::forget("root_categories_gender_3");
+            Cache::forget("root_categories_gender_4");
+
+            Cache::forget('categories.attributes.map');
 
             return response()->json([
                 'success' => true,

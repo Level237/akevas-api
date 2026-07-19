@@ -7,62 +7,68 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-
-
+use Illuminate\Support\Facades\Cache;
 class ProductByCategoryController extends Controller
 {
     public function index($categoryUrl, Request $request)
     {
-        $query = Product::with('categories')->whereHas('categories', function ($query) use ($categoryUrl) {
-            $query->where('categories.category_url', $categoryUrl);
-        })->where('status', 1)
-            ->where('is_trashed', 0)
-            ->where("isRejet", 0);
+        // 1. GÉNÉRATION D'UNE CLÉ DE CACHE UNIQUE ET STABLE
+        // On prend tous les paramètres SAUF 'page', on les trie, et on crée un hash MD5
+        $queryParams = $request->except(['page']);
+        ksort($queryParams); // Garantit que ?color=red&size=M = ?size=M&color=red
 
+        $paramsHash = md5(json_encode($queryParams));
+        $currentPage = $request->get('page', 1);
+
+        // Clé finale ex: products.cat.chaussures.a1b2c3d4.page.1
+        $cacheKey = "products.cat.{$categoryUrl}.{$paramsHash}.page.{$currentPage}";
+
+        // 2. CONSTRUCTION DE LA REQUÊTE (Identique à ta logique, mais avec Eager Loading massif)
+        $query = Product::with([
+            'categories',
+            // 🚨 CRUCIAL : Charger TOUTES les relations utilisées dans whereHas ET dans ton ProductResource
+            // pour éviter des centaines de requêtes N+1 après le cache
+            'variations.color',
+            'variations.attributesVariation.attributeValue',
+            'variations.wholesalePrices',
+            'wholesalePrices',
+            'shop:id,shop_name' // Ajoute les relations de ton Resource ici
+        ])
+            ->whereHas('categories', function ($query) use ($categoryUrl) {
+                $query->where('categories.category_url', $categoryUrl);
+            })
+            ->where('status', 1)
+            ->where('is_trashed', 0)
+            ->where('isRejet', 0);
+
+        // --- FILTRE PRIX ---
         if ($request->has('min_price') || $request->has('max_price')) {
             $minPrice = $request->input('min_price') ? floatval($request->input('min_price')) : null;
             $maxPrice = $request->input('max_price') ? floatval($request->input('max_price')) : null;
 
             $query->where(function (Builder $subQuery) use ($minPrice, $maxPrice) {
-
-                // Filtre pour les produits simples (prix dans la table 'products')
                 $subQuery->where(function ($simpleProductQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
+                    if ($minPrice !== null)
                         $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
+                    if ($maxPrice !== null)
                         $simpleProductQuery->whereRaw('CAST(product_price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
-
-                // Filtre pour les produits variés (couleur uniquement, prix dans la table 'product_variations')
-                $subQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
+                })->orWhereHas('variations', function (Builder $variationQuery) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null)
                         $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
+                    if ($maxPrice !== null)
                         $variationQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
-                });
-
-                // Filtre pour les produits variés (couleur + attributs, prix dans 'variation_attributes')
-                $subQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minPrice, $maxPrice) {
-                    if ($minPrice !== null) {
+                })->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null)
                         $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) >= ?', [$minPrice]);
-                    }
-                    if ($maxPrice !== null) {
+                    if ($maxPrice !== null)
                         $attributeQuery->whereRaw('CAST(price AS DECIMAL(10, 2)) <= ?', [$maxPrice]);
-                    }
                 });
             });
         }
 
-
-
+        // --- FILTRE COULEURS ---
         if ($request->has('colors')) {
-            $colorsString = $request->input('colors');
-            $colorNames = explode(',', $colorsString);
-
+            $colorNames = explode(',', $request->input('colors'));
             $query->whereHas('variations', function (Builder $variationQuery) use ($colorNames) {
                 $variationQuery->whereHas('color', function (Builder $colorQuery) use ($colorNames) {
                     $colorQuery->whereIn('value', $colorNames);
@@ -70,59 +76,47 @@ class ProductByCategoryController extends Controller
             });
         }
 
+        // --- FILTRE ATTRIBUTS ---
         if ($request->has('attributes')) {
             $attributesToFilter = $request->input('attributes');
-
-            // Check if the input is a string and handle it as a single attribute
             if (!is_array($attributesToFilter) && is_string($attributesToFilter)) {
-                // Assuming a single attribute ID is passed, e.g., ?attributes=5
                 $attributesToFilter = [$attributesToFilter => []];
             }
 
             foreach ($attributesToFilter as $attributeId => $valueIdsString) {
                 $valueIds = explode(',', $valueIdsString);
-
                 $query->whereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($attributeId, $valueIds) {
-                    $attributeQuery->whereHas('attributeValue', function (Builder $attributeValueQuery) use ($attributeId, $valueIds) {
-                        $attributeValueQuery
-                            ->whereIn('id', $valueIds);
+                    $attributeQuery->whereHas('attributeValue', function (Builder $attributeValueQuery) use ($valueIds) {
+                        $attributeValueQuery->whereIn('id', $valueIds);
                     });
                 });
             }
         }
 
+        // --- FILTRE GENRE ---
         if ($request->has('gender')) {
-            $genderId = $request->input('gender');
-            $query->where('product_gender', $genderId);
+            $query->where('product_gender', $request->input('gender'));
         }
 
+        // --- FILTRE VENTE EN GROS (SELLER MODE) ---
         if ($request->has('seller_mode') && $request->input('seller_mode') == true) {
             $query->where('is_wholesale', 1);
 
             if ($request->has('bulk_price_range')) {
                 list($minBulkPrice, $maxBulkPrice) = explode('-', $request->input('bulk_price_range'));
-
                 $minBulkPrice = floatval($minBulkPrice);
                 $maxBulkPrice = floatval($maxBulkPrice);
-                // On regroupe toutes les conditions de prix de gros
-                $query->where(function (Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
 
-                    // Cas 1: Prix de gros pour les produits simples (sans variations)
+                $query->where(function (Builder $bulkPriceQuery) use ($minBulkPrice, $maxBulkPrice) {
                     $bulkPriceQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
                         $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
                         $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
-                    });
-
-                    // Cas 2: Prix de gros pour les produits variés (couleur uniquement)
-                    $bulkPriceQuery->orWhereHas('variations', function (Builder $variationQuery) use ($minBulkPrice, $maxBulkPrice) {
+                    })->orWhereHas('variations', function (Builder $variationQuery) use ($minBulkPrice, $maxBulkPrice) {
                         $variationQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
                             $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
                             $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
                         });
-                    });
-
-                    // Cas 3: Prix de gros pour les produits variés (couleur + attribut)
-                    $bulkPriceQuery->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minBulkPrice, $maxBulkPrice) {
+                    })->orWhereHas('variations.attributesVariation', function (Builder $attributeQuery) use ($minBulkPrice, $maxBulkPrice) {
                         $attributeQuery->whereHas('wholesalePrices', function (Builder $wholesaleQuery) use ($minBulkPrice, $maxBulkPrice) {
                             $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) >= ?', [$minBulkPrice]);
                             $wholesaleQuery->whereRaw('CAST(wholesale_price AS DECIMAL(10, 2)) <= ?', [$maxBulkPrice]);
@@ -130,10 +124,12 @@ class ProductByCategoryController extends Controller
                     });
                 });
             }
-
         }
 
-        $products = $query->paginate(6);
+        // 3. EXÉCUTION AVEC CACHE (10 minutes est idéal pour du e-commerce filtré)
+        $products = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query) {
+            return $query->paginate(6);
+        });
 
         return ProductResource::collection($products);
     }
