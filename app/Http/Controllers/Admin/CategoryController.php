@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -19,59 +20,103 @@ class CategoryController extends Controller
      */
     public function index()
     {
-       $categories = Category::whereDoesntHave('parent')->get();
-        return response()->json(['categories'=>$categories],200);
+        // On utilise un nom de clé plus précis
+        $cacheKey = 'categories.root';
+
+        $categories = Cache::remember($cacheKey, now()->addDays(7), function () {
+            return Category::whereDoesntHave('parent')->get();
+        });
+
+        // On applique la Resource APRÈS la récupération du cache
+        return response()->json([
+            'categories' => $categories
+        ], 200);
     }
 
-    public function all(){
-        $categories = CategoryResource::collection(Category::orderBy('created_at', 'desc')->get());
-        return response()->json(['categories'=>$categories],200);
+    public function all()
+    {
+        $cacheKey = 'categories.all';
+
+        // 1. On cache UNIQUEMENT les données brutes (Eloquent)
+        $categories = Cache::remember($cacheKey, now()->addDays(7), function () {
+            return Category::with(['genders', 'parent']) // Ajout de 'parent' pour le Resource
+                ->withCount('products') // CRUCIAL : Évite le N+1 du Resource
+                ->orderBy('created_at', 'desc') // Ou orderBy('category_name', 'asc') pour un tri alphabétique
+                ->get();
+        });
+
+        // 2. On applique la Resource APRÈS la récupération du cache
+        return response()->json([
+            'categories' => CategoryResource::collection($categories)
+        ], 200);
     }
 
-    public function getCategory($id){
-        $category = Category::findOrFail($id);
-        return response()->json(['category'=>CategoryResource::make($category)],200);
+    public function getCategory($id)
+    {
+        $category = Cache::remember('category.' . $id, now()->addDays(7), function () use ($id) {
+            return CategoryResource::make(Category::findOrFail($id));
+        });
+        return response()->json(['category' => $category], 200);
     }
+
     public function update(Request $request, $id)
     {
-       
-
         try {
             DB::beginTransaction();
 
             $category = Category::findOrFail($id);
 
-            // Mettre à jour les données de base
-            $category->category_name = $request->category_name;
-            $category->parent_id = intval($request->parent_id);
-            $category->category_url = Str::slug($request->category_name);
-            // Gérer l'image de profil
-            if($request->category_profile){
-                $file=$request->file('category_profile');
-                $category->category_profile = $file->store('categories/profile', 'public');
-            }
+            // 1. Sauvegarder l'ancienne URL pour invalider l'ancien cache
+            $oldUrl = $category->category_url;
 
-            // Générer l'URL de la catégorie si elle n'existe pas
-           
+            // 2. Mettre à jour les données de base
+            $category->category_name = $request->category_name;
+            $category->parent_id = intval($request->parent_id ?? 0);
+
+            // Astuce : Ajouter l'ID au slug pour éviter les conflits de slugs en doublon
+            $category->category_url = Str::slug($request->category_name) . '-' . $category->id;
+
+            // 3. Gérer l'image de profil
+            if ($request->hasFile('category_profile')) {
+                // Supprimer l'ancienne image si elle existe (optionnel mais recommandé)
+                if ($category->category_profile) {
+                    \Storage::disk('public')->delete($category->category_profile);
+                }
+                $category->category_profile = $request->file('category_profile')->store('categories/profile', 'public');
+            }
 
             $category->save();
 
-            // Mettre à jour la relation avec le genre
+            // 4. Mettre à jour la relation avec le genre
             $category->genders()->sync([intval($request->gender_id)]);
 
             DB::commit();
 
-            return $request->all();
+            // 🚨 5. INVALIDATION DU CACHE (CRITIQUE)
+            // On vide l'ancien cache (au cas où l'URL a changé)
+            Cache::forget('category.url.' . $oldUrl);
+            // On vide le nouveau cache pour qu'il se régénère avec les nouvelles données
+            Cache::forget('category.url.' . $category->category_url);
+            // On vide aussi le cache global de l'arbre des catégories (vu précédemment)
+            Cache::forget('categories.tree');
+
+            // 6. Retour propre (pas $request->all())
+            return response()->json([
+                'success' => true,
+                'message' => 'Catégorie mise à jour avec succès',
+                'data' => new CategoryResource($category)
+            ], 200);
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour de la catégorie',
                 'error' => $e->getMessage()
             ], 500);
         }
+
     }
 
     /**
@@ -79,76 +124,76 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             $gender_name = "";
-            
-            if($request->parent_id == null){
-            $category = new Category;
-            $category->category_name = $request->category_name;
-            $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
-            
-            if($request->category_profile != null){
-                $file=$request->file('category_profile');
-                $category->category_profile = $file->store('categories/profile', 'public');
-            }
-            
-            
+
+            if ($request->parent_id == null) {
+                $category = new Category;
+                $category->category_name = $request->category_name;
+                $category->category_url = \Illuminate\Support\Str::slug($request->category_name);
+
+                if ($request->category_profile != null) {
+                    $file = $request->file('category_profile');
+                    $category->category_profile = $file->store('categories/profile', 'public');
+                }
+
+
                 $category->parent_id = $request->parent_id;
-            
-            
-            $category->save();
-            
-            // Attacher les genres si fournis
-            if($request->gender_id){
-                $category->genders()->attach(intval($request->gender_id));
-            }
-            }else{
-                foreach($request->gender_id as $gender){
+
+
+                $category->save();
+
+                // Attacher les genres si fournis
+                if ($request->gender_id) {
+                    $category->genders()->attach(intval($request->gender_id));
+                }
+            } else {
+                foreach ($request->gender_id as $gender) {
                     $category = new Category;
-                    $category_name=$request->category_name;
-                    if($request->parent_id){
-                        $category_name= $request->category_name . " " . $gender_name;
+                    $category_name = $request->category_name;
+                    if ($request->parent_id) {
+                        $category_name = $request->category_name . " " . $gender_name;
                         $category->parent_id = $request->parent_id;
                     }
-                    if($gender == "1"){
-                        $gender_name="homme";
-                    }else if($gender ==  "2"){
+                    if ($gender == "1") {
+                        $gender_name = "homme";
+                    } else if ($gender == "2") {
                         $gender_name = "femme";
-                    }else{
+                    } else {
                         $gender_name = "enfant";
                     }
-    
-                    
+
+
                     $category->category_name = $request->category_name . " " . $gender_name;
                     $category->category_url = \Illuminate\Support\Str::slug($request->category_name . " " . $gender_name);
-                
-                    if($request->category_profile){
-                        $file=$request->file('category_profile');
+
+                    if ($request->category_profile) {
+                        $file = $request->file('category_profile');
                         $category->category_profile = $file->store('categories/profile', 'public');
                     }
-                    
-                    
-                    
+
+
+
                     $category->save();
-    
-                   
-                        $category->genders()->attach(intval($gender));
-                    
+
+
+                    $category->genders()->attach(intval($gender));
+
                 }
             }
-            
-            
-            
+
+
+
             return response()->json([
                 'success' => true,
                 'message' => "Category created successfully",
                 'data' => $category->load('genders')
             ], 200);
-            
+
             // Attacher les genres si fournis
-            
-            
-        } catch(\Exception $e){
+
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong',
@@ -168,7 +213,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
 
     /**
      * Remove the specified resource from storage.
@@ -180,40 +225,40 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-            
+
             // Vérifier s'il y a des sous-catégories
-            if($category->children()->count() > 0) {
+            if ($category->children()->count() > 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete category with subcategories. Please delete subcategories first.'
                 ], 400);
             }
-            
+
             // Vérifier s'il y a des produits associés
-            if($category->products()->count() > 0) {
+            if ($category->products()->count() > 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete category with associated products. Please remove products first.'
                 ], 400);
             }
-            
+
             // Supprimer les relations avec les genres
             $category->genders()->detach();
-            
+
             // Supprimer la catégorie
             $category->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Category deleted successfully'
             ], 200);
-            
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Category not found'
             ], 404);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -231,21 +276,21 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-            
+
             // Supprimer récursivement toutes les sous-catégories
             $this->deleteCategoryRecursively($category);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Category and all subcategories deleted successfully'
             ], 200);
-            
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Category not found'
             ], 404);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -264,12 +309,12 @@ class CategoryController extends Controller
         foreach ($category->children as $child) {
             $this->deleteCategoryRecursively($child);
         }
-        
+
         // Supprimer les relations
         $category->genders()->detach();
         $category->products()->detach();
         $category->shops()->detach();
-        
+
         // Supprimer la catégorie
         $category->delete();
     }
