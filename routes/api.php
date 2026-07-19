@@ -116,24 +116,31 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
     */
 
 
-Route::middleware('throttle:login')->post('/login', [LoginController::class, 'login']);
-Route::middleware('throttle:login')->post('/login/mobile', [LoginController::class, 'loginwithToken']);
 
-Route::middleware('throttle:api')->group(function () {
+
+
+Route::middleware(['throttle:auth'])->group(function () {
+
+    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login/mobile', [LoginController::class, 'loginwithToken']);
+
+    Route::post('/check/email-and-phone-number', [CheckIfInputExistInDatabaseController::class, 'checkEmailAndPhoneNumber']);
+    Route::post('/check/login/phone-number', [CheckIfInputExistInDatabaseController::class, 'checkPhoneNumber']);
+
+    Route::post('create/seller', [CreateSellerController::class, 'create']);
+
+    Route::post('/register', [RegisterController::class, 'register']);
     Route::post("/password/forgot", [ForgotPasswordController::class, 'sendForgotPasswordOtp']);
 
     Route::post("/password/verify", [ForgotPasswordController::class, 'verifyOtp']);
 
     Route::post("/password/reset", [ForgotPasswordController::class, 'resetPassword']);
     Route::post("check/shop/status", [CheckShopStatusController::class, 'checkShopStatus']);
+});
 
-    Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
 
-    Route::get("resize/products", [ResizeAllProductImageController::class, "resizeAllProductImage"]);
-
-    Route::get('/filter/products/{arrayId}', [CategoryFilterController::class, 'filter']);
-    Route::get('/filter/categories/{arraySubCategoryId}', [CategoryFilterController::class, 'getCategoryBySubCategory']);
-    //Status for notchpay
+Route::middleware('throttle:payments')->group(function () {
+   
     Route::post('/get/payment/status', [HandleVerifyController::class, 'getPaymentStatus']);
 
     //Status for coolpay
@@ -142,6 +149,23 @@ Route::middleware('throttle:api')->group(function () {
 
     Route::post('/notchpay/coins/webhook', [HandleWebhookController::class, 'handleWebhook']);
     Route::post('/notchpay/product/webhook', [HandleWebhookProductPaymentController::class, 'handleWebhook']);
+
+
+});
+
+Route::middleware('throttle:api')->group(function () {
+    
+
+    Route::get("catalogue/{shop_key}", [CatalogueController::class, 'index']);
+
+    Route::get("resize/products", [ResizeAllProductImageController::class, "resizeAllProductImage"]);
+
+    Route::get('/filter/products/{arrayId}', [CategoryFilterController::class, 'filter']);
+    Route::get('/filter/categories/{arraySubCategoryId}', [CategoryFilterController::class, 'getCategoryBySubCategory']);
+    //Status for notchpay
+    
+
+    
     Route::get('/callback/payment', [CallbackPayment::class, 'callbackPayment']);
     Route::get('/get/profile/shop', [GetProfileShopController::class, 'getProfile']);
     Route::get("/get/modal/shop", [GetShowModalShopController::class, 'showRandom']);
@@ -151,13 +175,12 @@ Route::middleware('throttle:api')->group(function () {
     Route::get('/list/reviews/shop/{shopId}', [ShopReviewController::class, 'index']);
     Route::get('/product/by-category/{url}', [ProductByCategoryController::class, 'index']);
     Route::get('/send/notification', [SendNotificationController::class, 'sendNotification']);
-    Route::post('create/delivery', [CreateDeliveryController::class, 'create']);
+    
     Route::get('/category/gender/{id}', [ListCategoryController::class, 'getCategoriesByGender']);
     Route::get('/get/category/by-gender/{id}', [ListCategoryController::class, 'showCategoryByGender']);
     Route::get('/get/sub-categories/{arrayIds}/{id}', [ListCategoryController::class, 'getSubCategoriesByParentId']);
-    Route::post('/check/email-and-phone-number', [CheckIfInputExistInDatabaseController::class, 'checkEmailAndPhoneNumber']);
-    Route::post('/check/login/phone-number', [CheckIfInputExistInDatabaseController::class, 'checkPhoneNumber']);
-    Route::post('/register', [RegisterController::class, 'register']);
+    
+    
     Route::get('/categories/with-parent-id-null', [ListCategoryController::class, 'getCategoryWithParentIdNull']);
     Route::get('/shop/{id}', [SellerController::class, 'show']);
     Route::get('/categories', [CategoryController::class, 'index']);
@@ -166,7 +189,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::get('/check/token', [CheckTokenValidityController::class, 'checkToken']);
 
     Route::get('/refresh/token', [AuthController::class, 'refresh']);
-    Route::post('create/seller', [CreateSellerController::class, 'create']);
+    
     Route::get('shop/show/{id}', [ShopController::class, 'show']);
     Route::get("home/products", [ProductListController::class, 'index']);
     Route::get("ads/products/{id}", [ProductListController::class, "adsProducts"]);
@@ -232,68 +255,104 @@ Route::middleware(["auth:api", 'scopes:seller'])->prefix('v1')->group(function (
 });
 
 Route::middleware(["auth:api", 'scopes:admin'])->prefix('v1')->group(function () {
-    Route::post('/decline/or/validate/{reviewId}/{status}', [DeclineOrValidateReviewController::class, 'declineOrValidate']);
-    Route::post('/decline/or/validate/shop/review/{reviewId}/{status}', [DeclineOrValidateShopReviewController::class, 'declineOrValidate']);
+
+    Route::middleware(['throttle:api'])->group(function () {
+
     Route::get('/recent/products', [RecentProductController::class, 'index']);
     Route::get('/recent/sellers', [RecentSellerController::class, 'recentSeller']);
     Route::get('/recent/deliveries', [RecentDeliveryController::class, 'recentDelivery']);
     Route::get('admin/products', [ListProductController::class, 'index']);
     Route::get("/admin/reviews", [AdminListReviewsController::class, 'index']);
-    Route::apiResource('admin/deliveries', DeliveryController::class);
-    Route::post('/shop/confirm/{id}', [ConfirmStatusSellerController::class, 'index']);
-    Route::post('/delivery/confirm/{id}', [ConfirmStatusDeliveryController::class, 'confirmStatusDelivery']);
-    Route::apiResource('sellers', SellerController::class);
-    Route::apiResource('categories', CategoryController::class);
-    Route::delete('admin/category/{id}', [CategoryController::class, 'destroy']);
-    Route::apiResource('/admin/towns', TownController::class);
-    Route::apiResource('/admin/quarters', QuarterController::class);
-    Route::apiResource('admin/customers', CustomerController::class);
-    Route::post("give/coins", [GiveCoinsController::class, 'giveCoins']);
-    Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
-    Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
+     Route::get('/admin/active/stats', [ActiveStatController::class, 'activeStat']);
     Route::get('/admin/active/seller/stats', [ActiveSellerStatController::class, 'activeSellerStat']);
     Route::get('/admin/active/delivery/stats', [ActiveDeliveryStatController::class, 'activeDeliveryStat']);
     Route::get('/admin/list/feedbacks', [ListFeedbackController::class, 'index']);
     Route::get('/admin/list/shop/reviews', [ListShopReviewController::class, 'index']);
     Route::get('admin/orders', [ListOrdersController::class, 'listOrders']);
-    Route::post("add/shop", [CreateSellerController::class, 'create']);
-    Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
+    
     Route::get('/admin/order/{id}', [OrderDetailController::class, 'detail']);
     Route::get('/admin/recent/orders', [AdminRecentOrderController::class, 'recentOrder']);
     Route::get('/admin/all/categories', [CategoryController::class, 'all']);
     Route::get('/admin/all/categories', [CategoryController::class, 'all']);
-    Route::post('/admin/add/category', [CategoryController::class, 'store']);
     Route::get('/admin/category/{id}', [CategoryController::class, 'getCategory']);
-    Route::post('update/category/{id}', [CategoryController::class, 'update']);
-    Route::post('update/town/{id}', [TownController::class, 'update']);
+
+    });
+
+
+      Route::middleware(['throttle:api-writes'])->group(function () {
+            Route::post('/decline/or/validate/{reviewId}/{status}', [DeclineOrValidateReviewController::class, 'declineOrValidate']);
+            Route::post('/decline/or/validate/shop/review/{reviewId}/{status}', [DeclineOrValidateShopReviewController::class, 'declineOrValidate']);
+            Route::post('/shop/confirm/{id}', [ConfirmStatusSellerController::class, 'index']);
+            Route::post('/delivery/confirm/{id}', [ConfirmStatusDeliveryController::class, 'confirmStatusDelivery']);
+            Route::delete('admin/category/{id}', [CategoryController::class, 'destroy']);
+
+            Route::post("give/coins", [GiveCoinsController::class, 'giveCoins']);
+            Route::patch('/product/confirm/{id}', [ValidateProductController::class, 'validateProduct']);
+            Route::post("add/shop", [CreateSellerController::class, 'create']);
+            Route::post('/published/product/{id}', [PublishedProductController::class, 'publishedProduct']);
+            Route::post('/admin/add/category', [CategoryController::class, 'store']);
+    
+            Route::post('update/category/{id}', [CategoryController::class, 'update']);
+            Route::post('update/town/{id}', [TownController::class, 'update']);
+            });
+   
+    
+    Route::apiResource('admin/deliveries', DeliveryController::class);
+    
+    Route::apiResource('sellers', SellerController::class);
+    Route::apiResource('categories', CategoryController::class);
+    
+    Route::apiResource('/admin/towns', TownController::class);
+    Route::apiResource('/admin/quarters', QuarterController::class);
+    Route::apiResource('admin/customers', CustomerController::class);
+   
+   
+   
 });
 
 Route::middleware(["auth:api", 'scopes:customer'])->prefix('v1')->group(function () {
-    Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
+
+
+    Route::middleware(['throttle:api'])->group(function () {
+        Route::get('/recent/orders', [RecentOrderController::class, 'recentOrders']);
     Route::get('user/show/order/{id}', [ShowOrderController::class, 'showOrder']);
     Route::get('/list/orders', [ListOrderController::class, 'listOrder']);
     Route::get('/current/stats', [StatShopController::class, 'currentStats']);
+    });
+
+    
 });
 
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
-    Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
+
+
+     Route::middleware(['throttle:api'])->group(function () {
+         Route::get('/orders/towns', [GetOrderOfTownController::class, 'getOrdersByTown']);
+         Route::get("/recents/histories", [SearchController::class, "recentHistory"]);
+        Route::get('/current/user', [ProfileController::class, 'currentUser']);
+        Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
+        Route::get("/show/payment/{ref}", [ShowPaymentByReferenceController::class, "show"]);
+    });
+   
     //Route::get('init/pay/coolpay',[BuyProductProcessController::class,'initPaymentCoolpay']);
     Route::post("init/payment/buy/product", [InitPaymentController::class, "initPayment"]);
 
-    Route::get("/recents/histories", [SearchController::class, "recentHistory"]);
-    Route::get('/current/user', [ProfileController::class, 'currentUser']);
-    Route::post('/update/user', [ProfileController::class, 'updateUser']);
+    Route::middleware(['throttle:api-writes'])->group(function () {
+        Route::post('/update/user', [ProfileController::class, 'updateUser']);
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/control/payment', [ControlPaymentStatusByRefController::class, 'control']);
     Route::post('/payment/product', [PaymentProductProcessingController::class, 'handlePaymentProduct']);
     Route::post('/payment/stripe', [PaymentController::class, 'pay']);
-    Route::get('/check-auth', [CheckTokenValidityController::class, 'checkIsAuthenticated']);
+    
     Route::post('/make/comment/product/{product_id}', [MakeCommentProductController::class, 'makeCommentProduct']);
     Route::post('/make/comment/shop/{shop_id}', [MakeReviewShopController::class, 'makeCommentShop']);
     Route::post('/success/payment', [SucessPaymentController::class, 'successPayment']);
-    Route::get("/show/payment/{ref}", [ShowPaymentByReferenceController::class, "show"]);
+   
     Route::post('/payin', [PayinController::class, 'payin']);
+    });
+    
+    
 });
 
 Route::middleware(["auth:api", 'scopes:delivery'])->prefix('v1')->group(function () {

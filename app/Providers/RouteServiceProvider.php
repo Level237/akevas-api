@@ -24,9 +24,28 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+         RateLimiter::for('auth', function (Request $request) {
+    $ip = $request->header('CF-Connecting-IP') ?: $request->ip();
+    $key = $request->input('phone_number') . '|' . $ip;
+
+    return [
+        Limit::perMinute(10)->by($key),           // souple à court terme
+        Limit::perHour(20)->by($key),               // strict sur la durée
+    ];
+});
+        // Rate limiter pour les routes API générales
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Rate limiter plus restrictif pour les écritures (POST, PUT, DELETE)
+        RateLimiter::for('api-writes', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
+        });
+
+         RateLimiter::for('payments', function (Request $request) {
+        return Limit::perMinute(20)->by($request->ip());
+    });
 
         $this->routes(function () {
             Route::middleware('api')

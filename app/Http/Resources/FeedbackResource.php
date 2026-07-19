@@ -16,11 +16,14 @@ class FeedbackResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $role_id=$this->user->role_id ? $role_id=$this->user->role_id : null;
+
+       
         return [
             'id'=>$this->id,
             'message'=>$this->message,
             'user'=>$this->user,
-            'role'=>$this->user->role_id,
+            'role'=>$role_id,
             'shop'=>Shop::where("user_id",$this->user->id)->first(),
             'status'=>$this->status,
             'created_at'=>$this->created_at

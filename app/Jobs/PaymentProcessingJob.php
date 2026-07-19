@@ -26,7 +26,7 @@ class PaymentProcessingJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-  
+
      */
     public function __construct($request, $userId, $reference)
     {
@@ -44,7 +44,7 @@ class PaymentProcessingJob implements ShouldQueue
         NotchPay::setApiKey(env("NOTCHPAY_API_KEY"));
         $user = User::find($this->userId);
 
-      
+
 
         $paymentStatus = (new VerifyPayinService())->verify($this->reference);
         $responseStatus = $paymentStatus->getData(true)['status'] ?? null;
@@ -68,13 +68,38 @@ class PaymentProcessingJob implements ShouldQueue
             self::dispatch($this->request, $this->userId, $this->reference)->delay(now()->addSeconds(15));
         }
 
-        if (isset($responseStatus) && $responseStatus === "FAILED" || $responseStatus === "CANCELED") {
+        if (isset($responseStatus) && $responseStatus === "FAILED") {
             Log::error('PaymentProcessingJob: Payment failed');
-             Log::info('PaymentProcessingJob: Payment processing for job', [
+            Log::info('PaymentProcessingJob: Payment processing for job', [
                 "app" => $this->request,
                 "reference" => $this->reference,
             ]);
-            return;
+
+            Payment::create([
+                'payment_type' => 'product',
+                'price' => $this->request['amount'],
+                'transaction_ref' => $this->reference,
+                'payment_of' => 'Paiement produit',
+                'user_id' => $this->userId,
+                "status" => "FAILED"
+            ]);
+        }
+
+        if (isset($responseStatus) && $responseStatus === "CANCELED") {
+            Log::error('PaymentProcessingJob: Payment canceled');
+            Log::info('PaymentProcessingJob: Payment processing for job', [
+                "app" => $this->request,
+                "reference" => $this->reference,
+            ]);
+
+            Payment::create([
+                'payment_type' => 'product',
+                'price' => $this->request['amount'],
+                'transaction_ref' => $this->reference,
+                'payment_of' => 'Paiement produit',
+                'user_id' => $this->userId,
+                "status" => "CANCELED"
+            ]);
         }
 
         if (isset($responseStatus) && $responseStatus == 'SUCCESS') {

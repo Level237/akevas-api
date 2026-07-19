@@ -21,7 +21,7 @@ class SellerResource extends JsonResource
     public function toArray(Request $request): array
     {
         $shop = Shop::where('user_id', $this->id)->first();
-        $productCount = Product::where('shop_id', $shop->id)->where('status', 0)->where('is_trashed', 1)->where('isRejet', 1)->count('id');
+        //$productCount = Product::where('shop_id', $shop->id)->where('status', 0)->where('is_trashed', 1)->where('isRejet', 1)->count('id');
         return [
             "id" => $this->id,
             "firstName" => $this->firstName,
@@ -38,7 +38,7 @@ class SellerResource extends JsonResource
             "identity_card_with_the_person" => URL("/storage/" . $this->identity_card_with_the_person),
             "isSeller" => $this->isSeller,
             "feedbacks" => $this->feedbacks,
-            "last_feedbacks_product_verification" => $productCount,
+            "last_feedbacks_product_verification" => 0,
             "shop" => ShopResource::make(Shop::where('user_id', $this->id)->first()),
             "created_at" => $this->created_at
         ];
